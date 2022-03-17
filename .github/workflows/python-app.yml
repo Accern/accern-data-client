@@ -51,10 +51,6 @@ jobs:
       run: |
         make lint-requirements
 
-    - name: Lint Code (requirements complete)
-      run: |
-        make requirements-complete
-
     - name: Lint Code (use f"" style formating)
       run: |
         make lint-stringformat
