@@ -1,12 +1,10 @@
-name: CI
+name: Python Checks
 
 on:
   push:
-    branches: [ main ]
+    branches: '*'
   pull_request:
     branches: [ main ]
-
-  workflow_dispatch:
 
 jobs:
   build:
