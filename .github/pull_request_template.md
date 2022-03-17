@@ -15,7 +15,7 @@ TODO (If this is a bug fix, explain what was causing the issue)
 
 ### Links:
 
--   xyme-backend: https://github.com/Accern/accern-data-client/pull/000
+- Jira: https://myaccern.atlassian.net/browse/TAD-000
 
 ### How did you test this PR?
 
