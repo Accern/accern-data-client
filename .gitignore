@@ -3,7 +3,7 @@ __pycache__
 .mypy_cache/
 .vscode
 *.pyc
-accern_data_client.egg-info/
+accern_data.egg-info/
 build/
 dist/
 venv/

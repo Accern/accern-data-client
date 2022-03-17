@@ -20,7 +20,7 @@ help:
 	@echo "version-sync	check package versions are same"
 
 ENV ?= venv
-VERSION=`echo "from packages.python.accern_data_client import __version__;import sys;out = sys.stdout;out.write(__version__);out.flush();" | python3 2>/dev/null`
+VERSION=`echo "from packages.python.accern_data import __version__;import sys;out = sys.stdout;out.write(__version__);out.flush();" | python3 2>/dev/null`
 TS_VERSION=`echo "import json;fin=open('package.json', 'r');version=json.loads(fin.read())['version'];fin.close();print(version)" | python3 2>/dev/null`
 
 create-env:

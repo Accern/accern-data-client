@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from packages.python import accern_data_client
+from packages.python import accern_data
 
 with open("./README.md", "r") as readme:
     description = readme.read()
@@ -8,8 +8,8 @@ with open('requirements.txt') as file:
     required = file.read().splitlines()
 
 setup(
-    name="accern_data_client",
-    version=accern_data_client.__version__,
+    name="accern_data",
+    version=accern_data.__version__,
     description="",
     long_description=description,
     long_description_content_type="text/markdown",
