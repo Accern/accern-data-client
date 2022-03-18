@@ -1,36 +1,80 @@
-# This is a basic workflow to help you get started with Actions
+name: Python Checks
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: '*'
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.8']
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+    - name: Set up Python ${{ matrix.python }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python }}
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+    - name: Cache python modules 3.8
+      uses: actions/cache@v2
+      if: ${{ matrix.python == '3.8'}}
+      with:
+        path: ${{ env.pythonLocation }}
+        key: ${{ env.pythonLocation }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements.lint.txt') }}
+
+    - name: Install dependencies
+      run: |
+        make install
+
+    - name: Git Check (tests may not alter any git visible files)
+      run: |
+        git status -sb --porcelain
+        [ -z "$(git status --porcelain)" ]
+
+    - name: Lint Code (use uppercase TODO, XXX, FIXME, NOTE and explain nopep8)
+      run: |
+        make lint-comment
+
+    - name: Lint Code (use empty main inits)
+      run: |
+        make lint-emptyinit
+
+    - name: Lint Code (sort requirements)
+      run: |
+        make lint-requirements
+
+    - name: Lint Code (use f"" style formating)
+      run: |
+        make lint-stringformat
+
+    - name: Lint Code (indent in fours)
+      run: |
+        make lint-indent
+
+    - name: Lint Code (no f"a", "{a}", or f'{a}')
+      run: |
+        make lint-forgottenformat
+
+    - name: Only pyi in stubs
+      run: |
+        make lint-pyi
+
+    - name: Lint Code (missing trailing comma)
+      run: |
+        make lint-flake8
+
+    - name: Lint Code (pycodestyle)
+      run: |
+        make lint-pycodestyle
+
+    - name: Lint Code (type-check)
+      run: |
+        make lint-type-check
+
+    - name: Lint Code (pylint)
+      run: |
+        make lint-pylint
