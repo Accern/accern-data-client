@@ -3,7 +3,7 @@ import json
 import os
 import time
 import traceback
-from typing import Any, Dict, List, Optional, TypedDict, Union
+from typing import Any, Dict, Iterator, List, Optional, TypedDict, Union
 import io
 import pandas as pd
 import requests
@@ -41,10 +41,14 @@ class Mode:
                 List[pd.DataFrame], List[Dict[str, Any]]]:
         raise NotImplementedError()
 
-    def size(self, batch) -> int:
+    def size(
+            self,
+            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]]) -> int:
         raise NotImplementedError()
 
-    def max_date(self, batch) -> str:
+    def max_date(
+            self,
+            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]]) -> str:
         raise NotImplementedError()
 
     def init_day(
@@ -104,10 +108,11 @@ class CSVMode(Mode):
     def size(self, batch: List[pd.DataFrame]) -> int:
         return sum(len(cur) for cur in batch)
 
-    def max_date(self, batch) -> str:
+    def max_date(self, batch: List[pd.DataFrame]) -> str:
         dates = (sorted(set(row for cur in batch for row in list(cur["harvested_at"]))))
         if len(dates) <= 1:
             return dates[0].strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        # Second last date.
         return max(dates[:-1]).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
     def do_init(self, is_first_day: bool) -> None:
@@ -156,10 +161,10 @@ class JSONMode(Mode):
             for signal in res_json["signals"]
         ]
 
-    def size(self, batch) -> int:
+    def size(self, batch: List[Dict[str, Any]]) -> int:
         return len(batch)
 
-    def max_date(self, batch) -> str:
+    def max_date(self, batch: List[Dict[str, Any]]) -> str:
         dates: List[pd.Timestamp] = sorted(
             set(cur["harvested_at"] for cur in batch))
         if len(dates) <= 1:
@@ -202,8 +207,9 @@ class DataClient():
         self._base_url = url
         self._token = token
         self._filters = self.validate_filters(filters)
-        self._params = {}
+        self._params: Dict[str, str] = {}
         self._mode: Optional[Mode] = None
+        self._first_error = True
 
     @staticmethod
     def validate_filters(filters: FiltersType) -> FiltersType:
@@ -215,60 +221,79 @@ class DataClient():
         return filters
 
     def set_mode(self, mode: str) -> None:
+        all_modes = {"json", "csv_full", "csv_date"}
+        if mode not in all_modes:
+            raise ValueError(
+                f"Please set proper mode. It is '{mode}' which is not in "
+                f"{all_modes}")
         mode_mapping: Dict[str, Mode] = {
             "json": JSONMode(),
             "csv_full": CSVMode(is_by_day=False),
             "csv_date": CSVMode(is_by_day=True),
         }
         self._mode = mode_mapping[mode]
-        self._filters["format"] = self.get_mode().get_format()
+        self._params["format"] = self.get_mode().get_format()
 
     def get_mode(self) -> Mode:
         assert self._mode is not None, "Set mode first."
         return self._mode
 
-    def _read_total(base_url, start_date):
-        global FIRST_ERROR
-
+    def _read_total(self) -> int:
         while True:
             try:
-                url = f"{base_url}&format=json"
-                resp = requests.get(url)
+                resp = requests.get(
+                    self._base_url,
+                    params={
+                        "token": self._token,
+                        **{
+                            key: f"{val}"
+                            for key, val in self._filters.items()
+                        },
+                        "date": self._params["date"],
+                        "format": "json",
+                    })
                 if not str(resp.text).strip():  # if nothing is fetched
                     return 0
                 return int(resp.json()["overall_total"])
             except KeyboardInterrupt:
                 raise
             except:
-                if FIRST_ERROR:
+                if self._first_error:
                     print(traceback.format_exc())
-                    FIRST_ERROR = False
-                print(f"unknown error...retrying...{url}")
+                    self._first_error = False
+                print(f"unknown error...retrying...{resp.url}")
                 time.sleep(0.5)
 
-    def _read_date(self):
-        global FIRST_ERROR
-
+    def _read_date(self) -> Union[List[pd.DataFrame], List[Dict[str, Any]]]:
         while True:
             try:
-                resp = requests.get(self._base_url, params=self._filters)
+                resp = requests.get(
+                    self._base_url,
+                    params={
+                        "token": self._token,
+                        **{
+                            key: f"{val}"
+                            for key, val in self._filters.items()
+                        },
+                        **self._params,
+                    })
                 if not str(resp.text).strip():
                     return []
                 return self.get_mode().parse_result(resp)
             except KeyboardInterrupt:
                 raise
             except:
-                if FIRST_ERROR:
+                if self._first_error:
                     print(traceback.format_exc())
-                    FIRST_ERROR = False
+                    self._first_error = False
                 print(f"unknown error...retrying...{resp.url}")
                 time.sleep(0.5)
 
-    def _scroll(self, start_date: str):
+    def _scroll(self, start_date: str) -> Iterator[pd.DataFrame]:
         print("new day")
         remainder = None
         self._params["harvested_after"] = start_date
-        batch = self._read_date(start_date)
+        batch = self._read_date()
         total = self.get_mode().size(batch)
         prev_start = start_date
         while self.get_mode().size(batch) > 0:
@@ -279,7 +304,7 @@ class DataClient():
                     yield b[b['harvested_at'] <= start_date]
                     remainder.append(b[b['harvested_at'] > start_date])
                 self._params["harvested_after"] = start_date
-                batch = self._read_date(start_date)
+                batch = self._read_date()
                 total += self.get_mode().size(batch)
                 if start_date == prev_start:
                     break
@@ -299,7 +324,7 @@ class DataClient():
             *,
             is_first_day: bool) -> None:
         self._params["date"] = cur_date
-        print(f"expected {self._read_total(cur_date)} {cur_date}")
+        print(f"expected {self._read_total()}")
         first = True
         for res in self._scroll("1900-01-01"):
             if first:
