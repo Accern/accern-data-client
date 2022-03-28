@@ -67,3 +67,6 @@ class Timestamp:
                 nanosecond: Optional[int] = None,
                 tzinfo: Any = ..., fold: Optional[int] = 0) -> 'Timestamp':
         ...
+
+    def strftime(self, format: str) -> str:
+        ...
