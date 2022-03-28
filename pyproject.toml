@@ -91,13 +91,6 @@
 [tool.pylint.IMPORTS]
     allow-wildcard-with-all = "yes"
 
-[tool.pylint.TYPECHECK]
-    generated-members = ["torch.*"]
-    ignored-modules = [
-        "datrie",
-        "dawg",
-    ]
-
 [tool.pytest.ini_options]
     filterwarnings = [
         "error",
