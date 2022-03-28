@@ -114,12 +114,22 @@ class CSVMode(Mode):
             self._cols = res.columns
         return [res]
 
-    def size(self, batch: List[pd.DataFrame]) -> int:
+    def size(
+            self,
+            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]]) -> int:
         return sum(len(cur) for cur in batch)
 
-    def max_date(self, batch: List[pd.DataFrame]) -> str:
-        dates: List[pd.Timestamp] = sorted(
-            set(row for cur in batch for row in list(cur["harvested_at"])))
+    def max_date(
+            self,
+            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]]) -> str:
+        temp = set()
+        for cur in batch:
+            assert isinstance(cur, pd.DataFrame)
+            for row in cur:
+                harvested_at = row["harvested_at"]
+                assert isinstance(harvested_at, pd.Timestamp)
+                temp.add(harvested_at)
+        dates: List[pd.Timestamp] = sorted(temp)
         if len(dates) <= 1:
             return dates[0].strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         # Second last date.
@@ -132,8 +142,11 @@ class CSVMode(Mode):
                 fname, index=False, header=True, mode="w")
         print(f"current file is {fname}")
 
-    def add_result(self, signal: pd.DataFrame) -> None:
+    def add_result(
+            self,
+            signal: Union[pd.DataFrame, List[Dict[str, Any]]]) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
+        assert isinstance(signal, pd.DataFrame)
         signal.to_csv(fname, index=False, header=False, mode="a")
 
     def finish_day(self) -> None:
@@ -141,9 +154,11 @@ class CSVMode(Mode):
 
     def split(
             self,
-            batch: List[pd.DataFrame],
+            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]],
             value: pd.Timestamp) -> pd.DataFrame:
-        return batch[0][batch[0]['harvested_at'] <= value]
+        df = batch[0]
+        assert isinstance(df, pd.DataFrame)
+        return df[df['harvested_at'] <= value]
 
 
 class JSONMode(Mode):
@@ -177,12 +192,22 @@ class JSONMode(Mode):
             for signal in res_json["signals"]
         ]
 
-    def size(self, batch: List[Dict[str, Any]]) -> int:
+    def size(
+            self,
+            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]]) -> int:
         return len(batch)
 
-    def max_date(self, batch: List[Dict[str, Any]]) -> str:
-        dates: List[pd.Timestamp] = sorted(
-            set(cur["harvested_at"] for cur in batch))
+    def max_date(
+            self,
+            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]]) -> str:
+        assert isinstance(batch[0], dict)
+        temp = set()
+        for cur in batch:
+            assert isinstance(cur, dict)
+            harvested_at = cur["harvested_at"]
+            assert isinstance(harvested_at, pd.Timestamp)
+            temp.add(harvested_at)
+        dates: List[pd.Timestamp] = sorted(temp)
         if len(dates) <= 1:
             return dates[0].strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         return max(dates[:-1]).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
@@ -190,7 +215,10 @@ class JSONMode(Mode):
     def do_init(self, is_first_day: bool) -> None:
         self._res = []
 
-    def add_result(self, signal: List[Dict[str, Any]]) -> None:
+    def add_result(
+            self,
+            signal: Union[pd.DataFrame, List[Dict[str, Any]]]) -> None:
+        assert isinstance(signal, list)
         self._res.extend(signal)
 
     def finish_day(self) -> None:
@@ -220,10 +248,11 @@ class JSONMode(Mode):
 
     def split(
             self,
-            batch: List[Dict[str, Any]],
+            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]],
             value: pd.Timestamp) -> List[Dict[str, Any]]:
         result = []
         for record in batch:
+            assert isinstance(record, dict)
             if record['harvested_at'] <= value:
                 result.append(record)
         return result
@@ -347,6 +376,8 @@ class DataClient():
                 batch = self._read_date()
                 total += self.get_mode().size(batch)
                 if start_date == prev_start:
+                    # FIXME: redundant check? batch_size becomes 0
+                    # loop gets terminated.
                     break
                 prev_start = start_date
             except pd.errors.EmptyDataError:
