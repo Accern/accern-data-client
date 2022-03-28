@@ -417,9 +417,9 @@ class DataClient():
     def download_range(
             self,
             start_date: str,
-            end_date: Optional[str],
             output_path: str,
-            output_pattern: str) -> None:
+            output_pattern: str,
+            end_date: Optional[str] = None) -> None:
         if end_date is None:
             print(f"single day {start_date}")
             self._process_date(
