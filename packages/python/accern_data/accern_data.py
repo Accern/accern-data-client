@@ -271,11 +271,10 @@ class DataClient():
     def __init__(
             self,
             url: str,
-            token: str,
-            filters: Optional[FiltersType]) -> None:
+            token: str) -> None:
         self._base_url = url
         self._token = token
-        self._filters = self.validate_filters(filters)
+        self._filters = self.validate_filters(None)
         self._params: Dict[str, str] = {}
         self._mode: Optional[Mode] = None
         self._first_error = True
@@ -290,6 +289,9 @@ class DataClient():
                     f"{key} is not a valid filed."
                     f"Possible fileds: {FilterField}")
         return filters
+
+    def set_filters(self, filters: FiltersType) -> None:
+        self._filters = self.validate_filters(filters)
 
     def set_mode(self, mode: MODE) -> None:
         if mode not in ALL_MODES:
@@ -438,6 +440,5 @@ class DataClient():
 
 def create_data_client(
         url: str,
-        token: str,
-        filters: Optional[FiltersType] = None) -> DataClient:
-    return DataClient(url, token, filters)
+        token: str) -> DataClient:
+    return DataClient(url, token)
