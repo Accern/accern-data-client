@@ -7,6 +7,7 @@ from typing import Any, Dict, Iterator, List, Optional, TypedDict, Union
 import io
 import pandas as pd
 import requests
+from requests.exceptions import RequestException, RequestsWarning
 
 FiltersType = TypedDict("FiltersType", {
     "provider_ID": Optional[str],
@@ -65,10 +66,18 @@ class Mode:
     def do_init(self, is_first_day: bool) -> None:
         raise NotImplementedError()
 
-    def add_result(self, signal) -> None:
+    def add_result(
+            self,
+            signal: Union[pd.DataFrame, List[Dict[str, Any]]]) -> None:
         raise NotImplementedError()
 
     def finish_day(self) -> None:
+        raise NotImplementedError()
+
+    def split(
+            self,
+            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]],
+            value: pd.Timestamp) -> Union[pd.DataFrame, List[Dict[str, Any]]]:
         raise NotImplementedError()
 
     def get_path(self, is_by_day: bool) -> str:
@@ -109,7 +118,8 @@ class CSVMode(Mode):
         return sum(len(cur) for cur in batch)
 
     def max_date(self, batch: List[pd.DataFrame]) -> str:
-        dates = (sorted(set(row for cur in batch for row in list(cur["harvested_at"]))))
+        dates: List[pd.Timestamp] = sorted(
+            set(row for cur in batch for row in list(cur["harvested_at"])))
         if len(dates) <= 1:
             return dates[0].strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         # Second last date.
@@ -122,18 +132,24 @@ class CSVMode(Mode):
                 fname, index=False, header=True, mode="w")
         print(f"current file is {fname}")
 
-    def add_result(self, signal) -> None:
+    def add_result(self, signal: pd.DataFrame) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
         signal.to_csv(fname, index=False, header=False, mode="a")
 
     def finish_day(self) -> None:
         pass
 
+    def split(
+            self,
+            batch: List[pd.DataFrame],
+            value: pd.Timestamp) -> pd.DataFrame:
+        return batch[0][batch[0]['harvested_at'] <= value]
+
 
 class JSONMode(Mode):
     def __init__(self, debug_json: bool = False) -> None:
         super().__init__()
-        self._res = []
+        self._res: List[Dict[str, Any]] = []
         self._debug_json = debug_json
         self._debug_ix = 0
 
@@ -174,15 +190,16 @@ class JSONMode(Mode):
     def do_init(self, is_first_day: bool) -> None:
         self._res = []
 
-    def add_result(self, signal) -> None:
-        self._res.append(signal)
+    def add_result(self, signal: List[Dict[str, Any]]) -> None:
+        self._res.extend(signal)
 
     def finish_day(self) -> None:
         fname = self.get_path(is_by_day=True)
         dt_format = "%Y-%m-%dT%H:%M:%S.%fZ"
-        print(f"writing results to {fname}")
+        print(f"writing results to {fname}, {len(self._res)}")
 
         def stringify_dates(obj: Dict[str, Any]) -> Dict[str, Any]:
+            # print(obj)
             if "harvested_at" in obj:
                 obj["harvested_at"] = obj["harvested_at"].strftime(dt_format)
             if "published_at" in obj:
@@ -201,9 +218,23 @@ class JSONMode(Mode):
                 indent=2,
                 sort_keys=True)
 
+    def split(
+            self,
+            batch: List[Dict[str, Any]],
+            value: pd.Timestamp) -> List[Dict[str, Any]]:
+        result = []
+        for record in batch:
+            if record['harvested_at'] <= value:
+                result.append(record)
+        return result
+
 
 class DataClient():
-    def __init__(self, url: str, token: str, filters: FiltersType) -> None:
+    def __init__(
+            self,
+            url: str,
+            token: str,
+            filters: Optional[FiltersType]) -> None:
         self._base_url = url
         self._token = token
         self._filters = self.validate_filters(filters)
@@ -212,7 +243,9 @@ class DataClient():
         self._first_error = True
 
     @staticmethod
-    def validate_filters(filters: FiltersType) -> FiltersType:
+    def validate_filters(filters: Optional[FiltersType]) -> FiltersType:
+        if filters is None:
+            return {}
         for key in filters.keys():
             if key not in FilterField:
                 raise ValueError(
@@ -255,13 +288,17 @@ class DataClient():
                 if not str(resp.text).strip():  # if nothing is fetched
                     return 0
                 return int(resp.json()["overall_total"])
-            except KeyboardInterrupt:
-                raise
-            except:
+            except KeyboardInterrupt as err:
+                raise err
+            except (
+                    AssertionError,
+                    KeyError,
+                    RequestException,
+                    RequestsWarning):  # FIXME: add more?
                 if self._first_error:
                     print(traceback.format_exc())
                     self._first_error = False
-                print(f"unknown error...retrying...{resp.url}")
+                print("unknown error...retrying...")
                 time.sleep(0.5)
 
     def _read_date(self) -> Union[List[pd.DataFrame], List[Dict[str, Any]]]:
@@ -280,18 +317,24 @@ class DataClient():
                 if not str(resp.text).strip():
                     return []
                 return self.get_mode().parse_result(resp)
-            except KeyboardInterrupt:
-                raise
-            except:
+            except KeyboardInterrupt as err:
+                raise err
+            except (
+                    AssertionError,
+                    KeyError,
+                    RequestException,
+                    RequestsWarning):  # FIXME: add more?
                 if self._first_error:
                     print(traceback.format_exc())
                     self._first_error = False
-                print(f"unknown error...retrying...{resp.url}")
+                print("unknown error...retrying...")
                 time.sleep(0.5)
 
-    def _scroll(self, start_date: str) -> Iterator[pd.DataFrame]:
+    def _scroll(
+            self,
+            start_date: str) -> Iterator[
+                Union[pd.DataFrame, List[Dict[str, Any]]]]:
         print("new day")
-        remainder = None
         self._params["harvested_after"] = start_date
         batch = self._read_date()
         total = self.get_mode().size(batch)
@@ -299,10 +342,7 @@ class DataClient():
         while self.get_mode().size(batch) > 0:
             try:
                 start_date = self.get_mode().max_date(batch)
-                remainder = []
-                for b in batch:
-                    yield b[b['harvested_at'] <= start_date]
-                    remainder.append(b[b['harvested_at'] > start_date])
+                yield self.get_mode().split(batch, pd.to_datetime(start_date))
                 self._params["harvested_after"] = start_date
                 batch = self._read_date()
                 total += self.get_mode().size(batch)
@@ -311,10 +351,6 @@ class DataClient():
                 prev_start = start_date
             except pd.errors.EmptyDataError:
                 break
-        if remainder is None:
-            yield from batch
-        else:
-            yield from remainder
 
     def _process_date(
             self,
@@ -327,11 +363,16 @@ class DataClient():
         print(f"expected {self._read_total()}")
         first = True
         for res in self._scroll("1900-01-01"):
+            is_empty = False
             if first:
                 self.get_mode().init_day(
                     cur_date, output_path, output_pattern, is_first_day)
                 first = False
-            if not res.empty:
+            if isinstance(res, pd.DataFrame) and res.empty:
+                is_empty = True
+            elif isinstance(res, list) and len(res) == 0:
+                is_empty = True
+            if not is_empty:
                 self.get_mode().add_result(res)
         if not first:
             self.get_mode().finish_day()
@@ -361,5 +402,5 @@ class DataClient():
 def create_data_client(
         url: str,
         token: str,
-        filters: FiltersType = {}) -> DataClient:
+        filters: Optional[FiltersType] = None) -> DataClient:
     return DataClient(url, token, filters)
