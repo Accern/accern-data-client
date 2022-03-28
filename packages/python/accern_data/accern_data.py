@@ -7,7 +7,6 @@ from typing import Any, Dict, Iterator, List, Optional, TypedDict, Union
 import io
 import pandas as pd
 import requests
-from requests.exceptions import RequestException, RequestsWarning
 
 FiltersType = TypedDict("FiltersType", {
     "provider_ID": Optional[str],
@@ -322,8 +321,7 @@ class DataClient():
             except (
                     AssertionError,
                     KeyError,
-                    RequestException,
-                    RequestsWarning):  # FIXME: add more?
+                    requests.exceptions.RequestException):  # FIXME: add more?
                 if self._first_error:
                     print(traceback.format_exc())
                     self._first_error = False
@@ -344,15 +342,14 @@ class DataClient():
                         **self._params,
                     })
                 if not str(resp.text).strip():
-                    return []
+                    return []  # type: ignore
                 return self.get_mode().parse_result(resp)
             except KeyboardInterrupt as err:
                 raise err
             except (
                     AssertionError,
                     KeyError,
-                    RequestException,
-                    RequestsWarning):  # FIXME: add more?
+                    requests.exceptions.RequestException):  # FIXME: add more?
                 if self._first_error:
                     print(traceback.format_exc())
                     self._first_error = False
