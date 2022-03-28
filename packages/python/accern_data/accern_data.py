@@ -1,9 +1,17 @@
-
 import json
 import os
 import time
 import traceback
-from typing import Any, Dict, Iterator, List, Optional, TypedDict, Union
+from typing import (
+    Any,
+    Dict,
+    Iterator,
+    List,
+    Literal,
+    Optional,
+    TypedDict,
+    Union,
+)
 import io
 import pandas as pd
 import requests
@@ -18,12 +26,16 @@ FiltersType = TypedDict("FiltersType", {
 
 
 FilterField = {
-    "provider_ID",
+    "entity_accern_id",
     "entity_name",
-    "event",
     "entity_ticker",
-    "entity_accern_id"
+    "event",
+    "provider_ID",
 }
+
+ALL_MODES = {"json", "csv_full", "csv_date"}
+DT_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+MODE = Literal["json", "csv_full", "csv_date"]
 
 
 class Mode:
@@ -130,9 +142,9 @@ class CSVMode(Mode):
                 temp.add(harvested_at)
         dates: List[pd.Timestamp] = sorted(temp)
         if len(dates) <= 1:
-            return dates[0].strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            return dates[0].strftime(DT_FORMAT)
         # Second last date.
-        return max(dates[:-1]).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        return max(dates[:-1]).strftime(DT_FORMAT)
 
     def do_init(self, is_first_day: bool) -> None:
         fname = self.get_path(self._is_by_day)
@@ -208,8 +220,8 @@ class JSONMode(Mode):
             temp.add(harvested_at)
         dates: List[pd.Timestamp] = sorted(temp)
         if len(dates) <= 1:
-            return dates[0].strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-        return max(dates[:-1]).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            return dates[0].strftime(DT_FORMAT)
+        return max(dates[:-1]).strftime(DT_FORMAT)
 
     def do_init(self, is_first_day: bool) -> None:
         self._res = []
@@ -222,17 +234,15 @@ class JSONMode(Mode):
 
     def finish_day(self) -> None:
         fname = self.get_path(is_by_day=True)
-        dt_format = "%Y-%m-%dT%H:%M:%S.%fZ"
         print(f"writing results to {fname}, {len(self._res)}")
 
         def stringify_dates(obj: Dict[str, Any]) -> Dict[str, Any]:
-            # print(obj)
             if "harvested_at" in obj:
-                obj["harvested_at"] = obj["harvested_at"].strftime(dt_format)
+                obj["harvested_at"] = obj["harvested_at"].strftime(DT_FORMAT)
             if "published_at" in obj:
-                obj["published_at"] = obj["published_at"].strftime(dt_format)
+                obj["published_at"] = obj["published_at"].strftime(DT_FORMAT)
             if "crawled_at" in obj:
-                obj["crawled_at"] = obj["crawled_at"].strftime(dt_format)
+                obj["crawled_at"] = obj["crawled_at"].strftime(DT_FORMAT)
             return obj
 
         with open(fname, "w") as fout:
@@ -281,18 +291,17 @@ class DataClient():
                     f"Possible fileds: {FilterField}")
         return filters
 
-    def set_mode(self, mode: str) -> None:
-        all_modes = {"json", "csv_full", "csv_date"}
-        if mode not in all_modes:
+    def set_mode(self, mode: MODE) -> None:
+        if mode not in ALL_MODES:
             raise ValueError(
                 f"Please set proper mode. It is '{mode}' which is not in "
-                f"{all_modes}")
-        mode_mapping: Dict[str, Mode] = {
-            "json": JSONMode(),
-            "csv_full": CSVMode(is_by_day=False),
-            "csv_date": CSVMode(is_by_day=True),
-        }
-        self._mode = mode_mapping[mode]
+                f"{ALL_MODES}")
+        if mode == "json":
+            self._mode = JSONMode()
+        elif mode == "csv_full":
+            self._mode = CSVMode(is_by_day=False)
+        elif mode == "csv_date":
+            self._mode = CSVMode(is_by_day=True)
         self._params["format"] = self.get_mode().get_format()
 
     def get_mode(self) -> Mode:
