@@ -36,6 +36,12 @@ FilterField = {
 ALL_MODES = {"json", "csv_full", "csv_date"}
 DT_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 MODE = Literal["json", "csv_full", "csv_date"]
+VERBOSE = False
+
+
+def print_fn(msg: str) -> None:
+    if VERBOSE:
+        print(msg)
 
 
 class Mode:
@@ -151,7 +157,7 @@ class CSVMode(Mode):
         if is_first_day or self._is_by_day:
             pd.DataFrame([], columns=self._cols).to_csv(
                 fname, index=False, header=True, mode="w")
-        print(f"current file is {fname}")
+        print_fn(f"current file is {fname}")
 
     def add_result(
             self,
@@ -234,7 +240,7 @@ class JSONMode(Mode):
 
     def finish_day(self) -> None:
         fname = self.get_path(is_by_day=True)
-        print(f"writing results to {fname}, {len(self._res)}")
+        print_fn(f"writing results to {fname}, {len(self._res)}")
 
         def stringify_dates(obj: Dict[str, Any]) -> Dict[str, Any]:
             if "harvested_at" in obj:
@@ -334,9 +340,9 @@ class DataClient():
                     KeyError,
                     requests.exceptions.RequestException):  # FIXME: add more?
                 if self._first_error:
-                    print(traceback.format_exc())
+                    print_fn(traceback.format_exc())
                     self._first_error = False
-                print("unknown error...retrying...")
+                print_fn("unknown error...retrying...")
                 time.sleep(0.5)
 
     def _read_date(self) -> Union[List[pd.DataFrame], List[Dict[str, Any]]]:
@@ -362,16 +368,16 @@ class DataClient():
                     KeyError,
                     requests.exceptions.RequestException):  # FIXME: add more?
                 if self._first_error:
-                    print(traceback.format_exc())
+                    print_fn(traceback.format_exc())
                     self._first_error = False
-                print("unknown error...retrying...")
+                print_fn("unknown error...retrying...")
                 time.sleep(0.5)
 
     def _scroll(
             self,
             start_date: str) -> Iterator[
                 Union[pd.DataFrame, List[Dict[str, Any]]]]:
-        print("new day")
+        print_fn("new day")
         self._params["harvested_after"] = start_date
         batch = self._read_date()
         total = self.get_mode().size(batch)
@@ -399,7 +405,7 @@ class DataClient():
             *,
             is_first_day: bool) -> None:
         self._params["date"] = cur_date
-        print(f"expected {self._read_total()}")
+        print_fn(f"expected {self._read_total()}")
         first = True
         for res in self._scroll("1900-01-01"):
             is_empty = False
@@ -421,15 +427,18 @@ class DataClient():
             start_date: str,
             output_path: str,
             output_pattern: str,
-            end_date: Optional[str] = None) -> None:
+            end_date: Optional[str] = None,
+            verbose: bool = False) -> None:
+        global VERBOSE
+        VERBOSE = verbose
         if end_date is None:
-            print(f"single day {start_date}")
+            print_fn(f"single day {start_date}")
             self._process_date(
                 start_date, output_path, output_pattern, is_first_day=True)
         else:
             is_first_day = True
             for cur_date in pd.date_range(start_date, end_date):
-                print(f"now processing {cur_date}")
+                print_fn(f"now processing {cur_date}")
                 self._process_date(
                     cur_date.strftime("%Y-%m-%d"),
                     output_path,
