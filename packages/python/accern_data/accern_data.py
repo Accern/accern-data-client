@@ -196,7 +196,6 @@ class JSONMode(Mode):
                 self._debug_ix += 1
 
         def parse_dates(obj: Dict[str, Any]) -> Dict[str, Any]:
-            # FIXME: need to check?
             obj["harvested_at"] = pd.to_datetime(obj["harvested_at"])
             if "published_at" in obj:
                 obj["published_at"] = pd.to_datetime(obj["published_at"])
@@ -240,7 +239,7 @@ class JSONMode(Mode):
 
     def finish_day(self) -> None:
         fname = self.get_path(is_by_day=True)
-        print_fn(f"writing results to {fname}, {len(self._res)}")
+        print_fn(f"writing results to {fname}")
 
         def stringify_dates(obj: Dict[str, Any]) -> Dict[str, Any]:
             if "harvested_at" in obj:
