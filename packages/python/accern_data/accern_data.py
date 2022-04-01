@@ -142,8 +142,8 @@ class CSVMode(Mode):
         temp = set()
         for cur in batch:
             assert isinstance(cur, pd.DataFrame)
-            for row in cur:
-                harvested_at = row["harvested_at"]
+            harvested_at_list = cur["harvested_at"].to_list()
+            for harvested_at in harvested_at_list:
                 assert isinstance(harvested_at, pd.Timestamp)
                 temp.add(harvested_at)
         dates: List[pd.Timestamp] = sorted(temp)
