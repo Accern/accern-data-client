@@ -6,7 +6,7 @@ EXAMPLE_URL = "http://api.example.com/"
 
 
 def is_example_url(url: str) -> bool:
-    return url.startswith(EXAMPLE_URL)
+    return url == EXAMPLE_URL
 
 
 def get_file_name(filename: str) -> str:
