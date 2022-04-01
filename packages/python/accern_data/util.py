@@ -18,7 +18,6 @@ def get_file_name(filename: str) -> str:
 
 
 def generate_file_response(
-        filepath: str,
         date: str,
         harvested_after: str,
         encoding: str = "utf-8") -> Response:
@@ -39,5 +38,5 @@ def generate_file_response(
     response_obj._content = obj.read(-1)  # or readall?
     response_obj.encoding = encoding
     response_obj.status_code = 200
-    response_obj.url = filepath
+    response_obj.url = "tests/examples/data-2022.csv"
     return response_obj

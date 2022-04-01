@@ -15,6 +15,11 @@ from typing import (
 import io
 import pandas as pd
 import requests
+from accern_data.util import (
+    get_file_name,
+    generate_file_response,
+    is_example_url,
+)
 
 FiltersType = TypedDict("FiltersType", {
     "provider_ID": Optional[str],
@@ -347,16 +352,21 @@ class DataClient():
     def _read_date(self) -> Union[List[pd.DataFrame], List[Dict[str, Any]]]:
         while True:
             try:
-                resp = requests.get(
-                    self._base_url,
-                    params={
-                        "token": self._token,
-                        **{
-                            key: f"{val}"
-                            for key, val in self._filters.items()
-                        },
-                        **self._params,
-                    })
+                if is_example_url(self._base_url):
+                    date = self._params['date']
+                    harvested_after = self._params["harvested_after"]
+                    resp = generate_file_response(date, harvested_after)
+                else:
+                    resp = requests.get(
+                        self._base_url,
+                        params={
+                            "token": self._token,
+                            **{
+                                key: f"{val}"
+                                for key, val in self._filters.items()
+                            },
+                            **self._params,
+                        })
                 if not str(resp.text).strip():
                     return []  # type: ignore
                 return self.get_mode().parse_result(resp)
@@ -404,7 +414,8 @@ class DataClient():
             *,
             is_first_day: bool) -> None:
         self._params["date"] = cur_date
-        print_fn(f"expected {self._read_total()}")
+        if not is_example_url(self._base_url):
+            print_fn(f"expected {self._read_total()}")
         first = True
         for res in self._scroll("1900-01-01"):
             is_empty = False
