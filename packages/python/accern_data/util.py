@@ -22,7 +22,7 @@ def generate_file_response(
         harvested_after: str,
         encoding: str = "utf-8") -> Response:
     response_obj = Response()
-    df = pd.read_csv("tests/examples/data-2022.csv")
+    df = pd.read_csv("tests/data/data-2022.csv")
     df["harvested_at"] = pd.to_datetime(df["harvested_at"])
     df["published_at"] = pd.to_datetime(df["published_at"])
 
@@ -38,5 +38,5 @@ def generate_file_response(
     response_obj._content = obj.read(-1)  # or readall?
     response_obj.encoding = encoding
     response_obj.status_code = 200
-    response_obj.url = "tests/examples/data-2022.csv"
+    response_obj.url = "tests/data/data-2022.csv"
     return response_obj
