@@ -78,3 +78,7 @@ jobs:
     - name: Lint Code (pylint)
       run: |
         make lint-pylint
+
+    - name: Run Tests
+      run: |
+        make pytest
