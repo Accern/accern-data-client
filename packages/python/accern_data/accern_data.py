@@ -15,11 +15,8 @@ from typing import (
 import io
 import pandas as pd
 import requests
-from accern_data.util import (
-    get_file_name,
-    generate_file_response,
-    is_example_url,
-)
+from accern_data.util import generate_file_response, is_example_url
+
 
 FiltersType = TypedDict("FiltersType", {
     "provider_ID": Optional[str],
@@ -355,7 +352,8 @@ class DataClient():
                 if is_example_url(self._base_url):
                     date = self._params['date']
                     harvested_after = self._params["harvested_after"]
-                    resp = generate_file_response(date, harvested_after)
+                    mode = self._params["format"]
+                    resp = generate_file_response(date, harvested_after, mode)
                 else:
                     resp = requests.get(
                         self._base_url,
