@@ -1,6 +1,7 @@
 import pandas as pd
 import pandas.testing as pd_test
 import accern_data
+from accern_data.util import load_json
 
 
 def test_csv_date() -> None:
@@ -23,7 +24,7 @@ def test_csv_date() -> None:
             df_generated = pd.read_csv(
                 f"tests/outputs/test-data-2022-{date}.csv")
         except FileNotFoundError:
-            pass
+            continue
 
         pd_test.assert_frame_equal(
             df_actual[sorted(df_actual.columns)],
@@ -49,3 +50,27 @@ def test_csv_full() -> None:
     pd_test.assert_frame_equal(
         df_actual[sorted(df_actual.columns)],
         df_generated[sorted(df_generated.columns)])
+
+
+def test_json() -> None:
+    start_date = "2022-01-03"
+    end_date = "2022-03-04"
+    client = accern_data.create_data_client(
+        "http://api.example.com/", "SomeRandomToken")
+    client.set_mode("json")
+    client.download_range(
+        start_date=start_date,
+        output_path="./tests/outputs/",
+        output_pattern="test-data-2022",
+        end_date=end_date,
+        verbose=True)
+    for cur_date in pd.date_range(start_date, end_date):
+        date = cur_date.strftime("%Y-%m-%d")
+        try:
+            json_actual = load_json(f"tests/data/json/{date}.json")
+            json_generated = load_json(
+                f"tests/outputs/test-data-2022-{date}.json")
+        except FileNotFoundError:
+            continue
+
+        assert json_actual == json_generated
