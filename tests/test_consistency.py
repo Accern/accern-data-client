@@ -1,6 +1,7 @@
 import pandas as pd
 import pandas.testing as pd_test
 import accern_data
+from accern_data.util import load_json
 
 
 def test_csv_full_csv_date_consistency() -> None:
@@ -41,3 +42,33 @@ def test_csv_full_csv_date_consistency() -> None:
         combined_df[sorted(combined_df.columns)])
 
 
+def test_json_csv_date_consistency() -> None:
+    start_date = "2022-01-03"
+    end_date = "2022-03-04"
+    client = accern_data.create_data_client(
+        "http://api.example.com/", "SomeRandomToken")
+    client.set_mode("csv_date")
+    client.download_range(
+        start_date=start_date,
+        output_path="./tests/outputs/",
+        output_pattern="test-data-2022",
+        end_date=end_date,
+        verbose=True)
+
+    client.set_mode("json")
+    client.download_range(
+        start_date=start_date,
+        output_path="./tests/outputs/",
+        output_pattern="test-data-2022",
+        end_date=end_date,
+        verbose=True)
+
+    for cur_date in pd.date_range(start_date, end_date):
+        date = cur_date.strftime("%Y-%m-%d")
+        try:
+            json_obj = load_json(f"tests/data/json/{date}.json")
+            csv_obj = pd.read_csv(f"tests/data/csv/{date}.json")
+        except FileNotFoundError:
+            continue
+        csv_json = csv_obj.to_dict("records")
+        assert csv_json == json_obj, f"Results for {date} are different."
