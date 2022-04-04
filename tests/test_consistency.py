@@ -1,6 +1,8 @@
+import json
 import pandas as pd
 import pandas.testing as pd_test
 import accern_data
+from accern_data.accern_data import DT_FORMAT
 from accern_data.util import load_json
 
 
@@ -34,7 +36,7 @@ def test_csv_full_csv_date_consistency() -> None:
         output_pattern="test-data-2022",
         end_date=end_date,
         verbose=True)
-
+    combined_df.to_csv("combined.csv")
     df_csv_full = pd.read_csv("tests/outputs/test-data-2022.csv")
 
     pd_test.assert_frame_equal(
@@ -66,9 +68,22 @@ def test_json_csv_date_consistency() -> None:
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime("%Y-%m-%d")
         try:
-            json_obj = load_json(f"tests/data/json/{date}.json")
-            csv_obj = pd.read_csv(f"tests/data/csv/{date}.json")
+            json_obj = load_json(f"tests/outputs/test-data-2022-{date}.json")
+            csv_obj = pd.read_csv(f"tests/outputs/test-data-2022-{date}.csv")
         except FileNotFoundError:
             continue
+        csv_obj["event_accern_id"] = csv_obj["event_accern_id"].astype("str")
+        for col in {"harvested_at", "crawled_at", "published_at"}:
+            csv_obj[col] = csv_obj[col].apply(
+                lambda x: pd.to_datetime(x).strftime(DT_FORMAT))
+        jsonified_cols = {
+            "event_hits",
+            "entity_hits",
+            "entity_indices",
+            "event_text",
+            "entity_text",
+        }
+        for col in jsonified_cols:
+            csv_obj[col] = csv_obj[col].apply(json.loads)
         csv_json = csv_obj.to_dict("records")
         assert csv_json == json_obj, f"Results for {date} are different."
