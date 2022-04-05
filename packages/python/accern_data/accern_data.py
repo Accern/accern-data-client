@@ -1,4 +1,3 @@
-import json
 import os
 import time
 import traceback
@@ -15,7 +14,7 @@ from typing import (
 import io
 import pandas as pd
 import requests
-from accern_data.util import generate_file_response, is_example_url
+from accern_data.util import generate_file_response, is_example_url, write_json
 
 
 FiltersType = TypedDict("FiltersType", {
@@ -100,11 +99,17 @@ class Mode:
         raise NotImplementedError()
 
     def get_path(self, is_by_day: bool) -> str:
-        day_str = f"-{self._cur_date}" if is_by_day else ''
+        day_str = f"{self._cur_date}" if is_by_day else ''
         assert self._cur_path is not None and self._cur_pattern is not None
-        return os.path.join(
-            self._cur_path,
-            f"{self._cur_pattern}{day_str}.{self.get_format()}")
+        assert self._cur_pattern != '' or day_str != '', \
+            "csv_full should have an output pattern."
+        if self._cur_pattern == '':
+            fname = f"{day_str}.{self.get_format()}"
+        elif day_str == '':
+            fname = f"{self._cur_pattern}.{self.get_format()}"
+        else:
+            fname = f"{self._cur_pattern}-{day_str}.{self.get_format()}"
+        return os.path.join(self._cur_path, fname)
 
 
 class CSVMode(Mode):
@@ -252,15 +257,8 @@ class JSONMode(Mode):
                 obj["crawled_at"] = obj["crawled_at"].strftime(DT_FORMAT)
             return obj
 
-        with open(fname, "w") as fout:
-            json.dump(
-                [
-                    stringify_dates(cur)
-                    for cur in self._res
-                ],
-                fp=fout,
-                indent=2,
-                sort_keys=True)
+        obj = [stringify_dates(cur) for cur in self._res]
+        write_json(obj, fname, sort_keys=True)
 
     def split(
             self,
