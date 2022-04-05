@@ -17,6 +17,11 @@ def load_json(path: str) -> Any:
     return json_obj
 
 
+def write_json(obj: object, path: str, **kwargs: Any) -> None:
+    with open(path, "w") as file:
+        json.dump(obj, file, indent=4, **kwargs)
+
+
 def generate_file_response(
         date: str,
         harvested_after: str,
