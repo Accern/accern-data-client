@@ -33,7 +33,10 @@ Note: To download single day's data, set `end_date=None` or can leave that unset
         output_path="./",
         output_pattern="data-",
         end_date=None)
+```
 OR
+
+```python
 >>> client.download_range(
         start_date="2022-01-03",
         output_path="./",
