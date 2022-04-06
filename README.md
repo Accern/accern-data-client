@@ -2,12 +2,22 @@
 
 Client library for consuming Accern data feed API.
 
+
+### Installation:
+```
+pip install accern-data
+```
+
+
 ### Sample snippet:
 
 ```python
 >>> import accern_data
+# Create a data client.
 >>> client = accern_data.create_data_client(feed_url, token)
+# Set a data format/mode in which the data has to be downloaded. 
 >>> client.set_mode("csv_date")  # Other modes: {"csv_full", "json"}
+# Set parameters to the download function.
 >>> client.download_range(
         start_date="2022-01-03",
         output_path="./",
