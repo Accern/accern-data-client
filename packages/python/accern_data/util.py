@@ -1,6 +1,7 @@
 import io
 import json
 from typing import Any
+
 import pandas as pd
 from requests import Response
 

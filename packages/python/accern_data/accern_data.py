@@ -1,3 +1,4 @@
+import io
 import os
 import time
 import traceback
@@ -11,11 +12,10 @@ from typing import (
     TypedDict,
     Union,
 )
-import io
+
 import pandas as pd
 import requests
 from accern_data.util import generate_file_response, is_example_url, write_json
-
 
 FiltersType = TypedDict("FiltersType", {
     "provider_ID": Optional[str],

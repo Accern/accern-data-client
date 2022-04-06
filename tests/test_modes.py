@@ -1,6 +1,6 @@
+import accern_data
 import pandas as pd
 import pandas.testing as pd_test
-import accern_data
 from accern_data.util import load_json
 
 
