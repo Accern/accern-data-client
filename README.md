@@ -24,12 +24,12 @@ pip install accern-data
 ### Set filters:
 ```python
 >>> client.set_filters({
-    "provider_ID": Optional[str],
-    "entity_name": Optional[str],
-    "event": Optional[str],
-    "entity_ticker": Optional[str],
-    "entity_accern_id": Optional[str],
-})
+        "provider_ID": Optional[str],
+        "entity_name": Optional[str],
+        "event": Optional[str],
+        "entity_ticker": Optional[str],
+        "entity_accern_id": Optional[str],
+    })
 ```
 
 
