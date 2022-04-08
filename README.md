@@ -18,11 +18,30 @@ pip install accern-data
 >>> client = accern_data.create_data_client(feed_url, token)
 # Set a data format/mode in which the data has to be downloaded.
 >>> client.set_mode("csv_date")  # Other modes: {"csv_full", "json"}
-# Set parameters to the download function.
+```
+
+
+### Set filters:
+```python
+>>> client.set_filters({
+    "provider_ID": Optional[str],
+    "entity_name": Optional[str],
+    "event": Optional[str],
+    "entity_ticker": Optional[str],
+    "entity_accern_id": Optional[str],
+})
+```
+
+
+
+
+
+### Set parameters to the download function:
+```python
 >>> client.download_range(
         start_date="2022-01-03",
         output_path="./",
-        output_pattern="data-",
+        output_pattern="data",
         end_date="2022-03-04")
 ```
 
@@ -31,7 +50,7 @@ Note: To download single day's data, set `end_date=None` or can leave that unset
 >>> client.download_range(
         start_date="2022-01-03",
         output_path="./",
-        output_pattern="data-",
+        output_pattern="data",
         end_date=None)
 ```
 OR
@@ -40,5 +59,5 @@ OR
 >>> client.download_range(
         start_date="2022-01-03",
         output_path="./",
-        output_pattern="data-")
+        output_pattern="data")
 ```
