@@ -1,4 +1,5 @@
-# Accern Data Library ![Status](https://github.com/Accern/accern-data-client/actions/workflows/python-app.yml/badge.svg)
+# Accern Data Library 
+[![Python Checks](https://github.com/Accern/accern-data-client/actions/workflows/python-app.yml/badge.svg)](https://github.com/Accern/accern-data-client/actions/workflows/python-app.yml)
 
 Client library for consuming Accern data feed API.
 
