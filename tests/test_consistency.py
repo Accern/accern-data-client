@@ -10,7 +10,7 @@ from accern_data.util import load_json
 def test_csv_full_csv_date_consistency() -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_pattern = "test-data-2022"
+    output_pattern = "test_csv_full_csv_date_consistency"
     client = accern_data.create_data_client(
         "http://api.example.com/", "SomeRandomToken")
     client.set_mode("csv_date")
@@ -38,7 +38,6 @@ def test_csv_full_csv_date_consistency() -> None:
         output_pattern=output_pattern,
         end_date=end_date,
         verbose=True)
-    combined_df.to_csv("combined.csv")
     df_csv_full = pd.read_csv(f"tests/outputs/{output_pattern}.csv")
 
     pd_test.assert_frame_equal(
@@ -49,7 +48,7 @@ def test_csv_full_csv_date_consistency() -> None:
 def test_json_csv_date_consistency() -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_pattern = "test-data-2022"
+    output_pattern = "test_json_csv_date_consistency"
     client = accern_data.create_data_client(
         "http://api.example.com/", "SomeRandomToken")
     client.set_mode("csv_date")
@@ -82,7 +81,6 @@ def test_json_csv_date_consistency() -> None:
             "event_hits",
             "entity_hits",
             "entity_indices",
-            "entity_text",
         }
         for col in jsonified_cols:
             csv_obj[col] = csv_obj[col].apply(json.loads)
