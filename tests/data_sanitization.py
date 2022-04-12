@@ -18,7 +18,6 @@ def combine_json(src_path: str, dest_path: str) -> None:
     signals = []
     total = 0
     for filename in sorted(os.listdir(src_path)):
-        print(os.path.join(src_path, filename))
         json_var = load_json(os.path.join(src_path, filename))
         signals.extend(json_var)
         total += len(json_var)
@@ -44,7 +43,7 @@ def url_sub(string: str, seed: int = 300) -> str:
     return re.sub(r"www\.[a-z-]+\.(com|gov)", "www.dummy-url.com", url)
 
 
-def event_text(string: str) -> str:  # pylint: disable=unused-argument
+def redacted_text(string: str) -> str:  # pylint: disable=unused-argument
     return "[redacted]"
 
 
@@ -52,18 +51,20 @@ def truncate_precision(value: float, dps: int = 10) -> float:
     return float(f"{value:0.{dps}f}")
 
 
+combine_json("./tests/data/json/", "./tests/data/")
+
 # Combined files
 df = pd.read_csv("./tests/data/data-2022.csv")
-df["doc_url"] = df["doc_url"].apply(url_sub)
-df["event_text"] = df["event_text"].apply(event_text)
+for col in {"doc_title", "doc_url", "event_text", "entity_text"}:
+    df[col] = df[col].apply(redacted_text)
 for col in {"event_sentiment", "signal_sentiment"}:
     df[col] = df[col].apply(truncate_precision)
 df.to_csv("./tests/data/data-2022.csv", index=False)
 
 json_obj = load_json("./tests/data/data-2022.json")
 for rec in json_obj["signals"]:
-    rec["doc_url"] = url_sub(rec["doc_url"])
-    rec["event_text"] = event_text(rec["event_text"])
+    for key in {"doc_title", "doc_url", "event_text", "entity_text"}:
+        rec[key] = redacted_text(rec[key])
     for key in {"event_sentiment", "signal_sentiment"}:
         rec[key] = truncate_precision(rec[key])
 write_json(json_obj, "./tests/data/data-2022.json")
@@ -71,8 +72,8 @@ write_json(json_obj, "./tests/data/data-2022.json")
 # Separate Files
 for file_name in os.listdir("./tests/data/csv_date/"):
     df = pd.read_csv(f"./tests/data/csv_date/{file_name}")
-    df["doc_url"] = df["doc_url"].apply(url_sub)
-    df["event_text"] = df["event_text"].apply(event_text)
+    for col in {"doc_title", "doc_url", "event_text", "entity_text"}:
+        df[col] = df[col].apply(redacted_text)
     for col in {"event_sentiment", "signal_sentiment"}:
         df[col] = df[col].apply(truncate_precision)
     df.to_csv(f"./tests/data/csv_date/{file_name}", index=False)
@@ -80,8 +81,8 @@ for file_name in os.listdir("./tests/data/csv_date/"):
 for file in os.listdir("./tests/data/json/"):
     json_obj = load_json(f"./tests/data/json/{file}")
     for rec in json_obj:
-        rec["doc_url"] = url_sub(rec["doc_url"])
-        rec["event_text"] = event_text(rec["event_text"])
+        for key in {"doc_title", "doc_url", "event_text", "entity_text"}:
+            rec[key] = redacted_text(rec[key])
         for key in {"event_sentiment", "signal_sentiment"}:
             rec[key] = truncate_precision(rec[key])
     write_json(json_obj, f"./tests/data/json/{file}")
