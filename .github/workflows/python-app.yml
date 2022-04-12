@@ -30,6 +30,10 @@ jobs:
       run: |
         make install
 
+    - name: Local installation of package
+      run: |
+        pip install -e .
+
     - name: Git Check (tests may not alter any git visible files)
       run: |
         git status -sb --porcelain
