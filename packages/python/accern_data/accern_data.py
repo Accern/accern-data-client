@@ -437,6 +437,7 @@ class DataClient():
             verbose: bool = False) -> None:
         global VERBOSE
         VERBOSE = verbose
+        os.makedirs(output_path, exist_ok=True)
         if end_date is None:
             print_fn(f"single day {start_date}")
             self._process_date(
