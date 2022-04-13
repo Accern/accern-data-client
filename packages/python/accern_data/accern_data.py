@@ -99,13 +99,13 @@ class Mode:
         raise NotImplementedError()
 
     def get_path(self, is_by_day: bool) -> str:
-        day_str = f"{self._cur_date}" if is_by_day else ''
+        day_str = f"{self._cur_date}" if is_by_day else None
         assert self._cur_path is not None and self._cur_pattern is not None
-        assert self._cur_pattern != '' or day_str != '', \
+        assert self._cur_pattern != '' or day_str is not None, \
             "csv_full should have an output pattern."
         if self._cur_pattern == '':
             fname = f"{day_str}.{self.get_format()}"
-        elif day_str == '':
+        elif day_str is None:
             fname = f"{self._cur_pattern}.{self.get_format()}"
         else:
             fname = f"{self._cur_pattern}-{day_str}.{self.get_format()}"
