@@ -1,3 +1,4 @@
+import argparse
 import os
 import random
 import re
@@ -6,7 +7,7 @@ import pandas as pd
 from accern_data.util import load_json, write_json
 
 
-def combine_json(src_path: str, dest_path: str) -> None:
+def combine_json(src_path: str, dest_path: str, master_file: str) -> None:
     full_json = {
         "start_harvested_at": "",
         "end_harvested_at": "",
@@ -24,7 +25,7 @@ def combine_json(src_path: str, dest_path: str) -> None:
     full_json["signals"] = signals
     full_json["total"] = total
     full_json["overall_total"] = total
-    write_json(full_json, os.path.join(dest_path, "data-2022.json"))
+    write_json(full_json, os.path.join(dest_path, f"{master_file}.json"))
 
 
 def shuffle_str(string: str, seed: int = 200) -> str:
@@ -51,38 +52,62 @@ def truncate_precision(value: float, dps: int = 10) -> float:
     return float(f"{value:0.{dps}f}")
 
 
-combine_json("./tests/data/json/", "./tests/data/")
+if __name__ == "__main__":
+    argparser = argparse.ArgumentParser(
+        prog="accern_data", description="Accern feed API library")
+    argparser.add_argument(
+        "--directory",
+        default="./tests/data/",
+        type=str,
+        help="The location for the data directory with appropriate directory \
+            structure.")
 
-# Combined files
-df = pd.read_csv("./tests/data/data-2022.csv")
-for col in {"doc_title", "doc_url", "event_text", "entity_text"}:
-    df[col] = df[col].apply(redacted_text)
-for col in {"event_sentiment", "signal_sentiment"}:
-    df[col] = df[col].apply(truncate_precision)
-df.to_csv("./tests/data/data-2022.csv", index=False)
+    argparser.add_argument(
+        "--master-file",
+        type=str,
+        help="The name for master data file. Should be same for both csv \
+            & json file.")
+    args = argparser.parse_args()
 
-json_obj = load_json("./tests/data/data-2022.json")
-for rec in json_obj["signals"]:
-    for key in {"doc_title", "doc_url", "event_text", "entity_text"}:
-        rec[key] = redacted_text(rec[key])
-    for key in {"event_sentiment", "signal_sentiment"}:
-        rec[key] = truncate_precision(rec[key])
-write_json(json_obj, "./tests/data/data-2022.json")
+    combine_json(
+        os.path.join(args.directory, "json"), args.directory, args.master_file)
 
-# Separate Files
-for file_name in os.listdir("./tests/data/csv_date/"):
-    df = pd.read_csv(f"./tests/data/csv_date/{file_name}")
+    # Combined files
+    master_csv_file = os.path.join(args.directory, f"{args.master_file}.csv")
+    df = pd.read_csv(master_csv_file)
     for col in {"doc_title", "doc_url", "event_text", "entity_text"}:
         df[col] = df[col].apply(redacted_text)
     for col in {"event_sentiment", "signal_sentiment"}:
         df[col] = df[col].apply(truncate_precision)
-    df.to_csv(f"./tests/data/csv_date/{file_name}", index=False)
+    df.to_csv(master_csv_file, index=False)
 
-for file in os.listdir("./tests/data/json/"):
-    json_obj = load_json(f"./tests/data/json/{file}")
-    for rec in json_obj:
+    master_json_file = os.path.join(args.directory, f"{args.master_file}.json")
+    json_obj = load_json(master_json_file)
+    for rec in json_obj["signals"]:
         for key in {"doc_title", "doc_url", "event_text", "entity_text"}:
             rec[key] = redacted_text(rec[key])
         for key in {"event_sentiment", "signal_sentiment"}:
             rec[key] = truncate_precision(rec[key])
-    write_json(json_obj, f"./tests/data/json/{file}")
+    write_json(json_obj, master_json_file)
+
+    # Separate Files
+    csv_date_dir = os.path.join(args.directory, "csv_date")
+    for file_name in os.listdir(csv_date_dir):
+        file_dir = os.path.join(csv_date_dir, f"{file_name}")
+        df = pd.read_csv(file_dir)
+        for col in {"doc_title", "doc_url", "event_text", "entity_text"}:
+            df[col] = df[col].apply(redacted_text)
+        for col in {"event_sentiment", "signal_sentiment"}:
+            df[col] = df[col].apply(truncate_precision)
+        df.to_csv(file_dir, index=False)
+
+    json_dir = os.path.join(args.directory, "json")
+    for file in os.listdir(json_dir):
+        file_dir = os.path.join(csv_date_dir, f"{file}")
+        json_obj = load_json(file_dir)
+        for rec in json_obj:
+            for key in {"doc_title", "doc_url", "event_text", "entity_text"}:
+                rec[key] = redacted_text(rec[key])
+            for key in {"event_sentiment", "signal_sentiment"}:
+                rec[key] = truncate_precision(rec[key])
+        write_json(json_obj, file_dir)
