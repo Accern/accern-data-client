@@ -348,7 +348,7 @@ class DataClient():
         while True:
             try:
                 if is_example_url(self._base_url):
-                    date = self._params['date']
+                    date = self._params["date"]
                     harvested_after = self._params["harvested_after"]
                     mode = self._params["format"]
                     resp = generate_file_response(date, harvested_after, mode)

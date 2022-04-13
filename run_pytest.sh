@@ -8,7 +8,7 @@ find * \( -name '*.py' -o -name '*.pyi' \) -and -not -path './venv/*' \
  -and -not -path './stubs/*' -exec python3 -m compileall -q -j 0 {} +
 
 run_test() {
-    python -m pytest -m "not local" -xvv $1
+    python -m pytest -xvv $1
 }
 export -f run_test
 

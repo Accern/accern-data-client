@@ -1,4 +1,4 @@
-# Accern Data Library 
+# Accern Data Library
 [![Python Checks](https://github.com/Accern/accern-data-client/actions/workflows/python-app.yml/badge.svg)](https://github.com/Accern/accern-data-client/actions/workflows/python-app.yml)
 
 Client library for consuming Accern data feed API.
@@ -16,7 +16,7 @@ pip install accern-data
 ```python
 >>> import accern_data
 # Create a data client.
->>> client = accern_data.create_data_client(feed_url, token)
+>>> client = accern_data.create_data_client("http://api.example.com/", "SomeRandomToken")
 # Set a data format/mode in which the data has to be downloaded.
 >>> client.set_mode("csv_date")  # Other modes: {"csv_full", "json"}
 ```
