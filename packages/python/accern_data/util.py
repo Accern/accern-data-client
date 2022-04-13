@@ -59,7 +59,7 @@ def generate_file_response(
                 filtered["signals"].append(record)
         obj = io.BytesIO(json.dumps(filtered).encode(encoding))
     obj.seek(0)
-    response_obj._content = obj.read(-1)
+    response_obj._content = obj.read()
     response_obj.encoding = encoding
     response_obj.status_code = 200
     response_obj.url = f"tests/data/data-2022.{mode}"
