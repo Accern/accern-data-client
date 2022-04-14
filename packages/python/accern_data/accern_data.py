@@ -101,9 +101,9 @@ class Mode:
     def get_path(self, is_by_day: bool) -> str:
         day_str = f"{self._cur_date}" if is_by_day else None
         assert self._cur_path is not None and self._cur_pattern is not None
-        assert self._cur_pattern != '' or day_str is not None, \
+        assert self._cur_pattern != "" or day_str is not None, \
             "csv_full should have an output pattern."
-        if self._cur_pattern == '':
+        if self._cur_pattern == "":
             fname = f"{day_str}.{self.get_format()}"
         elif day_str is None:
             fname = f"{self._cur_pattern}.{self.get_format()}"
@@ -182,7 +182,7 @@ class CSVMode(Mode):
             value: pd.Timestamp) -> pd.DataFrame:
         df = batch[0]
         assert isinstance(df, pd.DataFrame)
-        return df[df['harvested_at'] <= value]
+        return df[df["harvested_at"] <= value]
 
 
 class JSONMode(Mode):
@@ -267,7 +267,7 @@ class JSONMode(Mode):
         result = []
         for record in batch:
             assert isinstance(record, dict)
-            if record['harvested_at'] <= value:
+            if record["harvested_at"] <= value:
                 result.append(record)
         return result
 

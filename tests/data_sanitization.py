@@ -59,14 +59,15 @@ if __name__ == "__main__":
         "--directory",
         default="./tests/data/",
         type=str,
-        help="The location for the data directory with appropriate directory \
-            structure.")
+        help=(
+            "The location for the data directory with appropriate directory "
+            "structure."))
 
     argparser.add_argument(
         "--master-file",
         type=str,
-        help="The name for master data file. Should be same for both csv \
-            & json file.")
+        help=("The name for master data file. Should be same for both csv "
+            "& json file."))
     args = argparser.parse_args()
 
     combine_json(
