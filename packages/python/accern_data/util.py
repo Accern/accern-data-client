@@ -52,7 +52,7 @@ class ProgressBar:
 
     def set_description(self, desc: str) -> None:
         if self._pbar is not None:
-            self._pbar.set_description(desc)
+            self._pbar.set_description_str(desc)
 
     def close(self) -> None:
         if self._pbar is not None:
