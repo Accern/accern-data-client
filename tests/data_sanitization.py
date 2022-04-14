@@ -66,7 +66,8 @@ if __name__ == "__main__":
     argparser.add_argument(
         "--master-file",
         type=str,
-        help=("The name for master data file. Should be same for both csv "
+        help=(
+            "The name for master data file. Should be same for both csv "
             "& json file."))
     args = argparser.parse_args()
 
