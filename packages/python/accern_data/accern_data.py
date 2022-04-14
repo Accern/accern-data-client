@@ -441,7 +441,6 @@ class DataClient():
             print_fn(f"expected {self._expected_records[0]}")
             progress_bar = ProgressBar(
                     total=self._expected_records[0],
-                    unit="signals",
                     desc="Downloading Signals",
                     verbose=verbose)
             self._process_date(
@@ -455,7 +454,6 @@ class DataClient():
             total = 0
             info_progress_bar = ProgressBar(
                 total=len(pd.date_range(start_date, end_date)),
-                unit="days",
                 desc="Fetching info",
                 verbose=verbose)
 
@@ -467,7 +465,6 @@ class DataClient():
             total = sum(self._expected_records)
             progress_bar = ProgressBar(
                 total=total,
-                unit="signals",
                 desc="Downloading Signals",
                 verbose=verbose)
 

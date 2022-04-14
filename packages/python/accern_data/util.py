@@ -3,6 +3,9 @@ from typing import Optional
 import tqdm
 
 IS_JUPYTER: Optional[bool] = None
+L_BAR = "{desc}: |"
+R_BAR = "| {percentage:3.0f}%"
+BAR_FMT = f"{L_BAR}{{bar}}{R_BAR}"
 
 
 def is_jupyter() -> bool:
@@ -24,7 +27,6 @@ class ProgressBar:
     def __init__(
             self,
             total: int,
-            unit: str,
             desc: str,
             verbose: bool,
             unit_scale: bool = True) -> None:
@@ -33,10 +35,16 @@ class ProgressBar:
             self._pbar = None
         elif is_jupyter():
             self._pbar = tqdm.tqdm_notebook(
-                total=total, unit=unit, desc=desc, unit_scale=unit_scale)
+                total=total,
+                desc=desc,
+                unit_scale=unit_scale,
+                bar_format=BAR_FMT)
         else:
             self._pbar = tqdm.tqdm(
-                total=total, unit=unit, desc=desc, unit_scale=unit_scale)
+                total=total,
+                desc=desc,
+                unit_scale=unit_scale,
+                bar_format=BAR_FMT)
 
     def update(self, num: int) -> None:
         if self._pbar is not None:
