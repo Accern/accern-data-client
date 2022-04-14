@@ -1,3 +1,4 @@
+import io
 import json
 import os
 import time
@@ -12,9 +13,10 @@ from typing import (
     TypedDict,
     Union,
 )
-import io
+
 import pandas as pd
 import requests
+from accern_data.util import ProgressBar
 
 FiltersType = TypedDict("FiltersType", {
     "provider_ID": Optional[str],
@@ -142,8 +144,8 @@ class CSVMode(Mode):
         temp = set()
         for cur in batch:
             assert isinstance(cur, pd.DataFrame)
-            for row in cur:
-                harvested_at = row["harvested_at"]
+            harvested_at_list = cur["harvested_at"].to_list()
+            for harvested_at in harvested_at_list:
                 assert isinstance(harvested_at, pd.Timestamp)
                 temp.add(harvested_at)
         dates: List[pd.Timestamp] = sorted(temp)
@@ -283,6 +285,7 @@ class DataClient():
         self._params: Dict[str, str] = {}
         self._mode: Optional[Mode] = None
         self._first_error = True
+        self._expected_records: List[int] = []
 
     @staticmethod
     def validate_filters(filters: Optional[FiltersType]) -> FiltersType:
@@ -315,7 +318,7 @@ class DataClient():
         assert self._mode is not None, "Set mode first."
         return self._mode
 
-    def _read_total(self) -> int:
+    def _read_total(self, cur_date: str) -> int:
         while True:
             try:
                 resp = requests.get(
@@ -326,7 +329,7 @@ class DataClient():
                             key: f"{val}"
                             for key, val in self._filters.items()
                         },
-                        "date": self._params["date"],
+                        "date": cur_date,
                         "format": "json",
                     })
                 if not str(resp.text).strip():  # if nothing is fetched
@@ -402,9 +405,9 @@ class DataClient():
             output_path: str,
             output_pattern: str,
             *,
-            is_first_day: bool) -> None:
+            is_first_day: bool,
+            progress_bar: ProgressBar) -> None:
         self._params["date"] = cur_date
-        print_fn(f"expected {self._read_total()}")
         first = True
         for res in self._scroll("1900-01-01"):
             is_empty = False
@@ -418,6 +421,8 @@ class DataClient():
                 is_empty = True
             if not is_empty:
                 self.get_mode().add_result(res)
+                progress_bar.update(len(res))
+
         if not first:
             self.get_mode().finish_day()
 
@@ -431,19 +436,55 @@ class DataClient():
         global VERBOSE
         VERBOSE = verbose
         if end_date is None:
+            self._expected_records.append(self._read_total(start_date))
             print_fn(f"single day {start_date}")
+            print_fn(f"expected {self._expected_records[0]}")
+            progress_bar = ProgressBar(
+                    total=self._expected_records[0],
+                    unit="signals",
+                    desc="Downloading Signals",
+                    verbose=verbose)
             self._process_date(
-                start_date, output_path, output_pattern, is_first_day=True)
+                start_date,
+                output_path,
+                output_pattern,
+                is_first_day=True,
+                progress_bar=progress_bar)
         else:
             is_first_day = True
+            total = 0
+            info_progress_bar = ProgressBar(
+                total=len(pd.date_range(start_date, end_date)),
+                unit="days",
+                desc="Fetching info",
+                verbose=verbose)
+
             for cur_date in pd.date_range(start_date, end_date):
+                self._expected_records.append(self._read_total(cur_date))
+                info_progress_bar.update(1)
+
+            info_progress_bar.close()
+            total = sum(self._expected_records)
+            progress_bar = ProgressBar(
+                total=total,
+                unit="signals",
+                desc="Downloading Signals",
+                verbose=verbose)
+
+            for ix, cur_date in enumerate(pd.date_range(start_date, end_date)):
                 print_fn(f"now processing {cur_date}")
+                print_fn(f"expected {self._expected_records[ix]}")
+                progress_bar.set_description(
+                    f"Downloading Signals for {cur_date}")
                 self._process_date(
                     cur_date.strftime("%Y-%m-%d"),
                     output_path,
                     output_pattern,
-                    is_first_day=is_first_day)
+                    is_first_day=is_first_day,
+                    progress_bar=progress_bar)
                 is_first_day = False
+        progress_bar.close()
+        self._expected_records = []
 
 
 def create_data_client(
