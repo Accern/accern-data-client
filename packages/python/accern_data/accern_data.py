@@ -74,7 +74,7 @@ class Mode:
             self,
             cur_date: str,
             path: str,
-            pattern: str,
+            pattern: Optional[str],
             is_first_day: bool) -> None:
         self._cur_date = cur_date
         self._cur_path = path
@@ -101,9 +101,9 @@ class Mode:
     def get_path(self, is_by_day: bool) -> str:
         day_str = f"{self._cur_date}" if is_by_day else None
         assert self._cur_path is not None and self._cur_pattern is not None
-        assert self._cur_pattern != "" or day_str is not None, \
+        assert self._cur_pattern is not None or day_str is not None, \
             "csv_full should have an output pattern."
-        if self._cur_pattern == "":
+        if self._cur_pattern is None:
             fname = f"{day_str}.{self.get_format()}"
         elif day_str is None:
             fname = f"{self._cur_pattern}.{self.get_format()}"
@@ -406,7 +406,7 @@ class DataClient():
             self,
             cur_date: str,
             output_path: str,
-            output_pattern: str,
+            output_pattern: Optional[str],
             *,
             is_first_day: bool) -> None:
         self._params["date"] = cur_date
@@ -431,12 +431,14 @@ class DataClient():
     def download_range(
             self,
             start_date: str,
-            output_path: str,
-            output_pattern: str,
+            output_path: Optional[str] = None,
+            output_pattern: Optional[str] = None,
             end_date: Optional[str] = None,
             verbose: bool = False) -> None:
         global VERBOSE
         VERBOSE = verbose
+        if output_path is None:
+            output_path = "./"
         os.makedirs(output_path, exist_ok=True)
         if end_date is None:
             print_fn(f"single day {start_date}")
