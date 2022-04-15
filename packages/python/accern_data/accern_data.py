@@ -16,7 +16,12 @@ from typing import (
 
 import pandas as pd
 import requests
-from accern_data.util import ProgressBar
+from accern_data.util import (
+    generate_file_response,
+    is_example_url,
+    ProgressBar,
+    write_json,
+)
 
 FiltersType = TypedDict("FiltersType", {
     "provider_ID": Optional[str],
@@ -75,7 +80,7 @@ class Mode:
             self,
             cur_date: str,
             path: str,
-            pattern: str,
+            pattern: Optional[str],
             is_first_day: bool) -> None:
         self._cur_date = cur_date
         self._cur_path = path
@@ -100,11 +105,17 @@ class Mode:
         raise NotImplementedError()
 
     def get_path(self, is_by_day: bool) -> str:
-        day_str = f"-{self._cur_date}" if is_by_day else ''
+        day_str = f"{self._cur_date}" if is_by_day else None
         assert self._cur_path is not None and self._cur_pattern is not None
-        return os.path.join(
-            self._cur_path,
-            f"{self._cur_pattern}{day_str}.{self.get_format()}")
+        assert self._cur_pattern is not None or day_str is not None, \
+            "csv_full should have an output pattern."
+        if self._cur_pattern is None:
+            fname = f"{day_str}.{self.get_format()}"
+        elif day_str is None:
+            fname = f"{self._cur_pattern}.{self.get_format()}"
+        else:
+            fname = f"{self._cur_pattern}-{day_str}.{self.get_format()}"
+        return os.path.join(self._cur_path, fname)
 
 
 class CSVMode(Mode):
@@ -177,7 +188,7 @@ class CSVMode(Mode):
             value: pd.Timestamp) -> pd.DataFrame:
         df = batch[0]
         assert isinstance(df, pd.DataFrame)
-        return df[df['harvested_at'] <= value]
+        return df[df["harvested_at"] <= value]
 
 
 class JSONMode(Mode):
@@ -252,15 +263,8 @@ class JSONMode(Mode):
                 obj["crawled_at"] = obj["crawled_at"].strftime(DT_FORMAT)
             return obj
 
-        with open(fname, "w") as fout:
-            json.dump(
-                [
-                    stringify_dates(cur)
-                    for cur in self._res
-                ],
-                fp=fout,
-                indent=2,
-                sort_keys=True)
+        obj = [stringify_dates(cur) for cur in self._res]
+        write_json(obj, fname, sort_keys=True)
 
     def split(
             self,
@@ -269,7 +273,7 @@ class JSONMode(Mode):
         result = []
         for record in batch:
             assert isinstance(record, dict)
-            if record['harvested_at'] <= value:
+            if record["harvested_at"] <= value:
                 result.append(record)
         return result
 
@@ -350,16 +354,22 @@ class DataClient():
     def _read_date(self) -> Union[List[pd.DataFrame], List[Dict[str, Any]]]:
         while True:
             try:
-                resp = requests.get(
-                    self._base_url,
-                    params={
-                        "token": self._token,
-                        **{
-                            key: f"{val}"
-                            for key, val in self._filters.items()
-                        },
-                        **self._params,
-                    })
+                if is_example_url(self._base_url):
+                    date = self._params["date"]
+                    harvested_after = self._params["harvested_after"]
+                    mode = self._params["format"]
+                    resp = generate_file_response(date, harvested_after, mode)
+                else:
+                    resp = requests.get(
+                        self._base_url,
+                        params={
+                            "token": self._token,
+                            **{
+                                key: f"{val}"
+                                for key, val in self._filters.items()
+                            },
+                            **self._params,
+                        })
                 if not str(resp.text).strip():
                     return []  # type: ignore
                 return self.get_mode().parse_result(resp)
@@ -403,7 +413,7 @@ class DataClient():
             self,
             cur_date: str,
             output_path: str,
-            output_pattern: str,
+            output_pattern: Optional[str],
             *,
             is_first_day: bool,
             progress_bar: ProgressBar) -> None:
@@ -429,12 +439,15 @@ class DataClient():
     def download_range(
             self,
             start_date: str,
-            output_path: str,
-            output_pattern: str,
+            output_path: Optional[str] = None,
+            output_pattern: Optional[str] = None,
             end_date: Optional[str] = None,
             verbose: bool = False) -> None:
         global VERBOSE
         VERBOSE = verbose
+        if output_path is None:
+            output_path = "./"
+        os.makedirs(output_path, exist_ok=True)
         if end_date is None:
             self._expected_records.append(self._read_total(start_date))
             print_fn(f"single day {start_date}")
