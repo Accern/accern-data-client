@@ -4,7 +4,7 @@ import tqdm
 
 IS_JUPYTER: Optional[bool] = None
 L_BAR = "{desc}: |"
-R_BAR = "| {percentage:3.0f}%"
+R_BAR = "| {percentage:3.0f}% [{n}/{total}]"
 BAR_FMT = f"{L_BAR}{{bar}}{R_BAR}"
 
 
@@ -53,6 +53,10 @@ class ProgressBar:
     def set_description(self, desc: str) -> None:
         if self._pbar is not None:
             self._pbar.set_description_str(desc)
+
+    def set_total(self, total: int) -> None:
+        if self._pbar is not None:
+            self._pbar.reset(total=total)
 
     def close(self) -> None:
         if self._pbar is not None:

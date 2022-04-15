@@ -452,21 +452,18 @@ class DataClient():
         else:
             is_first_day = True
             total = 0
-            info_progress_bar = ProgressBar(
+            progress_bar = ProgressBar(
                 total=len(pd.date_range(start_date, end_date)),
                 desc="Fetching info",
                 verbose=verbose)
 
             for cur_date in pd.date_range(start_date, end_date):
                 self._expected_records.append(self._read_total(cur_date))
-                info_progress_bar.update(1)
+                progress_bar.update(1)
 
-            info_progress_bar.close()
             total = sum(self._expected_records)
-            progress_bar = ProgressBar(
-                total=total,
-                desc="Downloading Signals",
-                verbose=verbose)
+            progress_bar.set_total(total=total)
+            progress_bar.set_description(desc="Downloading Signals")
 
             for ix, cur_date in enumerate(pd.date_range(start_date, end_date)):
                 print_fn(f"now processing {cur_date}")
