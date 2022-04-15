@@ -71,6 +71,7 @@ def generate_file_response(
     response_obj.url = f"tests/data/data-2022.{mode}"
     return response_obj
 
+
 def is_jupyter() -> bool:
     global IS_JUPYTER
 
