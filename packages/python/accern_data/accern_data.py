@@ -99,9 +99,16 @@ class Mode:
         raise NotImplementedError()
 
     def get_path(self, is_by_day: bool) -> str:
+        # NOTE: pattern can be None or "" only for csv_date & json.
+        # In case of None, filenames would be <date>.csv or <date>.json.
+        # In case of empty string (""), filenames would be -<date>.csv or
+        # -<date>.json.
         day_str = f"{self._cur_date}" if is_by_day else None
-        assert self._cur_path is not None and self._cur_pattern is not None
-        assert self._cur_pattern is not None or day_str is not None, \
+        assert self._cur_path is not None
+        pattern = self._cur_pattern
+        if pattern is None:
+            pattern = ""
+        assert pattern.strip() or day_str is not None, \
             "csv_full should have an output pattern."
         if self._cur_pattern is None:
             fname = f"{day_str}.{self.get_format()}"
