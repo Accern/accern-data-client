@@ -112,5 +112,8 @@ publish-pypi:
 	python3 -m pip install -U setuptools twine wheel
 	python3 setup.py sdist bdist_wheel
 
+pytest:
+	./run_pytest.sh $(FILE)
+
 version-sync:
 	@test "${VERSION}" = "$(TS_VERSION)" || (echo "version not matching. VERSION=$(VERSION), TS_VERSION=$(TS_VERSION)" && exit 1)

@@ -7,3 +7,4 @@ accern_data.egg-info/
 build/
 dist/
 venv/
+tests/outputs/*
