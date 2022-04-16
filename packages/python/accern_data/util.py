@@ -9,8 +9,8 @@ from requests import Response
 
 EXAMPLE_URL = "http://api.example.com/"
 IS_JUPYTER: Optional[bool] = None
-L_BAR = "{desc}: |"
-R_BAR = "| {percentage:3.0f}% [{n}/{total}]"
+L_BAR = """{desc}: |"""  # FIXME
+R_BAR = """| {percentage:3.0f}% [{n}/{total}]"""  # FIXME
 BAR_FMT = f"{L_BAR}{{bar}}{R_BAR}"
 
 
