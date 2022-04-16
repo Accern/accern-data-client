@@ -8,3 +8,4 @@ pycodestyle==2.7.0
 pylint==2.6.0
 pytest-cov==3.0.0
 pytest==6.2.1
+tqdm-stubs==0.2.0
