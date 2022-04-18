@@ -31,6 +31,39 @@ def write_json(obj: Any, path: str, **kwargs: Any) -> None:
         json.dump(obj, file, indent=4, **kwargs)
 
 
+def get_overall_total_from_dummy(
+        date: str, encoding: str = "utf-8") -> Response:
+    response_obj = Response()
+    date_dt = pd.to_datetime(date, utc=True)
+    if os.environ.get("IS_TEST", "false") == "false":
+        is_test = False
+    else:
+        is_test = True
+    if is_test:
+        path = "tests/data/data-2022.json"
+    else:
+        path = get_master_file("json")
+    json_obj = load_json(path)
+    filtered = {
+        key: val
+        for key, val in json_obj.items()
+        if key != "signals"
+    }
+    filtered["signals"] = []
+    overall_total = 0
+    for record in json_obj["signals"]:
+        if (pd.to_datetime(record["published_at"]) == date_dt):
+            overall_total += 1
+    filtered["overall_total"] = overall_total
+    obj = io.BytesIO(json.dumps(filtered).encode(encoding))
+    obj.seek(0)
+    response_obj._content = obj.read()
+    response_obj.encoding = encoding
+    response_obj.status_code = 200
+    response_obj.url = path
+    return response_obj
+
+
 def generate_file_response(
         date: str,
         harvested_after: str,
@@ -96,6 +129,7 @@ def get_master_file(file: str) -> str:
         "https://raw.githubusercontent.com/Accern/accern-data-client/main/"
         f"tests/data/data-2022.{file}")
     response = requests.get(url)
+    assert response.status_code == 200
     with open(full_dir, "w") as file_obj:
         file_obj.write(response.text)
     return full_dir

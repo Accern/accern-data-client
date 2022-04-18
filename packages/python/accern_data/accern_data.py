@@ -17,6 +17,7 @@ import pandas as pd
 import requests
 from accern_data.util import (
     generate_file_response,
+    get_overall_total_from_dummy,
     is_example_url,
     ProgressBar,
     write_json,
@@ -331,17 +332,20 @@ class DataClient():
     def _read_total(self, cur_date: str) -> int:
         while True:
             try:
-                resp = requests.get(
-                    self._base_url,
-                    params={
-                        "token": self._token,
-                        **{
-                            key: f"{val}"
-                            for key, val in self._filters.items()
-                        },
-                        "date": cur_date,
-                        "format": "json",
-                    })
+                if is_example_url(self._base_url):
+                    resp = get_overall_total_from_dummy(cur_date)
+                else:
+                    resp = requests.get(
+                        self._base_url,
+                        params={
+                            "token": self._token,
+                            **{
+                                key: f"{val}"
+                                for key, val in self._filters.items()
+                            },
+                            "date": cur_date,
+                            "format": "json",
+                        })
                 if not str(resp.text).strip():  # if nothing is fetched
                     return 0
                 return int(resp.json()["overall_total"])
