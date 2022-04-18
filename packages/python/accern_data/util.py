@@ -125,7 +125,7 @@ class ProgressBar:
             unit_scale: bool = True) -> None:
         self._verbosity = verbose
         if verbose:
-            self._pbar = None
+            self._pbar: Optional[tqdm.tqdm] = None
         elif is_jupyter():
             self._pbar = tqdm.tqdm_notebook(
                 total=total,

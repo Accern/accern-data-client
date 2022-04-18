@@ -1,0 +1,3 @@
+from typing import Any
+
+def product(*iterables: Any, **tqdm_kwargs: Any) -> None: ...
