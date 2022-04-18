@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
-
+export IS_TEST="true"
 FILE=$1
 
 find * \( -name '*.py' -o -name '*.pyi' \) -and -not -path './venv/*' \

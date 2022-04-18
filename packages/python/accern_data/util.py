@@ -35,16 +35,20 @@ def generate_file_response(
         date: str,
         harvested_after: str,
         mode: str,
-        is_test: bool = False,
         encoding: str = "utf-8") -> Response:
+    if os.environ.get("IS_TEST", "false") == "false":
+        is_test = False
+    else:
+        is_test = True
     response_obj = Response()
     date_dt = pd.to_datetime(date, utc=True)
     harvested_after_dt = pd.to_datetime(harvested_after, utc=True)
     if mode == "csv":
         if is_test:
-            df = pd.read_csv("tests/data/data-2022.csv")
+            path = "tests/data/data-2022.csv"
         else:
-            df = pd.read_csv(get_master_file(mode))
+            path = get_master_file(mode)
+        df = pd.read_csv(path)
         df["harvested_at"] = pd.to_datetime(df["harvested_at"])
         df["published_at"] = pd.to_datetime(df["published_at"])
 
@@ -56,9 +60,10 @@ def generate_file_response(
         filtered.to_csv(obj, index=False)
     else:
         if is_test:
-            json_obj = load_json("tests/data/data-2022.json")
+            path = "tests/data/data-2022.json"
         else:
-            json_obj = load_json(get_master_file(mode))
+            path = get_master_file(mode)
+        json_obj = load_json(path)
         filtered = {
             key: val
             for key, val in json_obj.items()
@@ -77,7 +82,7 @@ def generate_file_response(
     response_obj._content = obj.read()
     response_obj.encoding = encoding
     response_obj.status_code = 200
-    response_obj.url = f"tests/data/data-2022.{mode}"
+    response_obj.url = path
     return response_obj
 
 
@@ -87,7 +92,9 @@ def get_master_file(file: str) -> str:
     full_dir = os.path.join(directory, "data", f"data-2022.{file}")
     if os.path.exists(full_dir):
         return full_dir
-    url = f"https://raw.githubusercontent.com/Accern/accern-data-client/main/tests/data/data-2022.{file}"
+    url = (
+        "https://raw.githubusercontent.com/Accern/accern-data-client/main/"
+        f"tests/data/data-2022.{file}")
     response = requests.get(url)
     with open(full_dir, "w") as file_obj:
         file_obj.write(response.text)
