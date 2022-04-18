@@ -460,7 +460,7 @@ class DataClient():
             print_fn(f"expected {self._expected_records[0]}")
             progress_bar = ProgressBar(
                     total=self._expected_records[0],
-                    desc="Downloading Signals",
+                    desc="Downloading signals",
                     verbose=verbose)
             self._process_date(
                 start_date,
@@ -482,13 +482,13 @@ class DataClient():
 
             total = sum(self._expected_records)
             progress_bar.set_total(total=total)
-            progress_bar.set_description(desc="Downloading Signals")
+            progress_bar.set_description(desc="Downloading signals")
 
             for ix, cur_date in enumerate(pd.date_range(start_date, end_date)):
                 print_fn(f"now processing {cur_date}")
                 print_fn(f"expected {self._expected_records[ix]}")
                 progress_bar.set_description(
-                    f"Downloading Signals for {cur_date}")
+                    f"Downloading signals for {cur_date.strftime('%Y-%m-%d')}")
                 self._process_date(
                     cur_date.strftime("%Y-%m-%d"),
                     output_path,
