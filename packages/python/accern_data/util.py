@@ -45,8 +45,7 @@ def get_overall_total_from_dummy(
         date: str, encoding: str = "utf-8") -> Response:
     response_obj = Response()
     date_dt = pd.to_datetime(date, utc=True)
-    is_test = check_is_test()
-    if is_test:
+    if check_is_test():
         path = "tests/data/data-2022.json"
     else:
         path = get_master_file("json")
@@ -76,12 +75,11 @@ def generate_file_response(
         harvested_after: str,
         mode: str,
         encoding: str = "utf-8") -> Response:
-    is_test = check_is_test()
     response_obj = Response()
     date_dt = pd.to_datetime(date, utc=True)
     harvested_after_dt = pd.to_datetime(harvested_after, utc=True)
     if mode == "csv":
-        if is_test:
+        if check_is_test():
             path = "tests/data/data-2022.csv"
         else:
             path = get_master_file(mode)
@@ -96,7 +94,7 @@ def generate_file_response(
         obj = io.BytesIO()
         filtered.to_csv(obj, index=False)
     else:
-        if is_test:
+        if check_is_test():
             path = "tests/data/data-2022.json"
         else:
             path = get_master_file(mode)
@@ -123,15 +121,15 @@ def generate_file_response(
     return response_obj
 
 
-def get_master_file(file: str) -> str:
+def get_master_file(extension: str) -> str:
     import accern_data
     directory = os.path.split(accern_data.__file__)[0]
-    full_dir = os.path.join(directory, "data", f"data-2022.{file}")
+    full_dir = os.path.join(directory, "data", f"data-2022.{extension}")
     if os.path.exists(full_dir):
         return full_dir
     url = (
         "https://raw.githubusercontent.com/Accern/accern-data-client/main/"
-        f"tests/data/data-2022.{file}")
+        f"tests/data/data-2022.{extension}")
     response = requests.get(url)
     assert response.status_code == 200
     with open(full_dir, "w") as file_obj:
