@@ -108,9 +108,13 @@ pre-commit:
 publish-pypi:
 	make git-check
 	make version-sync
-	rm -r dist build accern_xyme.egg-info || echo "no files to delete"
+	rm -r dist build accern_data.egg-info || echo "no files to delete"
 	python3 -m pip install -U setuptools twine wheel
 	python3 setup.py sdist bdist_wheel
+	python3 -m twine upload dist/accern_data-$(VERSION)-py3-none-any.whl dist/accern_data-$(VERSION).tar.gz
+	git tag "v$(VERSION)"
+	git push origin "v$(VERSION)"
+	@echo "succesfully deployed $(VERSION)"
 
 pytest:
 	./run_pytest.sh $(FILE)
