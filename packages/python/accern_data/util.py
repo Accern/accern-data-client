@@ -122,6 +122,7 @@ def generate_file_response(
 def get_master_file(extension: str) -> str:
     directory = os.path.split(__file__)[0]
     full_dir = os.path.join(directory, "data", f"data-2022.{extension}")
+    os.makedirs(os.path.join(directory, "data"), exist_ok=True)
     if os.path.exists(full_dir):
         return full_dir
     url = (

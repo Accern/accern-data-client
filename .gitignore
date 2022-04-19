@@ -1,10 +1,11 @@
 __pycache__
 .DS_Store
 .mypy_cache/
+.pytest_cache/
 .vscode
 *.pyc
 accern_data.egg-info/
 build/
 dist/
 venv/
-tests/outputs/*
+tests/outputs/

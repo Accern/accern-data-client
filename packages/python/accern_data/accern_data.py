@@ -24,7 +24,7 @@ from accern_data.util import (
 )
 
 FiltersType = TypedDict("FiltersType", {
-    "provider_ID": Optional[str],
+    "provider_id": Optional[str],
     "entity_name": Optional[str],
     "event": Optional[str],
     "entity_ticker": Optional[str],
@@ -37,7 +37,7 @@ FilterField = {
     "entity_name",
     "entity_ticker",
     "event",
-    "provider_ID",
+    "provider_id",
 }
 
 ALL_MODES = {"json", "csv_full", "csv_date"}
