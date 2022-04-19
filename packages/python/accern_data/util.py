@@ -10,6 +10,7 @@ from requests import Response
 
 EXAMPLE_URL = "http://api.example.com/"
 IS_JUPYTER: Optional[bool] = None
+IS_TEST: Optional[int] = None
 L_BAR = """{desc}: |"""  # FIXME
 R_BAR = """| {percentage:3.0f}% [{n}/{total}]"""  # FIXME
 BAR_FMT = f"{L_BAR}{{bar}}{R_BAR}"
@@ -30,10 +31,14 @@ def write_json(obj: Any, path: str, **kwargs: Any) -> None:
         json.dump(obj, file, indent=4, **kwargs)
 
 
-def check_is_test() -> bool:
-    if os.environ.get("IS_TEST", "0") == "0":
-        return False
-    return True
+def check_is_test() -> int:
+    global IS_TEST
+
+    if IS_TEST is not None:
+        return IS_TEST
+
+    IS_TEST = int(os.environ.get("IS_TEST", "0"))
+    return IS_TEST
 
 
 def get_overall_total_from_dummy(
