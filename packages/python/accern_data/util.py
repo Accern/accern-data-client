@@ -30,14 +30,17 @@ def write_json(obj: Any, path: str, **kwargs: Any) -> None:
         json.dump(obj, file, indent=4, **kwargs)
 
 
+def check_is_test() -> bool:
+    if os.environ.get("IS_TEST", "0") == "0":
+        return False
+    return True
+
+
 def get_overall_total_from_dummy(
         date: str, encoding: str = "utf-8") -> Response:
     response_obj = Response()
     date_dt = pd.to_datetime(date, utc=True)
-    if os.environ.get("IS_TEST", "false") == "false":
-        is_test = False
-    else:
-        is_test = True
+    is_test = check_is_test()
     if is_test:
         path = "tests/data/data-2022.json"
     else:
@@ -68,10 +71,7 @@ def generate_file_response(
         harvested_after: str,
         mode: str,
         encoding: str = "utf-8") -> Response:
-    if os.environ.get("IS_TEST", "false") == "false":
-        is_test = False
-    else:
-        is_test = True
+    is_test = check_is_test()
     response_obj = Response()
     date_dt = pd.to_datetime(date, utc=True)
     harvested_after_dt = pd.to_datetime(harvested_after, utc=True)
