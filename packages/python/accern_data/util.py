@@ -10,7 +10,7 @@ from requests import Response
 
 EXAMPLE_URL = "http://api.example.com/"
 IS_JUPYTER: Optional[bool] = None
-IS_TEST: Optional[int] = None
+IS_TEST: Optional[bool] = None
 L_BAR = """{desc}: |"""  # FIXME
 R_BAR = """| {percentage:3.0f}% [{n}/{total}]"""  # FIXME
 BAR_FMT = f"{L_BAR}{{bar}}{R_BAR}"
@@ -31,13 +31,11 @@ def write_json(obj: Any, path: str, **kwargs: Any) -> None:
         json.dump(obj, file, indent=4, **kwargs)
 
 
-def check_is_test() -> int:
+def is_test() -> int:
     global IS_TEST
 
-    if IS_TEST is not None:
-        return IS_TEST
-
-    IS_TEST = int(os.environ.get("IS_TEST", "0"))
+    if IS_TEST is None:
+        IS_TEST = int(os.environ.get("IS_TEST", "0")) != 0
     return IS_TEST
 
 
@@ -45,7 +43,7 @@ def get_overall_total_from_dummy(
         date: str, encoding: str = "utf-8") -> Response:
     response_obj = Response()
     date_dt = pd.to_datetime(date, utc=True)
-    if check_is_test():
+    if is_test():
         path = "tests/data/data-2022.json"
     else:
         path = get_master_file("json")
@@ -79,7 +77,7 @@ def generate_file_response(
     date_dt = pd.to_datetime(date, utc=True)
     harvested_after_dt = pd.to_datetime(harvested_after, utc=True)
     if mode == "csv":
-        if check_is_test():
+        if is_test():
             path = "tests/data/data-2022.csv"
         else:
             path = get_master_file(mode)
@@ -94,7 +92,7 @@ def generate_file_response(
         obj = io.BytesIO()
         filtered.to_csv(obj, index=False)
     else:
-        if check_is_test():
+        if is_test():
             path = "tests/data/data-2022.json"
         else:
             path = get_master_file(mode)
