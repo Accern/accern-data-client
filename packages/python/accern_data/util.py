@@ -122,8 +122,7 @@ def generate_file_response(
 
 
 def get_master_file(extension: str) -> str:
-    import accern_data
-    directory = os.path.split(accern_data.__file__)[0]
+    directory = os.path.split(__file__)[0]
     full_dir = os.path.join(directory, "data", f"data-2022.{extension}")
     if os.path.exists(full_dir):
         return full_dir
