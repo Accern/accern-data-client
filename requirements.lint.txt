@@ -1,5 +1,6 @@
 -r requirements.txt
 flake8==3.9.2
+ipython==7.31.1
 isort==5.9.3
 mypy==0.790
 pre-commit==2.16.0

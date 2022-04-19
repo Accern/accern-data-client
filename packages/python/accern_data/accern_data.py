@@ -15,7 +15,13 @@ from typing import (
 
 import pandas as pd
 import requests
-from accern_data.util import generate_file_response, is_example_url, write_json
+from accern_data.util import (
+    generate_file_response,
+    get_overall_total_from_dummy,
+    is_example_url,
+    ProgressBar,
+    write_json,
+)
 
 FiltersType = TypedDict("FiltersType", {
     "provider_ID": Optional[str],
@@ -99,9 +105,16 @@ class Mode:
         raise NotImplementedError()
 
     def get_path(self, is_by_day: bool) -> str:
+        # NOTE: pattern can be None or "" only for csv_date & json.
+        # In case of None, filenames would be <date>.csv or <date>.json.
+        # In case of empty string (""), filenames would be -<date>.csv or
+        # -<date>.json.
         day_str = f"{self._cur_date}" if is_by_day else None
-        assert self._cur_path is not None and self._cur_pattern is not None
-        assert self._cur_pattern is not None or day_str is not None, \
+        assert self._cur_path is not None
+        pattern = self._cur_pattern
+        if pattern is None:
+            pattern = ""
+        assert pattern.strip() or day_str is not None, \
             "csv_full should have an output pattern."
         if self._cur_pattern is None:
             fname = f"{day_str}.{self.get_format()}"
@@ -283,6 +296,7 @@ class DataClient():
         self._params: Dict[str, str] = {}
         self._mode: Optional[Mode] = None
         self._first_error = True
+        self._expected_records: List[int] = []
 
     @staticmethod
     def validate_filters(filters: Optional[FiltersType]) -> FiltersType:
@@ -315,20 +329,23 @@ class DataClient():
         assert self._mode is not None, "Set mode first."
         return self._mode
 
-    def _read_total(self) -> int:
+    def _read_total(self, cur_date: str) -> int:
         while True:
             try:
-                resp = requests.get(
-                    self._base_url,
-                    params={
-                        "token": self._token,
-                        **{
-                            key: f"{val}"
-                            for key, val in self._filters.items()
-                        },
-                        "date": self._params["date"],
-                        "format": "json",
-                    })
+                if is_example_url(self._base_url):
+                    resp = get_overall_total_from_dummy(cur_date)
+                else:
+                    resp = requests.get(
+                        self._base_url,
+                        params={
+                            "token": self._token,
+                            **{
+                                key: f"{val}"
+                                for key, val in self._filters.items()
+                            },
+                            "date": cur_date,
+                            "format": "json",
+                        })
                 if not str(resp.text).strip():  # if nothing is fetched
                     return 0
                 return int(resp.json()["overall_total"])
@@ -408,10 +425,9 @@ class DataClient():
             output_path: str,
             output_pattern: Optional[str],
             *,
-            is_first_day: bool) -> None:
+            is_first_day: bool,
+            progress_bar: ProgressBar) -> None:
         self._params["date"] = cur_date
-        if not is_example_url(self._base_url):
-            print_fn(f"expected {self._read_total()}")
         first = True
         for res in self._scroll("1900-01-01"):
             is_empty = False
@@ -425,6 +441,8 @@ class DataClient():
                 is_empty = True
             if not is_empty:
                 self.get_mode().add_result(res)
+                progress_bar.update(len(res))
+
         if not first:
             self.get_mode().finish_day()
 
@@ -441,19 +459,49 @@ class DataClient():
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
         if end_date is None:
+            self._expected_records.append(self._read_total(start_date))
             print_fn(f"single day {start_date}")
+            print_fn(f"expected {self._expected_records[0]}")
+            progress_bar = ProgressBar(
+                    total=self._expected_records[0],
+                    desc="Downloading signals",
+                    verbose=verbose)
             self._process_date(
-                start_date, output_path, output_pattern, is_first_day=True)
+                start_date,
+                output_path,
+                output_pattern,
+                is_first_day=True,
+                progress_bar=progress_bar)
         else:
             is_first_day = True
+            total = 0
+            progress_bar = ProgressBar(
+                total=len(pd.date_range(start_date, end_date)),
+                desc="Fetching info",
+                verbose=verbose)
+
             for cur_date in pd.date_range(start_date, end_date):
+                self._expected_records.append(self._read_total(cur_date))
+                progress_bar.update(1)
+
+            total = sum(self._expected_records)
+            progress_bar.set_total(total=total)
+            progress_bar.set_description(desc="Downloading signals")
+
+            for ix, cur_date in enumerate(pd.date_range(start_date, end_date)):
                 print_fn(f"now processing {cur_date}")
+                print_fn(f"expected {self._expected_records[ix]}")
+                progress_bar.set_description(
+                    f"Downloading signals for {cur_date.strftime('%Y-%m-%d')}")
                 self._process_date(
                     cur_date.strftime("%Y-%m-%d"),
                     output_path,
                     output_pattern,
-                    is_first_day=is_first_day)
+                    is_first_day=is_first_day,
+                    progress_bar=progress_bar)
                 is_first_day = False
+        progress_bar.close()
+        self._expected_records = []
 
 
 def create_data_client(
