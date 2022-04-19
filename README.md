@@ -3,6 +3,7 @@
 
 Client library for consuming Accern data feed API.
 
+PyPI page: [Click here](https://pypi.org/project/accern-data/)
 
 ### Installation:
 ```
