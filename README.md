@@ -26,11 +26,11 @@ client.set_mode("csv_date")  # Other modes: {"csv_full", "json"}
 ### Set filters:
 ```python
 client.set_filters({
-        "provider_ID": Optional[str],
-        "entity_name": Optional[str],
-        "event": Optional[str],
-        "entity_ticker": Optional[str],
-        "entity_accern_id": Optional[str],
+    "provider_id": 5,
+    "entity_name": "Hurco Companies, Inc.",
+    "event": "Governance - Product Development, R&D and Innovation",
+    "entity_ticker": "HURC",
+    "entity_accern_id": "BBG000BLLFK1",
 })
 ```
 
@@ -41,25 +41,25 @@ client.set_filters({
 ### Set parameters to the download function:
 ```python
 client.download_range(
-        start_date="2022-01-03",
-        output_path="./",
-        output_pattern="data",
-        end_date="2022-03-04")
+    start_date="2022-01-03",
+    output_path="./",
+    output_pattern="data",
+    end_date="2022-03-04")
 ```
 
 Note: To download single day's data, set `end_date=None` or can leave that unset:
 ```python
 client.download_range(
-        start_date="2022-01-03",
-        output_path="./",
-        output_pattern="data",
-        end_date=None)
+    start_date="2022-01-03",
+    output_path="./",
+    output_pattern="data",
+    end_date=None)
 ```
 OR
 
 ```python
 client.download_range(
-        start_date="2022-01-03",
-        output_path="./",
-        output_pattern="data")
+    start_date="2022-01-03",
+    output_path="./",
+    output_pattern="data")
 ```
