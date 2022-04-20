@@ -458,6 +458,7 @@ class DataClient():
         if output_path is None:
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
+        self.get_mode()
         if end_date is None:
             self._expected_records.append(self._read_total(start_date))
             print_fn(f"single day {start_date}")
