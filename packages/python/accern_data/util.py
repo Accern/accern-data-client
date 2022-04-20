@@ -8,6 +8,8 @@ import requests
 import tqdm
 from requests import Response
 
+from . import __version__
+
 EXAMPLE_URL = "http://api.example.com/"
 IS_JUPYTER: Optional[bool] = None
 IS_TEST: Optional[bool] = None
@@ -119,6 +121,26 @@ def generate_file_response(
     return response_obj
 
 
+def register_on_record() -> None:
+    directory, folder = os.path.split(os.path.split(__file__)[0])
+    full_directory = os.path.join(
+        directory,
+        f"{folder}-{__version__.replace('-', '')}.dist-info",
+        "RECORD")
+    lines = {
+        f"{folder}/data/data-2022.json",
+        f"{folder}/data/data-2022.csv",
+        f"{folder}/data/.DS_Store",
+        f"{folder}/.DS_Store",
+    }
+    print(full_directory)
+    with open(full_directory, "r") as file:
+        actual_lines = set([line.strip() for line in file.readlines()])
+    content = '\n'.join(actual_lines.union(lines))
+    with open(full_directory, "w") as file:
+        file.write(content)
+
+
 def get_master_file(extension: str) -> str:
     directory = os.path.split(__file__)[0]
     full_dir = os.path.join(directory, "data", f"data-2022.{extension}")
@@ -132,6 +154,7 @@ def get_master_file(extension: str) -> str:
     assert response.status_code == 200
     with open(full_dir, "w") as file_obj:
         file_obj.write(response.text)
+    register_on_record()
     return full_dir
 
 
