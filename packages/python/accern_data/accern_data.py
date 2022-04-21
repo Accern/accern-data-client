@@ -40,9 +40,9 @@ FilterField = {
     "provider_id",
 }
 
-ALL_MODES = {"json", "csv_full", "csv_date"}
+ALL_MODES = {"csv", "df", "json"}
 DT_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-MODE = Literal["json", "csv_full", "csv_date"]
+MODE = Literal["csv", "df", "json"]
 VERBOSE = False
 
 
@@ -312,17 +312,15 @@ class DataClient():
     def set_filters(self, filters: FiltersType) -> None:
         self._filters = self.validate_filters(filters)
 
-    def set_mode(self, mode: MODE) -> None:
+    def set_mode(self, mode: MODE = "csv", split_dates: bool = False) -> None:
         if mode not in ALL_MODES:
             raise ValueError(
                 f"Please set proper mode. It is '{mode}' which is not in "
                 f"{ALL_MODES}")
         if mode == "json":
             self._mode = JSONMode()
-        elif mode == "csv_full":
-            self._mode = CSVMode(is_by_day=False)
-        elif mode == "csv_date":
-            self._mode = CSVMode(is_by_day=True)
+        else:
+            self._mode = CSVMode(is_by_day=split_dates)
         self._params["format"] = self.get_mode().get_format()
 
     def get_mode(self) -> Mode:
