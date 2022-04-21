@@ -1,17 +1,19 @@
 import accern_data
 import pandas as pd
 import pandas.testing as pd_test
+import pytest
 from accern_data.util import load_json
 
 
-def test_csv_date() -> None:
+@pytest.mark.parametrize("sheet_mode", ["csv", "df"])
+def test_csv_date(sheet_mode: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
     output_pattern = "test_csv_date"
     client = accern_data.create_data_client(
         "http://api.example.com/", "SomeRandomToken")
-    client.set_mode("csv_date")
+    client.set_mode(sheet_mode, split_dates=True)
     client.download_range(
         start_date=start_date,
         output_path=output_path,
@@ -33,14 +35,15 @@ def test_csv_date() -> None:
             df_generated[sorted(df_generated.columns)])
 
 
-def test_csv_full() -> None:
+@pytest.mark.parametrize("sheet_mode", ["csv", "df"])
+def test_csv_full(sheet_mode: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
     output_pattern = "test_csv_full"
     client = accern_data.create_data_client(
         "http://api.example.com/", "SomeRandomToken")
-    client.set_mode("csv_full")
+    client.set_mode(sheet_mode, split_dates=False)
     client.download_range(
         start_date=start_date,
         output_path=output_path,
