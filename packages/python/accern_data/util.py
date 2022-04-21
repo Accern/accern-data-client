@@ -133,7 +133,6 @@ def register_on_record() -> None:
         f"{folder}/data/.DS_Store",
         f"{folder}/.DS_Store",
     }
-    print(full_directory)
     with open(full_directory, "r") as file:
         actual_lines = set([line.strip() for line in file.readlines()])
     content = '\n'.join(actual_lines.union(lines))
