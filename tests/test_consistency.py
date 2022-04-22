@@ -62,7 +62,7 @@ def test_json_csv_date_consistency(sheet_mode: str) -> None:
         end_date=end_date,
         verbose=True)
 
-    client.set_mode("json")
+    client.set_mode("json", split_dates=True)
     client.download_range(
         start_date=start_date,
         output_path="./tests/outputs/",

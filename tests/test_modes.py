@@ -66,7 +66,7 @@ def test_json() -> None:
     output_pattern = "test_json"
     client = accern_data.create_data_client(
         "http://api.example.com/", "SomeRandomToken")
-    client.set_mode("json")
+    client.set_mode("json", split_dates=True)
     client.download_range(
         start_date=start_date,
         output_path=output_path,
