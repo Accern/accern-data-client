@@ -25,20 +25,80 @@ from accern_data.util import (
 )
 
 FiltersType = TypedDict("FiltersType", {
-    "provider_id": Optional[str],
-    "entity_name": Optional[str],
-    "event": Optional[str],
-    "entity_ticker": Optional[str],
+    "doc_cluster_id": Optional[str],
+    "doc_id": Optional[str],
+    "doc_sentiment": Optional[str],  # FIXME: float?
+    "doc_source": Optional[str],
+    "doc_title": Optional[str],
+    "doc_type": Optional[str],
+    "doc_url": Optional[str],
     "entity_accern_id": Optional[str],
+    "entity_country": Optional[str],
+    "entity_exchcode": Optional[str],
+    "entity_figi": Optional[str],
+    "entity_hits": Optional[str],
+    "entity_indices": Optional[str],
+    "entity_name": Optional[str],
+    "entity_region": Optional[str],
+    "entity_relevance": Optional[str],  # FIXME: int?
+    "entity_sector": Optional[str],
+    "entity_sentiment": Optional[str],  # FIXME: float?
+    "entity_share_class": Optional[str],
+    "entity_text": Optional[str],
+    "entity_ticker": Optional[str],
+    "entity_type": Optional[str],
+    "event": Optional[str],
+    "event_accern_id": Optional[str],  # FIXME: int?
+    "event_group": Optional[str],
+    "event_hits": Optional[str],
+    "event_relevance": Optional[str],  # FIXME: float?
+    "event_sentiment": Optional[str],  # FIXME: float?
+    "event_text": Optional[str],
+    "primary_signal": Optional[str],  # FIXME: bool?
+    "provider_id": Optional[str],  # FIXME: int?
+    "signal_id": Optional[str],
+    "signal_relevance": Optional[str],  # FIXME: float?
+    "signal_sentiment": Optional[str],  # FIXME: float?
+    "signal_tag": Optional[str],
 }, total=False)
 
 
 FilterField = {
+    "doc_cluster_id",
+    "doc_id",
+    "doc_sentiment",
+    "doc_source",
+    "doc_title",
+    "doc_type",
+    "doc_url",
     "entity_accern_id",
+    "entity_country",
+    "entity_exchcode",
+    "entity_figi",
+    "entity_hits",
+    "entity_indices",
     "entity_name",
+    "entity_region",
+    "entity_relevance",
+    "entity_sector",
+    "entity_sentiment",
+    "entity_share_class",
+    "entity_text",
     "entity_ticker",
+    "entity_type",
     "event",
+    "event_accern_id",
+    "event_group",
+    "event_hits",
+    "event_relevance",
+    "event_sentiment",
+    "event_text",
+    "primary_signal",
     "provider_id",
+    "signal_id",
+    "signal_relevance",
+    "signal_sentiment",
+    "signal_tag",
 }
 
 ALL_MODES = {"csv", "df", "json"}
