@@ -8,19 +8,28 @@ from accern_data.accern_data import DT_FORMAT
 from accern_data.util import load_json
 
 
-@pytest.mark.parametrize("sheet_mode", ["csv", "df"])
-def test_csv_full_csv_date_consistency(sheet_mode: str) -> None:
+@pytest.mark.parametrize(
+    "sheet_mode, uses_mode_method",
+    [("csv", True), ("csv", False), ("df", True), ("df", False)])
+def test_csv_full_csv_date_consistency(
+        sheet_mode: str, uses_mode_method: bool) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_pattern = "test_csv_full_csv_date_consistency"
     client = accern_data.create_data_client(
         "http://api.example.com/", "SomeRandomToken")
-    client.set_mode(sheet_mode, split_dates=True)
+    if uses_mode_method:
+        client.set_mode(sheet_mode, split_dates=True)
+        mode = None
+    else:
+        mode = sheet_mode
     client.download_range(
         start_date=start_date,
         output_path="./tests/outputs/",
         output_pattern=output_pattern,
         end_date=end_date,
+        mode=mode,
+        split_dates=True,
         verbose=True)
     csv_date_arr = []
     for cur_date in pd.date_range(start_date, end_date):
@@ -33,12 +42,18 @@ def test_csv_full_csv_date_consistency(sheet_mode: str) -> None:
             continue
     combined_df = pd.concat(csv_date_arr)
     combined_df.reset_index(drop=True, inplace=True)
-    client.set_mode(sheet_mode, split_dates=False)
+    if uses_mode_method:
+        client.set_mode(sheet_mode, split_dates=False)
+        mode = None
+    else:
+        mode = sheet_mode
     client.download_range(
         start_date=start_date,
         output_path="./tests/outputs/",
         output_pattern=output_pattern,
         end_date=end_date,
+        mode=mode,
+        split_dates=False,
         verbose=True)
     df_csv_full = pd.read_csv(f"tests/outputs/{output_pattern}.csv")
 
@@ -47,27 +62,42 @@ def test_csv_full_csv_date_consistency(sheet_mode: str) -> None:
         combined_df[sorted(combined_df.columns)])
 
 
-@pytest.mark.parametrize("sheet_mode", ["csv", "df"])
-def test_json_csv_date_consistency(sheet_mode: str) -> None:
+@pytest.mark.parametrize(
+    "sheet_mode, uses_mode_method",
+    [("csv", True), ("csv", False), ("df", True), ("df", False)])
+def test_json_csv_date_consistency(
+        sheet_mode: str, uses_mode_method: bool) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_pattern = "test_json_csv_date_consistency"
     client = accern_data.create_data_client(
         "http://api.example.com/", "SomeRandomToken")
-    client.set_mode(sheet_mode, split_dates=True)
+    if uses_mode_method:
+        client.set_mode(sheet_mode, split_dates=True)
+        mode = None
+    else:
+        mode = sheet_mode
     client.download_range(
         start_date=start_date,
         output_path="./tests/outputs/",
         output_pattern=output_pattern,
         end_date=end_date,
+        mode=mode,
+        split_dates=True,
         verbose=True)
 
-    client.set_mode("json", split_dates=True)
+    if uses_mode_method:
+        client.set_mode("json", split_dates=True)
+        mode = None
+    else:
+        mode = "json"
     client.download_range(
         start_date=start_date,
         output_path="./tests/outputs/",
         output_pattern=output_pattern,
         end_date=end_date,
+        mode=mode,
+        split_dates=True,
         verbose=True)
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime("%Y-%m-%d")
