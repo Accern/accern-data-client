@@ -4,6 +4,7 @@ import time
 import traceback
 from typing import (
     Any,
+    cast,
     Dict,
     Iterator,
     List,
@@ -312,7 +313,7 @@ class DataClient():
     def set_filters(self, filters: FiltersType) -> None:
         self._filters = self.validate_filters(filters)
 
-    def set_mode(self, mode: MODE = "csv", split_dates: bool = False) -> None:
+    def set_mode(self, mode: MODE, split_dates: bool) -> None:
         if mode not in ALL_MODES:
             raise ValueError(
                 f"Please set proper mode. It is '{mode}' which is not in "
@@ -450,12 +451,18 @@ class DataClient():
             output_path: Optional[str] = None,
             output_pattern: Optional[str] = None,
             end_date: Optional[str] = None,
+            mode: Optional[str] = None,
+            split_dates: bool = False,
             verbose: bool = False) -> None:
         global VERBOSE
         VERBOSE = verbose
         if output_path is None:
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
+        if mode is None:
+            self.get_mode()
+        else:
+            self.set_mode(mode=cast(MODE, mode), split_dates=split_dates)
         if end_date is None:
             self._expected_records.append(self._read_total(start_date))
             print_fn(f"single day {start_date}")
