@@ -298,6 +298,9 @@ class DataClient():
         self._first_error = True
         self._expected_records: List[int] = []
 
+    def reset(self) -> None:
+        self._expected_records = []
+
     @staticmethod
     def validate_filters(filters: Optional[FiltersType]) -> FiltersType:
         if filters is None:
@@ -458,7 +461,7 @@ class DataClient():
         if output_path is None:
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
-        self.get_mode()
+        self.reset()
         if end_date is None:
             self._expected_records.append(self._read_total(start_date))
             print_fn(f"single day {start_date}")
@@ -502,7 +505,7 @@ class DataClient():
                     progress_bar=progress_bar)
                 is_first_day = False
         progress_bar.close()
-        self._expected_records = []
+        self.reset()
 
 
 def create_data_client(
