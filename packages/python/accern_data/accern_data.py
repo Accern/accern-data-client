@@ -335,7 +335,8 @@ class DataClient():
         while True:
             try:
                 if is_example_url(self._base_url):
-                    resp = get_overall_total_from_dummy(cur_date)
+                    resp = get_overall_total_from_dummy(
+                        cur_date, self.get_filters())
                 else:
                     resp = requests.get(
                         self._base_url,
@@ -343,7 +344,7 @@ class DataClient():
                             "token": self._token,
                             **{
                                 key: f"{val}"
-                                for key, val in self._filters.items()
+                                for key, val in self.get_filters().items()
                             },
                             "date": cur_date,
                             "format": "json",
@@ -370,7 +371,11 @@ class DataClient():
                     date = self._params["date"]
                     harvested_after = self._params["harvested_after"]
                     mode = self._params["format"]
-                    resp = generate_file_response(date, harvested_after, mode)
+                    resp = generate_file_response(
+                        date,
+                        harvested_after,
+                        mode,
+                        filters=self.get_filters())
                 else:
                     resp = requests.get(
                         self._base_url,
@@ -378,7 +383,7 @@ class DataClient():
                             "token": self._token,
                             **{
                                 key: f"{val}"
-                                for key, val in self._filters.items()
+                                for key, val in self.get_filters().items()
                             },
                             **self._params,
                         })
