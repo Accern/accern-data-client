@@ -8,8 +8,7 @@ from accern_data.util import load_json
 @pytest.mark.parametrize(
     "sheet_mode, uses_mode_method",
     [("csv", True), ("csv", False), ("df", True), ("df", False)])
-def test_csv_date(
-        sheet_mode: str, uses_mode_method: bool) -> None:
+def test_csv_date(sheet_mode: str, uses_mode_method: bool) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
@@ -47,8 +46,7 @@ def test_csv_date(
 @pytest.mark.parametrize(
     "sheet_mode, uses_mode_method",
     [("csv", True), ("csv", False), ("df", True), ("df", False)])
-def test_csv_full(
-        sheet_mode: str, uses_mode_method: bool) -> None:
+def test_csv_full(sheet_mode: str, uses_mode_method: bool) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
