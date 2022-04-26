@@ -492,26 +492,32 @@ class DataClient():
             output_path: str,
             output_pattern: Optional[str],
             *,
-            is_first_day: bool,
-            progress_bar: ProgressBar) -> None:
+            is_first_time: bool,
+            progress_bar: ProgressBar) -> bool:
         self._params["date"] = cur_date
         first = True
         for res in self._scroll("1900-01-01"):
             is_empty = False
             if first:
                 self.get_mode().init_day(
-                    cur_date, output_path, output_pattern, is_first_day)
+                    cur_date, output_path, output_pattern, is_first_time)
                 first = False
+
             if isinstance(res, pd.DataFrame) and res.empty:
                 is_empty = True
             elif isinstance(res, list) and len(res) == 0:
                 is_empty = True
+
+            if is_first_time and not is_empty:
+                is_first_time = False
+
             if not is_empty:
                 self.get_mode().add_result(res)
                 progress_bar.update(len(res))
 
         if not first:
             self.get_mode().finish_day()
+        return is_first_time
 
     def download_range(
             self,
@@ -546,10 +552,10 @@ class DataClient():
                 start_date,
                 output_path,
                 output_pattern,
-                is_first_day=True,
+                is_first_time=True,
                 progress_bar=progress_bar)
         else:
-            is_first_day = True
+            is_first_time = True
             total = 0
             progress_bar = ProgressBar(
                 total=len(pd.date_range(start_date, end_date)),
@@ -569,13 +575,12 @@ class DataClient():
                 print_fn(f"expected {self._expected_records[ix]}")
                 progress_bar.set_description(
                     f"Downloading signals for {cur_date.strftime('%Y-%m-%d')}")
-                self._process_date(
+                is_first_time = self._process_date(
                     cur_date.strftime("%Y-%m-%d"),
                     output_path,
                     output_pattern,
-                    is_first_day=is_first_day,
+                    is_first_time=is_first_time,
                     progress_bar=progress_bar)
-                is_first_day = False
         progress_bar.close()
         self._expected_records = []
 
