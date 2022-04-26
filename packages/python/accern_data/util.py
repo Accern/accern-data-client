@@ -125,7 +125,7 @@ def register_on_record() -> None:
     directory, folder = os.path.split(os.path.split(__file__)[0])
     full_directory = os.path.join(
         directory,
-        f"{folder}-{__version__.replace('-', '')}.dist-info",
+        f"{folder}-{__version__}.dist-info",
         "RECORD")
     lines = {
         f"{folder}/data/data-2022.json",
@@ -134,7 +134,7 @@ def register_on_record() -> None:
         f"{folder}/.DS_Store",
     }
     with open(full_directory, "r") as file:
-        actual_lines = set([line.strip() for line in file.readlines()])
+        actual_lines = {line.strip() for line in file.readlines()}
     content = '\n'.join(actual_lines.union(lines))
     with open(full_directory, "w") as file:
         file.write(content)

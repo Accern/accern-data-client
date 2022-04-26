@@ -505,7 +505,6 @@ class DataClient():
                     progress_bar=progress_bar)
                 is_first_day = False
         progress_bar.close()
-        self.reset()
 
 
 def create_data_client(
