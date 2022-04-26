@@ -379,7 +379,7 @@ class DataClient():
     def set_mode(self, mode: MODE, split_dates: bool) -> None:
         if mode == "json":
             self._mode = JSONMode()
-        elif mode == "csv":
+        elif mode in {"csv", "df"}:
             self._mode = CSVMode(is_by_day=split_dates)
         else:
             raise ValueError(
