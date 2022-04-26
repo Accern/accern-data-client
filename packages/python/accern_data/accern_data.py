@@ -63,7 +63,7 @@ FiltersType = TypedDict("FiltersType", {
 }, total=False)
 
 
-FilterField = {
+FILTER_FIELD = {
     "doc_cluster_id",
     "doc_id",
     "doc_sentiment",
@@ -364,10 +364,10 @@ class DataClient():
         if filters is None:
             return {}
         for key in filters.keys():
-            if key not in FilterField:
+            if key not in FILTER_FIELD:
                 raise ValueError(
                     f"{key} is not a valid filed."
-                    f"Possible fileds: {FilterField}")
+                    f"Possible fileds: {FILTER_FIELD}")
         return filters
 
     def set_filters(self, filters: FiltersType) -> None:
@@ -377,14 +377,14 @@ class DataClient():
         return self._filters
 
     def set_mode(self, mode: MODE, split_dates: bool) -> None:
-        if mode not in ALL_MODES:
+        if mode == "json":
+            self._mode = JSONMode()
+        elif mode == "csv":
+            self._mode = CSVMode(is_by_day=split_dates)
+        else:
             raise ValueError(
                 f"Please set proper mode. It is '{mode}' which is not in "
                 f"{ALL_MODES}")
-        if mode == "json":
-            self._mode = JSONMode()
-        else:
-            self._mode = CSVMode(is_by_day=split_dates)
         self._params["format"] = self.get_mode().get_format()
 
     def get_mode(self) -> Mode:

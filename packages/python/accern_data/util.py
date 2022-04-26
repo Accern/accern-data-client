@@ -43,7 +43,7 @@ def is_test() -> int:
 
 
 def check_filters(
-        record: Union[pd.DataFrame, Dict[str, Any]],
+        record: Union[pd.Series, Dict[str, Any]],
         filters: 'FiltersType') -> bool:
     for key, value in filters.items():
         if record[key] != value:
