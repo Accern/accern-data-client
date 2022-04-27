@@ -93,7 +93,7 @@ FiltersType = TypedDict(
         "event_group": Optional[str],
         "event_hits": Optional[str],
         "event_text": Optional[str],
-        "primary_signal": Optional[str],  # FIXME: this is actually a string representation of boolean. like "true" or "false".
+        "primary_signal": Optional[str],  # FIXME: str representation of bool
         "provider_id": Optional[int],
         "signal_id": Optional[str],
         "signal_tag": Optional[str],
