@@ -6,10 +6,12 @@ from typing import (
     Any,
     cast,
     Dict,
+    get_args,
     Iterator,
     List,
     Literal,
     Optional,
+    Set,
     TypedDict,
     Union,
 )
@@ -24,46 +26,7 @@ from accern_data.util import (
     write_json,
 )
 
-FiltersType = TypedDict("FiltersType", {
-    "doc_cluster_id": Optional[str],
-    "doc_id": Optional[str],
-    "doc_sentiment": Optional[str],  # FIXME: float?
-    "doc_source": Optional[str],
-    "doc_title": Optional[str],
-    "doc_type": Optional[str],
-    "doc_url": Optional[str],
-    "entity_accern_id": Optional[str],
-    "entity_country": Optional[str],
-    "entity_exchcode": Optional[str],
-    "entity_figi": Optional[str],
-    "entity_hits": Optional[str],
-    "entity_indices": Optional[str],
-    "entity_name": Optional[str],
-    "entity_region": Optional[str],
-    "entity_relevance": Optional[str],  # FIXME: int?
-    "entity_sector": Optional[str],
-    "entity_sentiment": Optional[str],  # FIXME: float?
-    "entity_share_class": Optional[str],
-    "entity_text": Optional[str],
-    "entity_ticker": Optional[str],
-    "entity_type": Optional[str],
-    "event": Optional[str],
-    "event_accern_id": Optional[str],  # FIXME: int?
-    "event_group": Optional[str],
-    "event_hits": Optional[str],
-    "event_relevance": Optional[str],  # FIXME: float?
-    "event_sentiment": Optional[str],  # FIXME: float?
-    "event_text": Optional[str],
-    "primary_signal": Optional[str],  # FIXME: bool?
-    "provider_id": Optional[str],  # FIXME: int?
-    "signal_id": Optional[str],
-    "signal_relevance": Optional[str],  # FIXME: float?
-    "signal_sentiment": Optional[str],  # FIXME: float?
-    "signal_tag": Optional[str],
-}, total=False)
-
-
-FILTER_FIELD = {
+FilterField = Literal[
     "doc_cluster_id",
     "doc_id",
     "doc_sentiment",
@@ -99,11 +62,53 @@ FILTER_FIELD = {
     "signal_relevance",
     "signal_sentiment",
     "signal_tag",
-}
+]
+FiltersType: Dict[FilterField, Union[str, int, float]] = TypedDict(
+    "FiltersType",
+    {
+        "doc_cluster_id": Optional[str],
+        "doc_id": Optional[str],
+        "doc_sentiment": Optional[float],
+        "doc_source": Optional[str],
+        "doc_title": Optional[str],
+        "doc_type": Optional[str],
+        "doc_url": Optional[str],
+        "entity_accern_id": Optional[str],
+        "entity_country": Optional[str],
+        "entity_exchcode": Optional[str],
+        "entity_figi": Optional[str],
+        "entity_hits": Optional[str],
+        "entity_indices": Optional[str],
+        "entity_name": Optional[str],
+        "entity_region": Optional[str],
+        "entity_relevance": Optional[int],
+        "entity_sector": Optional[str],
+        "entity_sentiment": Optional[float],
+        "entity_share_class": Optional[str],
+        "entity_text": Optional[str],
+        "entity_ticker": Optional[str],
+        "entity_type": Optional[str],
+        "event": Optional[str],
+        "event_accern_id": Optional[int],
+        "event_group": Optional[str],
+        "event_hits": Optional[str],
+        "event_relevance": Optional[float],
+        "event_sentiment": Optional[float],
+        "event_text": Optional[str],
+        "primary_signal": Optional[str],  # FIXME: bool?
+        "provider_id": Optional[int],
+        "signal_id": Optional[str],
+        "signal_relevance": Optional[float],
+        "signal_sentiment": Optional[float],
+        "signal_tag": Optional[str],
+    },
+    total=False)
 
-ALL_MODES = {"csv", "df", "json"}
+ModeType = Literal["csv", "df", "json"]
+
+FILTER_FIELD = get_args(FilterField)
+ALL_MODES: Set[ModeType] = {"csv", "df", "json"}
 DT_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-MODE = Literal["csv", "df", "json"]
 VERBOSE = False
 
 
@@ -376,7 +381,7 @@ class DataClient():
     def get_filters(self) -> FiltersType:
         return self._filters
 
-    def set_mode(self, mode: MODE, split_dates: bool) -> None:
+    def set_mode(self, mode: ModeType, split_dates: bool) -> None:
         if mode == "json":
             self._mode = JSONMode()
         elif mode in {"csv", "df"}:
@@ -537,7 +542,7 @@ class DataClient():
         if mode is None:
             self.get_mode()
         else:
-            self.set_mode(mode=cast(MODE, mode), split_dates=split_dates)
+            self.set_mode(mode=cast(ModeType, mode), split_dates=split_dates)
         if filters is not None:
             self.get_filters().update(filters)
         if end_date is None:

@@ -72,8 +72,7 @@ def get_overall_total_from_dummy(
     for record in json_obj["signals"]:
         if (
                 pd.to_datetime(record["published_at"]) == date_dt
-                and
-                check_filters(record, filters)):
+                and check_filters(record, filters)):
             overall_total += 1
     filtered["overall_total"] = overall_total
     obj = io.BytesIO(json.dumps(filtered).encode(encoding))
