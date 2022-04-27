@@ -26,10 +26,17 @@ from accern_data.util import (
     write_json,
 )
 
+ExcludedFilterField = Literal[
+    "crawled_at",
+    "format",
+    "harvested_at",
+    "published_at",
+    "token",
+]
+
 FilterField = Literal[
     "doc_cluster_id",
     "doc_id",
-    "doc_sentiment",
     "doc_source",
     "doc_title",
     "doc_type",
@@ -44,7 +51,6 @@ FilterField = Literal[
     "entity_region",
     "entity_relevance",
     "entity_sector",
-    "entity_sentiment",
     "entity_share_class",
     "entity_text",
     "entity_ticker",
@@ -53,22 +59,17 @@ FilterField = Literal[
     "event_accern_id",
     "event_group",
     "event_hits",
-    "event_relevance",
-    "event_sentiment",
     "event_text",
     "primary_signal",
     "provider_id",
     "signal_id",
-    "signal_relevance",
-    "signal_sentiment",
     "signal_tag",
 ]
-FiltersType: Dict[FilterField, Union[str, int, float]] = TypedDict(
+FiltersType = TypedDict(
     "FiltersType",
     {
         "doc_cluster_id": Optional[str],
         "doc_id": Optional[str],
-        "doc_sentiment": Optional[float],
         "doc_source": Optional[str],
         "doc_title": Optional[str],
         "doc_type": Optional[str],
@@ -83,7 +84,6 @@ FiltersType: Dict[FilterField, Union[str, int, float]] = TypedDict(
         "entity_region": Optional[str],
         "entity_relevance": Optional[int],
         "entity_sector": Optional[str],
-        "entity_sentiment": Optional[float],
         "entity_share_class": Optional[str],
         "entity_text": Optional[str],
         "entity_ticker": Optional[str],
@@ -92,14 +92,10 @@ FiltersType: Dict[FilterField, Union[str, int, float]] = TypedDict(
         "event_accern_id": Optional[int],
         "event_group": Optional[str],
         "event_hits": Optional[str],
-        "event_relevance": Optional[float],
-        "event_sentiment": Optional[float],
         "event_text": Optional[str],
-        "primary_signal": Optional[str],  # FIXME: bool?
+        "primary_signal": Optional[str],  # FIXME: this is actually a string representation of boolean. like "true" or "false".
         "provider_id": Optional[int],
         "signal_id": Optional[str],
-        "signal_relevance": Optional[float],
-        "signal_sentiment": Optional[float],
         "signal_tag": Optional[str],
     },
     total=False)
@@ -107,6 +103,7 @@ FiltersType: Dict[FilterField, Union[str, int, float]] = TypedDict(
 ModeType = Literal["csv", "df", "json"]
 
 FILTER_FIELD = get_args(FilterField)
+EXCLUDED_FILTER_FIELD = get_args(ExcludedFilterField)
 ALL_MODES: Set[ModeType] = {"csv", "df", "json"}
 DT_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 VERBOSE = False
@@ -377,6 +374,13 @@ class DataClient():
 
     def set_filters(self, filters: FiltersType) -> None:
         self._filters = self.validate_filters(filters)
+
+    def set_raw_filters(self, filters: FiltersType) -> None:
+        for key in filters:
+            assert key not in EXCLUDED_FILTER_FIELD, (
+                "filters should not be containing any of "
+                f"{EXCLUDED_FILTER_FIELD}")
+        self._filters = filters
 
     def get_filters(self) -> FiltersType:
         return self._filters
