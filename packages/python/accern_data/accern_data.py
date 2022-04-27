@@ -370,8 +370,9 @@ class DataClient():
                     f"{key} is not a valid field."
                     f"Possible fields: {FILTER_FIELD}")
             if key == "primary_signal":
-                if isinstance(filters["primary_signal"], bool):
-                    filters["primary_signal"] = f"{filters[key]}".lower()
+                val = filters["primary_signal"]
+                if isinstance(val, bool):
+                    filters["primary_signal"] = f"{val}".lower()
         return filters
 
     def set_filters(self, filters: FiltersType) -> None:
@@ -380,8 +381,9 @@ class DataClient():
     def set_raw_filters(self, filters: FiltersType) -> None:
         for key in filters:
             if key == "primary_signal":
-                if isinstance(filters["primary_signal"], bool):
-                    filters["primary_signal"] = f"{filters[key]}".lower()
+                val = filters["primary_signal"]
+                if isinstance(val, bool):
+                    filters["primary_signal"] = f"{val}".lower()
 
             assert key not in EXCLUDED_FILTER_FIELD, (
                 "filters should not be containing any of "
