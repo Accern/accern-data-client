@@ -24,7 +24,6 @@ def test_filters_csv_full(sheet_mode: str, uses_filter_method: bool) -> None:
     client = accern_data.create_data_client(
         "http://api.example.com/", "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=False)
-    client.set_filters(FILTERS)
     if uses_filter_method:
         client.set_filters(FILTERS)
         filters = None
@@ -58,7 +57,6 @@ def test_filters_csv_date(sheet_mode: str, uses_filter_method: bool) -> None:
     client = accern_data.create_data_client(
         "http://api.example.com/", "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=True)
-    client.set_filters(FILTERS)
     if uses_filter_method:
         client.set_filters(FILTERS)
         filters = None
@@ -96,7 +94,6 @@ def test_filters_json(uses_filter_method: bool) -> None:
     client = accern_data.create_data_client(
         "http://api.example.com/", "SomeRandomToken")
     client.set_mode("json", split_dates=True)
-    client.set_filters(FILTERS)
     if uses_filter_method:
         client.set_filters(FILTERS)
         filters = None
