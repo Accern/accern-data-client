@@ -105,10 +105,14 @@ def generate_file_response(
             (df["published_at"] == date_dt) &
             (df["harvested_at"] > harvested_after_dt)
         ]
-        result = pd.Series([True for _ in range(valid_df.shape[0])])
-        for key, val in filters.items():
-            result = result & (valid_df[key] == val)
-        filtered_df: pd.DataFrame = valid_df[result]
+        if valid_df.empty:
+            filtered_df = valid_df
+        else:
+            result = pd.Series(
+                [True for _ in range(valid_df.shape[0])], index=valid_df.index)
+            for key, val in filters.items():
+                result = result & (valid_df[key] == val)
+            filtered_df = valid_df[result]
         obj = io.BytesIO()
         filtered_df.to_csv(obj, index=False)
     else:
