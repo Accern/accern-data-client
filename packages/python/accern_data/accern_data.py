@@ -92,7 +92,7 @@ FiltersType = TypedDict(
         "event_group": Optional[str],
         "event_hits": Optional[str],
         "event_text": Optional[str],
-        "primary_signal": Optional[str],  # FIXME: str representation of bool
+        "primary_signal": Optional[Union[str, bool]],
         "provider_id": Optional[int],
         "signal_id": Optional[str],
         "signal_tag": Optional[str],
@@ -369,6 +369,9 @@ class DataClient():
                 raise ValueError(
                     f"{key} is not a valid field."
                     f"Possible fields: {FILTER_FIELD}")
+            if key == "primary_signal":
+                if isinstance(filters["primary_signal"], bool):
+                    filters["primary_signal"] = f"{filters[key]}".lower()
         return filters
 
     def set_filters(self, filters: FiltersType) -> None:
@@ -376,6 +379,10 @@ class DataClient():
 
     def set_raw_filters(self, filters: FiltersType) -> None:
         for key in filters:
+            if key == "primary_signal":
+                if isinstance(filters["primary_signal"], bool):
+                    filters["primary_signal"] = f"{filters[key]}".lower()
+
             assert key not in EXCLUDED_FILTER_FIELD, (
                 "filters should not be containing any of "
                 f"{EXCLUDED_FILTER_FIELD}")
