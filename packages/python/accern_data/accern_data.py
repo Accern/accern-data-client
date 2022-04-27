@@ -385,16 +385,18 @@ class DataClient():
     def get_filters(self) -> FiltersType:
         return self._filters
 
-    def set_mode(self, mode: ModeType, split_dates: bool) -> None:
+    @staticmethod
+    def parse_mode(mode: ModeType, split_dates: bool) -> Mode:
         if mode == "json":
-            self._mode = JSONMode()
-        elif mode in {"csv", "df"}:
-            self._mode = CSVMode(is_by_day=split_dates)
-        else:
-            raise ValueError(
-                f"Please set proper mode. It is '{mode}' which is not in "
-                f"{ALL_MODES}")
-        self._params["format"] = self.get_mode().get_format()
+            return JSONMode()
+        if mode in {"csv", "df"}:
+            return CSVMode(is_by_day=split_dates)
+        raise ValueError(
+            f"Please set proper mode. It is '{mode}' which is not in "
+            f"{ALL_MODES}")
+
+    def set_mode(self, mode: ModeType, split_dates: bool) -> None:
+        self._mode = self.parse_mode(mode, split_dates)
 
     def get_mode(self) -> Mode:
         assert self._mode is not None, "Set mode first."
@@ -435,6 +437,7 @@ class DataClient():
 
     def _read_date(
             self,
+            mode: Mode,
             filters: FiltersType) -> Union[
                 List[pd.DataFrame], List[Dict[str, Any]]]:
         while True:
@@ -442,11 +445,10 @@ class DataClient():
                 if is_example_url(self._base_url):
                     date = self._params["date"]
                     harvested_after = self._params["harvested_after"]
-                    mode = self._params["format"]
                     resp = generate_file_response(
                         date,
                         harvested_after,
-                        mode,
+                        mode.get_format(),
                         filters=filters)
                 else:
                     resp = requests.get(
@@ -458,6 +460,7 @@ class DataClient():
                                 for key, val in filters.items()
                             },
                             **self._params,
+                            **{"format": mode.get_format()}
                         })
                 if not str(resp.text).strip():
                     return []  # type: ignore
@@ -477,11 +480,12 @@ class DataClient():
     def _scroll(
             self,
             start_date: str,
+            mode: Mode,
             filters: FiltersType) -> Iterator[
                 Union[pd.DataFrame, List[Dict[str, Any]]]]:
         print_fn("new day")
         self._params["harvested_after"] = start_date
-        batch = self._read_date(filters)
+        batch = self._read_date(mode, filters)
         total = self.get_mode().size(batch)
         prev_start = start_date
         while self.get_mode().size(batch) > 0:
@@ -489,7 +493,7 @@ class DataClient():
                 start_date = self.get_mode().max_date(batch)
                 yield self.get_mode().split(batch, pd.to_datetime(start_date))
                 self._params["harvested_after"] = start_date
-                batch = self._read_date(filters)
+                batch = self._read_date(mode, filters)
                 total += self.get_mode().size(batch)
                 if start_date == prev_start:
                     # FIXME: redundant check? batch_size becomes 0
@@ -506,11 +510,12 @@ class DataClient():
             output_pattern: Optional[str],
             *,
             is_first_time: bool,
+            mode: Mode,
             filters: FiltersType,
             progress_bar: ProgressBar) -> bool:
         self._params["date"] = cur_date
         first = True
-        for res in self._scroll("1900-01-01", filters):
+        for res in self._scroll("1900-01-01", mode, filters):
             is_empty = False
             if first:
                 self.get_mode().init_day(
@@ -539,7 +544,7 @@ class DataClient():
             output_path: Optional[str] = None,
             output_pattern: Optional[str] = None,
             end_date: Optional[str] = None,
-            mode: Optional[str] = None,
+            mode: Optional[ModeType] = None,
             split_dates: bool = False,
             filters: Optional[FiltersType] = None,
             verbose: bool = False) -> None:
@@ -548,10 +553,8 @@ class DataClient():
         if output_path is None:
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
-        if mode is None:
-            self.get_mode()
-        else:
-            self.set_mode(mode=cast(ModeType, mode), split_dates=split_dates)
+        valid_mode = self.get_mode() \
+            if mode is None else self.parse_mode(mode, split_dates)
         valid_filters = self.get_filters() if filters is None else filters
         if end_date is None:
             self._expected_records.append(
@@ -567,6 +570,7 @@ class DataClient():
                 output_path,
                 output_pattern,
                 is_first_time=True,
+                mode=valid_mode,
                 filters=valid_filters,
                 progress_bar=progress_bar)
         else:
@@ -596,6 +600,7 @@ class DataClient():
                     output_path,
                     output_pattern,
                     is_first_time=is_first_time,
+                    mode=valid_mode,
                     filters=valid_filters,
                     progress_bar=progress_bar)
         progress_bar.close()
