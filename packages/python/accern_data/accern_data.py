@@ -470,7 +470,7 @@ class DataClient():
                         })
                 if not str(resp.text).strip():
                     return []  # type: ignore
-                return self.get_mode().parse_result(resp)
+                return mode.parse_result(resp)
             except KeyboardInterrupt as err:
                 raise err
             except (
@@ -492,15 +492,15 @@ class DataClient():
         print_fn("new day")
         self._params["harvested_after"] = start_date
         batch = self._read_date(mode, filters)
-        total = self.get_mode().size(batch)
+        total = mode.size(batch)
         prev_start = start_date
-        while self.get_mode().size(batch) > 0:
+        while mode.size(batch) > 0:
             try:
-                start_date = self.get_mode().max_date(batch)
-                yield self.get_mode().split(batch, pd.to_datetime(start_date))
+                start_date = mode.max_date(batch)
+                yield mode.split(batch, pd.to_datetime(start_date))
                 self._params["harvested_after"] = start_date
                 batch = self._read_date(mode, filters)
-                total += self.get_mode().size(batch)
+                total += mode.size(batch)
                 if start_date == prev_start:
                     # FIXME: redundant check? batch_size becomes 0
                     # loop gets terminated.
@@ -524,7 +524,7 @@ class DataClient():
         for res in self._scroll("1900-01-01", mode, filters):
             is_empty = False
             if first:
-                self.get_mode().init_day(
+                mode.init_day(
                     cur_date, output_path, output_pattern, is_first_time)
                 first = False
 
@@ -537,11 +537,11 @@ class DataClient():
                 is_first_time = False
 
             if not is_empty:
-                self.get_mode().add_result(res)
+                mode.add_result(res)
                 progress_bar.update(len(res))
 
         if not first:
-            self.get_mode().finish_day()
+            mode.finish_day()
         return is_first_time
 
     def download_range(
