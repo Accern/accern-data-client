@@ -368,8 +368,8 @@ class DataClient():
         for key in filters.keys():
             if key not in FILTER_FIELD:
                 raise ValueError(
-                    f"{key} is not a valid filed."
-                    f"Possible fileds: {FILTER_FIELD}")
+                    f"{key} is not a valid field."
+                    f"Possible fields: {FILTER_FIELD}")
         return filters
 
     def set_filters(self, filters: FiltersType) -> None:
@@ -400,12 +400,12 @@ class DataClient():
         assert self._mode is not None, "Set mode first."
         return self._mode
 
-    def _read_total(self, cur_date: str) -> int:
+    def _read_total(self, cur_date: str, filters: FiltersType) -> int:
         while True:
             try:
                 if is_example_url(self._base_url):
                     resp = get_overall_total_from_dummy(
-                        cur_date, self.get_filters())
+                        cur_date, filters)
                 else:
                     resp = requests.get(
                         self._base_url,
@@ -413,7 +413,7 @@ class DataClient():
                             "token": self._token,
                             **{
                                 key: f"{val}"
-                                for key, val in self.get_filters().items()
+                                for key, val in filters.items()
                             },
                             "date": cur_date,
                             "format": "json",
@@ -433,7 +433,10 @@ class DataClient():
                 print_fn("unknown error...retrying...")
                 time.sleep(0.5)
 
-    def _read_date(self) -> Union[List[pd.DataFrame], List[Dict[str, Any]]]:
+    def _read_date(
+            self,
+            filters: FiltersType) -> Union[
+                List[pd.DataFrame], List[Dict[str, Any]]]:
         while True:
             try:
                 if is_example_url(self._base_url):
@@ -444,7 +447,7 @@ class DataClient():
                         date,
                         harvested_after,
                         mode,
-                        filters=self.get_filters())
+                        filters=filters)
                 else:
                     resp = requests.get(
                         self._base_url,
@@ -452,7 +455,7 @@ class DataClient():
                             "token": self._token,
                             **{
                                 key: f"{val}"
-                                for key, val in self.get_filters().items()
+                                for key, val in filters.items()
                             },
                             **self._params,
                         })
@@ -473,11 +476,12 @@ class DataClient():
 
     def _scroll(
             self,
-            start_date: str) -> Iterator[
+            start_date: str,
+            filters: FiltersType) -> Iterator[
                 Union[pd.DataFrame, List[Dict[str, Any]]]]:
         print_fn("new day")
         self._params["harvested_after"] = start_date
-        batch = self._read_date()
+        batch = self._read_date(filters)
         total = self.get_mode().size(batch)
         prev_start = start_date
         while self.get_mode().size(batch) > 0:
@@ -485,7 +489,7 @@ class DataClient():
                 start_date = self.get_mode().max_date(batch)
                 yield self.get_mode().split(batch, pd.to_datetime(start_date))
                 self._params["harvested_after"] = start_date
-                batch = self._read_date()
+                batch = self._read_date(filters)
                 total += self.get_mode().size(batch)
                 if start_date == prev_start:
                     # FIXME: redundant check? batch_size becomes 0
@@ -502,10 +506,11 @@ class DataClient():
             output_pattern: Optional[str],
             *,
             is_first_time: bool,
+            filters: FiltersType,
             progress_bar: ProgressBar) -> bool:
         self._params["date"] = cur_date
         first = True
-        for res in self._scroll("1900-01-01"):
+        for res in self._scroll("1900-01-01", filters):
             is_empty = False
             if first:
                 self.get_mode().init_day(
@@ -547,10 +552,10 @@ class DataClient():
             self.get_mode()
         else:
             self.set_mode(mode=cast(ModeType, mode), split_dates=split_dates)
-        if filters is not None:
-            self.get_filters().update(filters)
+        valid_filters = self.get_filters() if filters is None else filters
         if end_date is None:
-            self._expected_records.append(self._read_total(start_date))
+            self._expected_records.append(
+                self._read_total(start_date, valid_filters))
             print_fn(f"single day {start_date}")
             print_fn(f"expected {self._expected_records[0]}")
             progress_bar = ProgressBar(
@@ -562,6 +567,7 @@ class DataClient():
                 output_path,
                 output_pattern,
                 is_first_time=True,
+                filters=valid_filters,
                 progress_bar=progress_bar)
         else:
             is_first_time = True
@@ -572,7 +578,8 @@ class DataClient():
                 verbose=verbose)
 
             for cur_date in pd.date_range(start_date, end_date):
-                self._expected_records.append(self._read_total(cur_date))
+                self._expected_records.append(
+                    self._read_total(cur_date, valid_filters))
                 progress_bar.update(1)
 
             total = sum(self._expected_records)
@@ -589,6 +596,7 @@ class DataClient():
                     output_path,
                     output_pattern,
                     is_first_time=is_first_time,
+                    filters=valid_filters,
                     progress_bar=progress_bar)
         progress_bar.close()
         self._expected_records = []
