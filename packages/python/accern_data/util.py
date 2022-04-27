@@ -125,7 +125,7 @@ def register_on_record() -> None:
     directory, folder = os.path.split(os.path.split(__file__)[0])
     full_directory = os.path.join(
         directory,
-        f"{folder}-{__version__}.dist-info",
+        f"{folder}-{__version__.replace('-', '')}.dist-info",
         "RECORD")
     lines = {
         f"{folder}/data/data-2022.json",
