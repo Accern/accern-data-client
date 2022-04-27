@@ -42,9 +42,7 @@ def is_test() -> int:
     return IS_TEST
 
 
-def check_filters(
-        record: Union[pd.Series, Dict[str, Any]],
-        filters: 'FiltersType') -> bool:
+def check_filters(record: Dict[str, Any], filters: 'FiltersType') -> bool:
     for key, value in filters.items():
         if record[key] != value:
             return False
@@ -103,18 +101,14 @@ def generate_file_response(
         df["harvested_at"] = pd.to_datetime(df["harvested_at"])
         df["published_at"] = pd.to_datetime(df["published_at"])
 
-        valid_df = df[
+        valid_df: pd.DataFrame = df[
             (df["published_at"] == date_dt) &
             (df["harvested_at"] > harvested_after_dt)
         ]
-        rows = []
-        for idx in range(valid_df.shape[0]):
-            if check_filters(valid_df.iloc[idx, :], filters):
-                rows.append(valid_df.iloc[[idx], :])
-        if len(rows) > 0:
-            filtered_df = pd.concat(rows)
-        else:
-            filtered_df = pd.DataFrame([], columns=df.columns)
+        result = pd.Series([True for _ in range(valid_df.shape[0])])
+        for key, val in filters.items():
+            result = result & (valid_df[key] == val)
+        filtered_df: pd.DataFrame = valid_df[result]
         obj = io.BytesIO()
         filtered_df.to_csv(obj, index=False)
     else:
