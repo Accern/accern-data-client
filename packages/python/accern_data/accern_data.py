@@ -361,36 +361,40 @@ class DataClient():
         self._expected_records: List[int] = []
 
     @staticmethod
-    def validate_filters(filters: Optional[FiltersType]) -> FiltersType:
+    def validate_filters(
+            filters: Optional[FiltersType]) -> Dict[
+                str, Optional[Union[bool, int, str]]]:
         if filters is None:
             return {}
-        for key in filters.keys():
+        valid_filters: Dict[str, Optional[Union[bool, int, str]]] = {}
+        for key, value in filters.items():
             if key not in FILTER_FIELD:
                 raise ValueError(
                     f"{key} is not a valid field."
                     f"Possible fields: {FILTER_FIELD}")
-            if key == "primary_signal":
-                val = filters["primary_signal"]
-                if isinstance(val, bool):
-                    filters["primary_signal"] = f"{val}".lower()
-        return filters
+            assert isinstance(value, (bool, int, str)) or value is None
+            valid_filters[key] = value
+        return valid_filters
 
     def set_filters(self, filters: FiltersType) -> None:
-        self._filters = self.validate_filters(filters)
+        self.set_raw_filters(self.validate_filters(filters))
 
-    def set_raw_filters(self, filters: FiltersType) -> None:
-        for key in filters:
-            if key == "primary_signal":
-                val = filters["primary_signal"]
-                if isinstance(val, bool):
-                    filters["primary_signal"] = f"{val}".lower()
+    def set_raw_filters(
+            self, filters: Dict[str, Optional[Union[bool, int, str]]]) -> None:
+        for key, value in filters.items():
+            if isinstance(value, bool):
+                filters[key] = f"{value}".lower()
+            elif value is None:
+                pass
+            else:
+                filters[key] = f"{value}"
 
             assert key not in EXCLUDED_FILTER_FIELD, (
                 "filters should not be containing any of "
                 f"{EXCLUDED_FILTER_FIELD}")
         self._filters = filters
 
-    def get_filters(self) -> FiltersType:
+    def get_filters(self) -> Dict[str, Optional[Union[bool, int, str]]]:
         return self._filters
 
     @staticmethod
