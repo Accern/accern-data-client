@@ -1,15 +1,12 @@
 import io
 import json
 import os
-from typing import Any, Dict, Optional, TYPE_CHECKING
+from typing import Any, Dict, Optional
 
 import pandas as pd
 import requests
 import tqdm
 from requests import Response
-
-if TYPE_CHECKING:
-    from accern_data import FiltersType
 
 EXAMPLE_URL = "http://api.example.com/"
 IS_JUPYTER: Optional[bool] = None
@@ -42,7 +39,8 @@ def is_test() -> int:
     return IS_TEST
 
 
-def check_filters(record: Dict[str, Any], filters: 'FiltersType') -> bool:
+def check_filters(
+        record: Dict[str, Any], filters: Dict[str, Optional[str]]) -> bool:
     for key, value in filters.items():
         if record[key] != value:
             return False
@@ -51,7 +49,7 @@ def check_filters(record: Dict[str, Any], filters: 'FiltersType') -> bool:
 
 def get_overall_total_from_dummy(
         date: str,
-        filters: 'FiltersType',
+        filters: Dict[str, Optional[str]],
         encoding: str = "utf-8") -> Response:
     response_obj = Response()
     date_dt = pd.to_datetime(date, utc=True)
@@ -86,7 +84,7 @@ def generate_file_response(
         date: str,
         harvested_after: str,
         mode: str,
-        filters: 'FiltersType',
+        filters: Dict[str, Optional[str]],
         encoding: str = "utf-8") -> Response:
     response_obj = Response()
     date_dt = pd.to_datetime(date, utc=True)

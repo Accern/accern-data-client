@@ -354,7 +354,7 @@ class DataClient():
             token: str) -> None:
         self._base_url = url
         self._token = token
-        self._filters = self.validate_filters(None)
+        self._filters = self.parse_filters(self.validate_filters(None))
         self._params: Dict[str, str] = {}
         self._mode: Optional[Mode] = None
         self._first_error = True
@@ -376,25 +376,32 @@ class DataClient():
             valid_filters[key] = value
         return valid_filters
 
+    @staticmethod
+    def parse_filters(
+            filters: Dict[str, Optional[Union[bool, int, str]]]) -> Dict[
+                str, Optional[str]]:
+        proper_filters: Dict[str, Optional[str]] = {}
+        for key, value in filters.items():
+            if isinstance(value, bool):
+                proper_filters[key] = f"{value}".lower()
+            elif value is None:
+                proper_filters[key] = value
+            else:
+                proper_filters[key] = f"{value}"
+        return proper_filters
+
     def set_filters(self, filters: FiltersType) -> None:
         self.set_raw_filters(self.validate_filters(filters))
 
     def set_raw_filters(
             self, filters: Dict[str, Optional[Union[bool, int, str]]]) -> None:
-        for key, value in filters.items():
-            if isinstance(value, bool):
-                filters[key] = f"{value}".lower()
-            elif value is None:
-                pass
-            else:
-                filters[key] = f"{value}"
-
+        for key in filters.items():
             assert key not in EXCLUDED_FILTER_FIELD, (
                 "filters should not be containing any of "
                 f"{EXCLUDED_FILTER_FIELD}")
-        self._filters = filters
+        self._filters = self.parse_filters(filters)
 
-    def get_filters(self) -> Dict[str, Optional[Union[bool, int, str]]]:
+    def get_filters(self) -> Dict[str, Optional[str]]:
         return self._filters
 
     @staticmethod
@@ -414,7 +421,8 @@ class DataClient():
         assert self._mode is not None, "Set mode first."
         return self._mode
 
-    def _read_total(self, cur_date: str, filters: FiltersType) -> int:
+    def _read_total(
+            self, cur_date: str, filters: Dict[str, Optional[str]]) -> int:
         while True:
             try:
                 if is_example_url(self._base_url):
@@ -450,7 +458,7 @@ class DataClient():
     def _read_date(
             self,
             mode: Mode,
-            filters: FiltersType) -> Union[
+            filters: Dict[str, Optional[str]]) -> Union[
                 List[pd.DataFrame], List[Dict[str, Any]]]:
         while True:
             try:
@@ -493,7 +501,7 @@ class DataClient():
             self,
             start_date: str,
             mode: Mode,
-            filters: FiltersType) -> Iterator[
+            filters: Dict[str, Optional[str]]) -> Iterator[
                 Union[pd.DataFrame, List[Dict[str, Any]]]]:
         print_fn("new day")
         self._params["harvested_after"] = start_date
@@ -523,7 +531,7 @@ class DataClient():
             *,
             is_first_time: bool,
             mode: Mode,
-            filters: FiltersType,
+            filters: Dict[str, Optional[str]],
             progress_bar: ProgressBar) -> bool:
         self._params["date"] = cur_date
         first = True
@@ -567,7 +575,10 @@ class DataClient():
         os.makedirs(output_path, exist_ok=True)
         valid_mode = self.get_mode() \
             if mode is None else self.parse_mode(mode, split_dates)
-        valid_filters = self.get_filters() if filters is None else filters
+        if filters is None:
+            valid_filters = self.get_filters()
+        else:
+            valid_filters = self.parse_filters(self.validate_filters(filters))
         if end_date is None:
             self._expected_records.append(
                 self._read_total(start_date, valid_filters))
