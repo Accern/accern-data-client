@@ -2,7 +2,7 @@ import accern_data
 import pandas as pd
 import pytest
 from accern_data import FiltersType
-from accern_data.util import load_json
+from accern_data.util import field_transformation, load_json
 
 FILTERS: FiltersType = {
     "provider_id": 5,
@@ -42,7 +42,7 @@ def test_filters_csv_full(sheet_mode: str, uses_filter_method: bool) -> None:
 
     df = pd.read_csv(f"{output_path}{output_pattern}.csv")
     for key, value in client.get_filters().items():
-        assert (df[key] == value).all(), \
+        assert (df[key].apply(field_transformation) == value).all(), \
             f"Column {key} of dataframe does not match with the value: {value}"
 
 
@@ -80,7 +80,7 @@ def test_filters_csv_date(sheet_mode: str, uses_filter_method: bool) -> None:
         except FileNotFoundError:
             continue
         for key, value in client.get_filters().items():
-            assert (df[key] == value).all(), (
+            assert (df[key].apply(field_transformation) == value).all(), (
                 f"Column {key} of dataframe does not match with the value: "
                 f"{value}")
 
@@ -119,5 +119,5 @@ def test_filters_json(uses_filter_method: bool) -> None:
 
         for rec in json_obj:
             for key, value in client.get_filters().items():
-                assert rec[key] == value, \
+                assert field_transformation(rec[key]) == value, \
                     f"expected {value} for {key}, but got {rec[key]}"

@@ -42,9 +42,17 @@ def is_test() -> int:
 def check_filters(
         record: Dict[str, Any], filters: Dict[str, Optional[str]]) -> bool:
     for key, value in filters.items():
-        if record[key] != value:
+        if field_transformation(record[key]) != value:
             return False
     return True
+
+
+def field_transformation(value: Any) -> Optional[str]:
+    if isinstance(value, bool):
+        return f"{value}".lower()
+    if value is None:
+        return value
+    return f"{value}"
 
 
 def get_overall_total_from_dummy(
@@ -109,7 +117,7 @@ def generate_file_response(
             result = pd.Series(
                 [True for _ in range(valid_df.shape[0])], index=valid_df.index)
             for key, val in filters.items():
-                result = result & (valid_df[key] == val)
+                result &= (valid_df[key].apply(field_transformation) == val)
             filtered_df = valid_df[result]
         obj = io.BytesIO()
         filtered_df.to_csv(obj, index=False)
