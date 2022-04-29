@@ -363,10 +363,6 @@ class DataClient():
         self._params: Dict[str, str] = {}
         self._mode: Optional[Mode] = None
         self._first_error = True
-        self._expected_records: List[int] = []
-
-    def reset(self) -> None:
-        self._expected_records = []
 
     @staticmethod
     def validate_filters(
@@ -575,7 +571,7 @@ class DataClient():
         if output_path is None:
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
-        self.reset()
+        expected_records: List[int] = []
         if mode is None:
             valid_mode = self.get_mode()
         elif isinstance(mode, Mode):
@@ -590,12 +586,12 @@ class DataClient():
             valid_filters = self.parse_filters(
                 {**self.get_filters(), **self.validate_filters(filters)})
         if end_date is None:
-            self._expected_records.append(
+            expected_records.append(
                 self._read_total(start_date, valid_filters))
             print_fn(f"single day {start_date}")
-            print_fn(f"expected {self._expected_records[0]}")
+            print_fn(f"expected {expected_records[0]}")
             progress_bar = ProgressBar(
-                    total=self._expected_records[0],
+                    total=expected_records[0],
                     desc="Downloading signals",
                     verbose=verbose)
             self._process_date(
@@ -615,17 +611,17 @@ class DataClient():
                 verbose=verbose)
 
             for cur_date in pd.date_range(start_date, end_date):
-                self._expected_records.append(
+                expected_records.append(
                     self._read_total(cur_date, valid_filters))
                 progress_bar.update(1)
 
-            total = sum(self._expected_records)
+            total = sum(expected_records)
             progress_bar.set_total(total=total)
             progress_bar.set_description(desc="Downloading signals")
 
             for ix, cur_date in enumerate(pd.date_range(start_date, end_date)):
                 print_fn(f"now processing {cur_date}")
-                print_fn(f"expected {self._expected_records[ix]}")
+                print_fn(f"expected {expected_records[ix]}")
                 progress_bar.set_description(
                     f"Downloading signals for {cur_date.strftime('%Y-%m-%d')}")
                 is_first_time = self._process_date(
