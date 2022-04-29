@@ -40,24 +40,22 @@ def is_test() -> int:
 
 
 def check_filters(
-        record: Dict[str, Any], filters: Dict[str, Optional[str]]) -> bool:
+        record: Dict[str, Any], filters: Dict[str, str]) -> bool:
     for key, value in filters.items():
         if field_transformation(record[key]) != value:
             return False
     return True
 
 
-def field_transformation(value: Any) -> Optional[str]:
+def field_transformation(value: Any) -> str:
     if isinstance(value, bool):
         return f"{value}".lower()
-    if value is None:
-        return value
     return f"{value}"
 
 
 def get_overall_total_from_dummy(
         date: str,
-        filters: Dict[str, Optional[str]],
+        filters: Dict[str, str],
         encoding: str = "utf-8") -> Response:
     response_obj = Response()
     date_dt = pd.to_datetime(date, utc=True)
@@ -92,7 +90,7 @@ def generate_file_response(
         date: str,
         harvested_after: str,
         mode: str,
-        filters: Dict[str, Optional[str]],
+        filters: Dict[str, str],
         encoding: str = "utf-8") -> Response:
     response_obj = Response()
     date_dt = pd.to_datetime(date, utc=True)

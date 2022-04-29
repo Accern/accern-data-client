@@ -27,6 +27,7 @@ from accern_data.util import (
 
 ExcludedFilterField = Literal[
     "crawled_at",
+    "date",
     "format",
     "harvested_at",
     "published_at",
@@ -379,13 +380,16 @@ class DataClient():
     @staticmethod
     def parse_filters(
             filters: Dict[str, Optional[Union[bool, int, str]]]) -> Dict[
-                str, Optional[str]]:
-        proper_filters: Dict[str, Optional[str]] = {}
+                str, str]:
+        proper_filters: Dict[str, str] = {}
         for key, value in filters.items():
+            assert key not in EXCLUDED_FILTER_FIELD, (
+                "filters should not be containing any of "
+                f"{EXCLUDED_FILTER_FIELD}")
             if isinstance(value, bool):
                 proper_filters[key] = f"{value}".lower()
             elif value is None:
-                proper_filters[key] = value
+                pass
             else:
                 proper_filters[key] = f"{value}"
         return proper_filters
@@ -395,18 +399,19 @@ class DataClient():
 
     def set_raw_filters(
             self, filters: Dict[str, Optional[Union[bool, int, str]]]) -> None:
-        for key in filters.items():
-            assert key not in EXCLUDED_FILTER_FIELD, (
-                "filters should not be containing any of "
-                f"{EXCLUDED_FILTER_FIELD}")
         self._filters = self.parse_filters(filters)
 
-    def get_filters(self) -> Dict[str, Optional[str]]:
+    def get_filters(self) -> Dict[str, str]:
         return self._filters
 
     @staticmethod
     def parse_mode(mode: ModeType, split_dates: bool) -> Mode:
         if mode == "json":
+            if not split_dates:
+                raise Warning(
+                    "In json mode, there is no difference between "
+                    "split_date=True or split_date=True. Both will work "
+                    "the same way.")
             return JSONMode()
         if mode in {"csv", "df"}:
             return CSVMode(is_by_day=split_dates)
@@ -422,7 +427,7 @@ class DataClient():
         return self._mode
 
     def _read_total(
-            self, cur_date: str, filters: Dict[str, Optional[str]]) -> int:
+            self, cur_date: str, filters: Dict[str, str]) -> int:
         while True:
             try:
                 if is_example_url(self._base_url):
@@ -433,10 +438,7 @@ class DataClient():
                         self._base_url,
                         params={
                             "token": self._token,
-                            **{
-                                key: f"{val}"
-                                for key, val in filters.items()
-                            },
+                            **filters.items(),
                             "date": cur_date,
                             "format": "json",
                         })
@@ -458,7 +460,7 @@ class DataClient():
     def _read_date(
             self,
             mode: Mode,
-            filters: Dict[str, Optional[str]]) -> Union[
+            filters: Dict[str, str]) -> Union[
                 List[pd.DataFrame], List[Dict[str, Any]]]:
         while True:
             try:
@@ -475,10 +477,7 @@ class DataClient():
                         self._base_url,
                         params={
                             "token": self._token,
-                            **{
-                                key: f"{val}"
-                                for key, val in filters.items()
-                            },
+                            **filters.items(),
                             **self._params,
                             **{"format": mode.get_format()}
                         })
@@ -501,7 +500,7 @@ class DataClient():
             self,
             start_date: str,
             mode: Mode,
-            filters: Dict[str, Optional[str]]) -> Iterator[
+            filters: Dict[str, str]) -> Iterator[
                 Union[pd.DataFrame, List[Dict[str, Any]]]]:
         print_fn("new day")
         self._params["harvested_after"] = start_date
@@ -531,7 +530,7 @@ class DataClient():
             *,
             is_first_time: bool,
             mode: Mode,
-            filters: Dict[str, Optional[str]],
+            filters: Dict[str, str],
             progress_bar: ProgressBar) -> bool:
         self._params["date"] = cur_date
         first = True
@@ -565,7 +564,7 @@ class DataClient():
             output_pattern: Optional[str] = None,
             end_date: Optional[str] = None,
             mode: Optional[ModeType] = None,
-            split_dates: bool = False,
+            split_dates: bool = True,
             filters: Optional[FiltersType] = None,
             verbose: bool = False) -> None:
         global VERBOSE
