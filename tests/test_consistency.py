@@ -22,8 +22,6 @@ def test_csv_full_csv_date_consistency(sheet_mode: str) -> None:
         output_path=output_path,
         output_pattern=output_pattern,
         end_date=end_date,
-        mode=sheet_mode,
-        split_dates=True,
         verbose=True)
     csv_date_arr = []
     for cur_date in pd.date_range(start_date, end_date):
@@ -42,8 +40,6 @@ def test_csv_full_csv_date_consistency(sheet_mode: str) -> None:
         output_path=output_path,
         output_pattern=output_pattern,
         end_date=end_date,
-        mode=sheet_mode,
-        split_dates=False,
         verbose=True)
     df_csv_full = pd.read_csv(f"{output_path}{output_pattern}.csv")
 
@@ -66,8 +62,6 @@ def test_json_csv_date_consistency(sheet_mode: str) -> None:
         output_path=output_path,
         output_pattern=output_pattern,
         end_date=end_date,
-        mode=sheet_mode,
-        split_dates=True,
         verbose=True)
 
     client.set_mode("json", split_dates=True)
@@ -76,8 +70,6 @@ def test_json_csv_date_consistency(sheet_mode: str) -> None:
         output_path=output_path,
         output_pattern=output_pattern,
         end_date=end_date,
-        mode="json",
-        split_dates=True,
         verbose=True)
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime("%Y-%m-%d")
