@@ -2,6 +2,7 @@ import io
 import os
 import time
 import traceback
+import warnings
 from typing import (
     Any,
     Dict,
@@ -11,6 +12,7 @@ from typing import (
     Literal,
     Optional,
     Set,
+    Tuple,
     TypedDict,
     Union,
 )
@@ -401,13 +403,15 @@ class DataClient():
         return self._filters
 
     @staticmethod
-    def parse_mode(mode: ModeType, split_dates: bool) -> Mode:
+    def parse_mode(mode: ModeType, split_dates: bool = True) -> Mode:
         if mode == "json":
             if not split_dates:
-                raise Warning(
+                warnings.warn(
                     "In json mode, there is no difference between "
                     "split_date=True or split_date=True. Both will work "
-                    "the same way.")
+                    "the same way.",
+                    Warning,
+                    stacklevel=2)
             return JSONMode()
         if mode in {"csv", "df"}:
             return CSVMode(is_by_day=split_dates)
@@ -559,8 +563,7 @@ class DataClient():
             output_path: Optional[str] = None,
             output_pattern: Optional[str] = None,
             end_date: Optional[str] = None,
-            mode: Optional[ModeType] = None,
-            split_dates: bool = True,
+            mode: Optional[Union[ModeType, Tuple[ModeType, bool]]] = None,
             filters: Optional[FiltersType] = None,
             verbose: bool = False) -> None:
         global VERBOSE
@@ -568,8 +571,12 @@ class DataClient():
         if output_path is None:
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
-        valid_mode = self.get_mode() \
-            if mode is None else self.parse_mode(mode, split_dates)
+        if mode is None:
+            valid_mode = self.get_mode()
+        elif isinstance(mode, str):
+            self.parse_mode(mode)
+        else:
+            self.parse_mode(*mode)
         if filters is None:
             valid_filters = self.get_filters()
         else:
