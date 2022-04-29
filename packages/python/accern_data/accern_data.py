@@ -573,7 +573,8 @@ class DataClient():
         if filters is None:
             valid_filters = self.get_filters()
         else:
-            valid_filters = self.parse_filters(self.validate_filters(filters))
+            valid_filters = self.parse_filters(
+                {**self.get_filters(), **self.validate_filters(filters)})
         if end_date is None:
             self._expected_records.append(
                 self._read_total(start_date, valid_filters))
