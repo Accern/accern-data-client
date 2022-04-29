@@ -17,7 +17,9 @@ from typing import (
 
 import pandas as pd
 import requests
-from accern_data.util import (
+
+from .util import (
+    field_transformation,
     generate_file_response,
     get_overall_total_from_dummy,
     is_example_url,
@@ -355,7 +357,7 @@ class DataClient():
             token: str) -> None:
         self._base_url = url
         self._token = token
-        self._filters = self.parse_filters(self.validate_filters(None))
+        self._filters: Dict[str, str] = {}
         self._params: Dict[str, str] = {}
         self._mode: Optional[Mode] = None
         self._first_error = True
@@ -363,10 +365,8 @@ class DataClient():
 
     @staticmethod
     def validate_filters(
-            filters: Optional[FiltersType]) -> Dict[
+            filters: FiltersType) -> Dict[
                 str, Optional[Union[bool, int, str]]]:
-        if filters is None:
-            return {}
         valid_filters: Dict[str, Optional[Union[bool, int, str]]] = {}
         for key, value in filters.items():
             if key not in FILTER_FIELD:
@@ -386,12 +386,8 @@ class DataClient():
             assert key not in EXCLUDED_FILTER_FIELD, (
                 "filters should not be containing any of "
                 f"{EXCLUDED_FILTER_FIELD}")
-            if isinstance(value, bool):
-                proper_filters[key] = f"{value}".lower()
-            elif value is None:
-                pass
-            else:
-                proper_filters[key] = f"{value}"
+            if value is not None:
+                proper_filters[key] = field_transformation(value)
         return proper_filters
 
     def set_filters(self, filters: FiltersType) -> None:
