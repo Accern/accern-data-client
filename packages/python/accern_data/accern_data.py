@@ -2,20 +2,26 @@ import io
 import os
 import time
 import traceback
+import warnings
 from typing import (
     Any,
     Dict,
+    get_args,
     Iterator,
     List,
     Literal,
     Optional,
+    Set,
+    Tuple,
     TypedDict,
     Union,
 )
 
 import pandas as pd
 import requests
-from accern_data.util import (
+
+from .util import (
+    field_transformation,
     generate_file_response,
     get_overall_total_from_dummy,
     is_example_url,
@@ -23,26 +29,87 @@ from accern_data.util import (
     write_json,
 )
 
-FiltersType = TypedDict("FiltersType", {
-    "provider_id": Optional[str],
-    "entity_name": Optional[str],
-    "event": Optional[str],
-    "entity_ticker": Optional[str],
-    "entity_accern_id": Optional[str],
-}, total=False)
+ExcludedFilterField = Literal[
+    "crawled_at",
+    "date",
+    "format",
+    "harvested_at",
+    "published_at",
+    "token",
+]
 
-
-FilterField = {
+FilterField = Literal[
+    "doc_cluster_id",
+    "doc_id",
+    "doc_source",
+    "doc_title",
+    "doc_type",
+    "doc_url",
     "entity_accern_id",
+    "entity_country",
+    "entity_exchcode",
+    "entity_figi",
+    "entity_hits",
+    "entity_indices",
     "entity_name",
+    "entity_region",
+    "entity_relevance",
+    "entity_sector",
+    "entity_share_class",
+    "entity_text",
     "entity_ticker",
+    "entity_type",
     "event",
+    "event_accern_id",
+    "event_group",
+    "event_hits",
+    "event_text",
+    "primary_signal",
     "provider_id",
-}
+    "signal_id",
+    "signal_tag",
+]
+FiltersType = TypedDict(
+    "FiltersType",
+    {
+        "doc_cluster_id": Optional[str],
+        "doc_id": Optional[str],
+        "doc_source": Optional[str],
+        "doc_title": Optional[str],
+        "doc_type": Optional[str],
+        "doc_url": Optional[str],
+        "entity_accern_id": Optional[str],
+        "entity_country": Optional[str],
+        "entity_exchcode": Optional[str],
+        "entity_figi": Optional[str],
+        "entity_hits": Optional[str],
+        "entity_indices": Optional[str],
+        "entity_name": Optional[str],
+        "entity_region": Optional[str],
+        "entity_relevance": Optional[int],
+        "entity_sector": Optional[str],
+        "entity_share_class": Optional[str],
+        "entity_text": Optional[str],
+        "entity_ticker": Optional[str],
+        "entity_type": Optional[str],
+        "event": Optional[str],
+        "event_accern_id": Optional[int],
+        "event_group": Optional[str],
+        "event_hits": Optional[str],
+        "event_text": Optional[str],
+        "primary_signal": Optional[Union[str, bool]],
+        "provider_id": Optional[int],
+        "signal_id": Optional[str],
+        "signal_tag": Optional[str],
+    },
+    total=False)
 
-ALL_MODES = {"json", "csv_full", "csv_date"}
+ModeType = Literal["csv", "df", "json"]
+
+FILTER_FIELD = get_args(FilterField)
+EXCLUDED_FILTER_FIELD = get_args(ExcludedFilterField)
+ALL_MODES: Set[ModeType] = {"csv", "df", "json"}
 DT_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-MODE = Literal["json", "csv_full", "csv_date"]
 VERBOSE = False
 
 
@@ -292,57 +359,86 @@ class DataClient():
             token: str) -> None:
         self._base_url = url
         self._token = token
-        self._filters = self.validate_filters(None)
+        self._filters: Dict[str, str] = {}
         self._params: Dict[str, str] = {}
         self._mode: Optional[Mode] = None
         self._first_error = True
         self._expected_records: List[int] = []
 
     @staticmethod
-    def validate_filters(filters: Optional[FiltersType]) -> FiltersType:
-        if filters is None:
-            return {}
-        for key in filters.keys():
-            if key not in FilterField:
+    def validate_filters(
+            filters: FiltersType) -> Dict[
+                str, Optional[Union[bool, int, str]]]:
+        valid_filters: Dict[str, Optional[Union[bool, int, str]]] = {}
+        for key, value in filters.items():
+            if key not in FILTER_FIELD:
                 raise ValueError(
-                    f"{key} is not a valid filed."
-                    f"Possible fileds: {FilterField}")
-        return filters
+                    f"{key} is not a valid field."
+                    f"Possible fields: {FILTER_FIELD}")
+            assert isinstance(value, (bool, int, str)) or value is None
+            valid_filters[key] = value
+        return valid_filters
+
+    @staticmethod
+    def parse_filters(
+            filters: Dict[str, Optional[Union[bool, int, str]]]) -> Dict[
+                str, str]:
+        proper_filters: Dict[str, str] = {}
+        for key, value in filters.items():
+            assert key not in EXCLUDED_FILTER_FIELD, (
+                "filters should not be containing any of "
+                f"{EXCLUDED_FILTER_FIELD}")
+            if value is not None:
+                proper_filters[key] = field_transformation(value)
+        return proper_filters
 
     def set_filters(self, filters: FiltersType) -> None:
-        self._filters = self.validate_filters(filters)
+        self.set_raw_filters(self.validate_filters(filters))
 
-    def set_mode(self, mode: MODE) -> None:
-        if mode not in ALL_MODES:
-            raise ValueError(
-                f"Please set proper mode. It is '{mode}' which is not in "
-                f"{ALL_MODES}")
+    def set_raw_filters(
+            self, filters: Dict[str, Optional[Union[bool, int, str]]]) -> None:
+        self._filters = self.parse_filters(filters)
+
+    def get_filters(self) -> Dict[str, str]:
+        return self._filters
+
+    @staticmethod
+    def parse_mode(mode: ModeType, split_dates: bool = True) -> Mode:
         if mode == "json":
-            self._mode = JSONMode()
-        elif mode == "csv_full":
-            self._mode = CSVMode(is_by_day=False)
-        elif mode == "csv_date":
-            self._mode = CSVMode(is_by_day=True)
-        self._params["format"] = self.get_mode().get_format()
+            if not split_dates:
+                warnings.warn(
+                    "In json mode, there is no difference between "
+                    "split_date=True or split_date=False. Both will work "
+                    "the same way.",
+                    Warning,
+                    stacklevel=2)
+            return JSONMode()
+        if mode in {"csv", "df"}:
+            return CSVMode(is_by_day=split_dates)
+        raise ValueError(
+            f"Please set proper mode. It is '{mode}' which is not in "
+            f"{ALL_MODES}")
+
+    def set_mode(self, mode: ModeType, split_dates: bool) -> None:
+        self._mode = self.parse_mode(mode, split_dates)
 
     def get_mode(self) -> Mode:
         assert self._mode is not None, "Set mode first."
         return self._mode
 
-    def _read_total(self, cur_date: str) -> int:
+    def _read_total(
+            self, cur_date: str, filters: Dict[str, str]) -> int:
         while True:
             try:
                 if is_example_url(self._base_url):
-                    resp = get_overall_total_from_dummy(cur_date)
+                    resp = get_overall_total_from_dummy(
+                        cur_date, filters)
                 else:
                     resp = requests.get(
                         self._base_url,
                         params={
                             "token": self._token,
-                            **{
-                                key: f"{val}"
-                                for key, val in self._filters.items()
-                            },
+                            **filters.items(),
                             "date": cur_date,
                             "format": "json",
                         })
@@ -361,28 +457,33 @@ class DataClient():
                 print_fn("unknown error...retrying...")
                 time.sleep(0.5)
 
-    def _read_date(self) -> Union[List[pd.DataFrame], List[Dict[str, Any]]]:
+    def _read_date(
+            self,
+            mode: Mode,
+            filters: Dict[str, str]) -> Union[
+                List[pd.DataFrame], List[Dict[str, Any]]]:
         while True:
             try:
                 if is_example_url(self._base_url):
                     date = self._params["date"]
                     harvested_after = self._params["harvested_after"]
-                    mode = self._params["format"]
-                    resp = generate_file_response(date, harvested_after, mode)
+                    resp = generate_file_response(
+                        date,
+                        harvested_after,
+                        mode.get_format(),
+                        filters=filters)
                 else:
                     resp = requests.get(
                         self._base_url,
                         params={
                             "token": self._token,
-                            **{
-                                key: f"{val}"
-                                for key, val in self._filters.items()
-                            },
+                            **filters.items(),
                             **self._params,
+                            **{"format": mode.get_format()}
                         })
                 if not str(resp.text).strip():
                     return []  # type: ignore
-                return self.get_mode().parse_result(resp)
+                return mode.parse_result(resp)
             except KeyboardInterrupt as err:
                 raise err
             except (
@@ -397,20 +498,22 @@ class DataClient():
 
     def _scroll(
             self,
-            start_date: str) -> Iterator[
+            start_date: str,
+            mode: Mode,
+            filters: Dict[str, str]) -> Iterator[
                 Union[pd.DataFrame, List[Dict[str, Any]]]]:
         print_fn("new day")
         self._params["harvested_after"] = start_date
-        batch = self._read_date()
-        total = self.get_mode().size(batch)
+        batch = self._read_date(mode, filters)
+        total = mode.size(batch)
         prev_start = start_date
-        while self.get_mode().size(batch) > 0:
+        while mode.size(batch) > 0:
             try:
-                start_date = self.get_mode().max_date(batch)
-                yield self.get_mode().split(batch, pd.to_datetime(start_date))
+                start_date = mode.max_date(batch)
+                yield mode.split(batch, pd.to_datetime(start_date))
                 self._params["harvested_after"] = start_date
-                batch = self._read_date()
-                total += self.get_mode().size(batch)
+                batch = self._read_date(mode, filters)
+                total += mode.size(batch)
                 if start_date == prev_start:
                     # FIXME: redundant check? batch_size becomes 0
                     # loop gets terminated.
@@ -425,26 +528,34 @@ class DataClient():
             output_path: str,
             output_pattern: Optional[str],
             *,
-            is_first_day: bool,
-            progress_bar: ProgressBar) -> None:
+            is_first_time: bool,
+            mode: Mode,
+            filters: Dict[str, str],
+            progress_bar: ProgressBar) -> bool:
         self._params["date"] = cur_date
         first = True
-        for res in self._scroll("1900-01-01"):
+        for res in self._scroll("1900-01-01", mode, filters):
             is_empty = False
             if first:
-                self.get_mode().init_day(
-                    cur_date, output_path, output_pattern, is_first_day)
+                mode.init_day(
+                    cur_date, output_path, output_pattern, is_first_time)
                 first = False
+
             if isinstance(res, pd.DataFrame) and res.empty:
                 is_empty = True
             elif isinstance(res, list) and len(res) == 0:
                 is_empty = True
+
+            if is_first_time and not is_empty:
+                is_first_time = False
+
             if not is_empty:
-                self.get_mode().add_result(res)
+                mode.add_result(res)
                 progress_bar.update(len(res))
 
         if not first:
-            self.get_mode().finish_day()
+            mode.finish_day()
+        return is_first_time
 
     def download_range(
             self,
@@ -452,14 +563,31 @@ class DataClient():
             output_path: Optional[str] = None,
             output_pattern: Optional[str] = None,
             end_date: Optional[str] = None,
+            mode: Optional[
+                Union[Mode, ModeType, Tuple[ModeType, bool]]] = None,
+            filters: Optional[FiltersType] = None,
             verbose: bool = False) -> None:
         global VERBOSE
         VERBOSE = verbose
         if output_path is None:
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
+        if mode is None:
+            valid_mode = self.get_mode()
+        elif isinstance(mode, Mode):
+            valid_mode = mode
+        elif isinstance(mode, str):
+            valid_mode = self.parse_mode(mode)
+        else:
+            valid_mode = self.parse_mode(*mode)
+        if filters is None:
+            valid_filters = self.get_filters()
+        else:
+            valid_filters = self.parse_filters(
+                {**self.get_filters(), **self.validate_filters(filters)})
         if end_date is None:
-            self._expected_records.append(self._read_total(start_date))
+            self._expected_records.append(
+                self._read_total(start_date, valid_filters))
             print_fn(f"single day {start_date}")
             print_fn(f"expected {self._expected_records[0]}")
             progress_bar = ProgressBar(
@@ -470,10 +598,12 @@ class DataClient():
                 start_date,
                 output_path,
                 output_pattern,
-                is_first_day=True,
+                is_first_time=True,
+                mode=valid_mode,
+                filters=valid_filters,
                 progress_bar=progress_bar)
         else:
-            is_first_day = True
+            is_first_time = True
             total = 0
             progress_bar = ProgressBar(
                 total=len(pd.date_range(start_date, end_date)),
@@ -481,7 +611,8 @@ class DataClient():
                 verbose=verbose)
 
             for cur_date in pd.date_range(start_date, end_date):
-                self._expected_records.append(self._read_total(cur_date))
+                self._expected_records.append(
+                    self._read_total(cur_date, valid_filters))
                 progress_bar.update(1)
 
             total = sum(self._expected_records)
@@ -493,13 +624,14 @@ class DataClient():
                 print_fn(f"expected {self._expected_records[ix]}")
                 progress_bar.set_description(
                     f"Downloading signals for {cur_date.strftime('%Y-%m-%d')}")
-                self._process_date(
+                is_first_time = self._process_date(
                     cur_date.strftime("%Y-%m-%d"),
                     output_path,
                     output_pattern,
-                    is_first_day=is_first_day,
+                    is_first_time=is_first_time,
+                    mode=valid_mode,
+                    filters=valid_filters,
                     progress_bar=progress_bar)
-                is_first_day = False
         progress_bar.close()
         self._expected_records = []
 

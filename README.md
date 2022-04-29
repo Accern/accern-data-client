@@ -19,7 +19,8 @@ import accern_data
 # Create a data client.
 client = accern_data.create_data_client("http://api.example.com/", "SomeRandomToken")
 # Set a data format/mode in which the data has to be downloaded.
-client.set_mode("csv_date")  # Other modes: {"csv_full", "json"}
+# Split dates lets you divide files on the basis of dates.
+client.set_mode(mode="csv", split_dates=True)  # Other modes: {"df", "json"}
 ```
 
 
@@ -33,8 +34,6 @@ client.set_filters({
     "entity_accern_id": "BBG000BLLFK1",
 })
 ```
-
-
 
 
 
@@ -62,4 +61,10 @@ client.download_range(
     start_date="2022-01-03",
     output_path="./",
     output_pattern="data")
+```
+
+
+### One-liner download:
+```python
+accern_data.create_client("http://api.example.com/", "SomeRandomToken").download(start_date="2022-01-03", output_path="./", output_pattern="data", end_date="2022-03-04", mode="csv", filters={"entity_ticker": "HURC"})
 ```
