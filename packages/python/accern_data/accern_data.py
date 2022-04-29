@@ -408,7 +408,7 @@ class DataClient():
             if not split_dates:
                 warnings.warn(
                     "In json mode, there is no difference between "
-                    "split_date=True or split_date=True. Both will work "
+                    "split_date=True or split_date=False. Both will work "
                     "the same way.",
                     Warning,
                     stacklevel=2)
