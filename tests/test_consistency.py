@@ -1,20 +1,19 @@
 import json
 
-import accern_data
 import pandas as pd
 import pandas.testing as pd_test
 import pytest
-from accern_data.accern_data import DT_FORMAT
+from accern_data.accern_data import create_data_client, DT_FORMAT, ModeType
 from accern_data.util import load_json
 
 
 @pytest.mark.parametrize("sheet_mode", ["csv", "df"])
-def test_csv_full_csv_date_consistency(sheet_mode: str) -> None:
+def test_csv_full_csv_date_consistency(sheet_mode: ModeType) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_pattern = "test_csv_full_csv_date_consistency"
     output_path = "./tests/outputs/"
-    client = accern_data.create_data_client(
+    client = create_data_client(
         "http://api.example.com/", "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=True)
     client.download_range(
@@ -49,12 +48,12 @@ def test_csv_full_csv_date_consistency(sheet_mode: str) -> None:
 
 
 @pytest.mark.parametrize("sheet_mode", ["csv", "df"])
-def test_json_csv_date_consistency(sheet_mode: str) -> None:
+def test_json_csv_date_consistency(sheet_mode: ModeType) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_pattern = "test_json_csv_date_consistency"
     output_path = "./tests/outputs/"
-    client = accern_data.create_data_client(
+    client = create_data_client(
         "http://api.example.com/", "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=True)
     client.download_range(

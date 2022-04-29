@@ -1,7 +1,6 @@
-import accern_data
 import pandas as pd
 import pytest
-from accern_data import FiltersType
+from accern_data import create_data_client, FiltersType, ModeType
 from accern_data.util import field_transformation, load_json
 
 FILTERS: FiltersType = {
@@ -16,12 +15,13 @@ FILTERS: FiltersType = {
 @pytest.mark.parametrize(
     "sheet_mode, uses_filter_method",
     [("csv", True), ("csv", False), ("df", True), ("df", False)])
-def test_filters_csv_full(sheet_mode: str, uses_filter_method: bool) -> None:
+def test_filters_csv_full(
+        sheet_mode: ModeType, uses_filter_method: bool) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
     output_pattern = "test_filters_csv_full"
-    client = accern_data.create_data_client(
+    client = create_data_client(
         "http://api.example.com/", "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=False)
     if uses_filter_method:
@@ -35,8 +35,6 @@ def test_filters_csv_full(sheet_mode: str, uses_filter_method: bool) -> None:
         output_path=output_path,
         output_pattern=output_pattern,
         end_date=end_date,
-        mode=sheet_mode,
-        split_dates=False,
         filters=filters,
         verbose=True)
 
@@ -49,12 +47,13 @@ def test_filters_csv_full(sheet_mode: str, uses_filter_method: bool) -> None:
 @pytest.mark.parametrize(
     "sheet_mode, uses_filter_method",
     [("csv", True), ("csv", False), ("df", True), ("df", False)])
-def test_filters_csv_date(sheet_mode: str, uses_filter_method: bool) -> None:
+def test_filters_csv_date(
+        sheet_mode: ModeType, uses_filter_method: bool) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
     output_pattern = "test_filters_csv_date"
-    client = accern_data.create_data_client(
+    client = create_data_client(
         "http://api.example.com/", "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=True)
     if uses_filter_method:
@@ -68,8 +67,6 @@ def test_filters_csv_date(sheet_mode: str, uses_filter_method: bool) -> None:
         output_path=output_path,
         output_pattern=output_pattern,
         end_date=end_date,
-        mode=sheet_mode,
-        split_dates=True,
         filters=filters,
         verbose=True)
 
@@ -91,7 +88,7 @@ def test_filters_json(uses_filter_method: bool) -> None:
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
     output_pattern = "test_filters_json"
-    client = accern_data.create_data_client(
+    client = create_data_client(
         "http://api.example.com/", "SomeRandomToken")
     client.set_mode("json", split_dates=True)
     if uses_filter_method:
@@ -105,8 +102,6 @@ def test_filters_json(uses_filter_method: bool) -> None:
         output_path=output_path,
         output_pattern=output_pattern,
         end_date=end_date,
-        mode="json",
-        split_dates=True,
         filters=filters,
         verbose=True)
 
