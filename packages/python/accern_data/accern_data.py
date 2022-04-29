@@ -563,7 +563,8 @@ class DataClient():
             output_path: Optional[str] = None,
             output_pattern: Optional[str] = None,
             end_date: Optional[str] = None,
-            mode: Optional[Union[ModeType, Tuple[ModeType, bool]]] = None,
+            mode: Optional[
+                Union[Mode, ModeType, Tuple[ModeType, bool]]] = None,
             filters: Optional[FiltersType] = None,
             verbose: bool = False) -> None:
         global VERBOSE
@@ -573,10 +574,12 @@ class DataClient():
         os.makedirs(output_path, exist_ok=True)
         if mode is None:
             valid_mode = self.get_mode()
+        elif isinstance(mode, Mode):
+            valid_mode = mode
         elif isinstance(mode, str):
-            self.parse_mode(mode)
+            valid_mode = self.parse_mode(mode)
         else:
-            self.parse_mode(*mode)
+            valid_mode = self.parse_mode(*mode)
         if filters is None:
             valid_filters = self.get_filters()
         else:
