@@ -635,6 +635,77 @@ class DataClient():
         progress_bar.close()
         self._expected_records = []
 
+    def iterate_range(
+            self,
+            start_date: str,
+            end_date: Optional[str] = None,
+            mode: Optional[
+                Union[Mode, ModeType, Tuple[ModeType, bool]]] = None,
+            filters: Optional[FiltersType] = None,
+            chunk_size: Optional[int] = None):
+        if mode is None:
+            valid_mode = self.get_mode()
+        elif isinstance(mode, Mode):
+            valid_mode = mode
+        elif isinstance(mode, str):
+            valid_mode = self.parse_mode(mode)
+        else:
+            valid_mode = self.parse_mode(*mode)
+        if filters is None:
+            valid_filters = self.get_filters()
+        else:
+            valid_filters = self.parse_filters(
+                {**self.get_filters(), **self.validate_filters(filters)})
+        buffer = pd.DataFrame([])
+        buffer_size = 0
+        if end_date is None:
+            self._params["date"] = start_date
+            data = self._scroll("1900-01-01", valid_mode, valid_filters)
+            if valid_mode.get_format() == "json":
+                assert isinstance(data, list)
+                for rec in data:
+                    yield rec
+            elif valid_mode.get_format() == "csv":
+                # split_dates wont work here, already one day :P
+                ...
+        else:
+            for cur_date in pd.date_range(start_date, end_date):
+                self._params["date"] = cur_date.strftime("%Y-%m-%d")
+                try:
+                    data = next(self._scroll("1900-01-01", valid_mode, valid_filters))
+                    print(cur_date, data.shape)
+                except StopIteration:
+                    data = None
+                if valid_mode.get_format() == "json":
+                    if data is None:
+                        return
+                    assert isinstance(data, list)
+                    for rec in data:
+                        yield rec
+                elif valid_mode.get_format() == "csv":
+                    assert chunk_size is not None
+                    if split_dates:
+                        # assert isinstance(data, pd.DataFrame)
+                        ...
+                    else:
+                        print("type", type(data), buffer.shape)
+                        if buffer_size == 0:
+                            buffer = data
+                            buffer_size = buffer.shape[0]
+                        while buffer_size >= chunk_size:
+                            result = buffer.iloc[:chunk_size, :]
+                            buffer.drop(
+                                index=list(range(chunk_size)), inplace=True)
+                            buffer.reset_index(drop=True, inplace=True)
+                            buffer_size = buffer.shape[0]
+                            yield result
+                        if data is not None:
+                            buffer = pd.concat((buffer, data), ignore_index=True)
+                            buffer_size = buffer.shape[0]
+                        else:
+                            return buffer
+
+
 
 def create_data_client(
         url: str,
