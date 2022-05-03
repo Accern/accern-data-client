@@ -302,7 +302,7 @@ class DataFrame(NDFrame):
         ...
 
     def reset_index(self, level: Optional[Any] = ..., drop: bool = ...,
-                    inplace: Literal[False] = ..., col_level: int = ...,
+                    inplace: bool = False, col_level: int = ...,
                     col_fill: str = ...) -> 'DataFrame':
         ...
 
