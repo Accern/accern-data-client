@@ -652,7 +652,7 @@ class DataClient():
                 Union[Mode, ModeType, Tuple[ModeType, bool]]] = None,
             filters: Optional[FiltersType] = None,
             chunk_size: Optional[int] = None) -> Iterator[
-                pd.DataFrame, Dict[str, Any]]:
+                Union[pd.DataFrame, Dict[str, Any]]]:
         if mode is None:
             valid_mode = self.get_mode()
         elif isinstance(mode, Mode):
