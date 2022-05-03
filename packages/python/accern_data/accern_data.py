@@ -651,7 +651,8 @@ class DataClient():
             mode: Optional[
                 Union[Mode, ModeType, Tuple[ModeType, bool]]] = None,
             filters: Optional[FiltersType] = None,
-            chunk_size: Optional[int] = None):
+            chunk_size: Optional[int] = None) -> Iterator[
+                pd.DataFrame, Dict[str, Any]]:
         if mode is None:
             valid_mode = self.get_mode()
         elif isinstance(mode, Mode):
@@ -676,7 +677,9 @@ class DataClient():
             proceed = True
             while proceed:
                 try:
-                    data = next(iterator)
+                    data: Optional[Union[
+                        pd.DataFrame,
+                        List[Dict[str, Any]]]] = next(iterator)
                 except StopIteration:
                     data = None
                     proceed = False
@@ -687,11 +690,11 @@ class DataClient():
                             yield rec
                 elif valid_mode.get_format() == "csv":
                     assert chunk_size is not None and chunk_size > 0
-
                     if data is not None:
                         buffer = pd.concat(
                             (buffer, data), ignore_index=True)
                         buffer_size = buffer.shape[0]
+
                     while buffer_size >= chunk_size:
                         result = buffer.iloc[:chunk_size, :]
                         buffer.drop(
@@ -710,7 +713,7 @@ class DataClient():
             # For remaining fragment of data in csv mode only.
             # here buffer.shape < chunk_size
             yield buffer
-        return
+
 
 def create_data_client(
         url: str,
