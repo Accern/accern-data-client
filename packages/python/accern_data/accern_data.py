@@ -658,6 +658,18 @@ class DataClient():
         else:
             valid_filters = self.parse_filters(
                 {**self.get_filters(), **self.validate_filters(filters)})
+
+        iterator = self.iterate_range(
+            start_date=start_date,
+            end_date=end_date,
+            mode=mode,
+            filters=filters,
+            chunk_size=100)
+        for something in iterator:
+            ...
+
+
+
         if end_date is None:
             self._expected_records.append(
                 self._read_total(start_date, valid_filters))
@@ -737,16 +749,9 @@ class DataClient():
             self._params["date"] = cur_date.strftime("%Y-%m-%d")
             iterator = self._scroll(
                 "1900-01-01", valid_mode, valid_filters)
-            proceed = True
-            while proceed:
-                try:
-                    data: Optional[Union[
-                        pd.DataFrame,
-                        List[Dict[str, Any]]]] = next(iterator)
-                except StopIteration:
-                    data = None
-                    proceed = False
+            for data in iterator:
                 yield from valid_mode.iterate_data(data, chunk_size=chunk_size)
+            yield from valid_mode.iterate_data(None, chunk_size=chunk_size)
         # For remaining fragment of data in csv mode only.
         # here buffer.shape < chunk_size
         buffer = valid_mode.get_buffer()
