@@ -130,6 +130,12 @@ class Mode:
     def split_dates(self) -> bool:
         raise NotImplementedError
 
+    def clean_buffer(self) -> None:
+        raise NotImplementedError
+
+    def get_buffer(self) -> Optional[pd.DataFrame]:
+        raise NotImplementedError
+
     def parse_result(
             self,
             resp: requests.Response) -> Union[
@@ -168,6 +174,13 @@ class Mode:
     def finish_day(self) -> None:
         raise NotImplementedError()
 
+    def iterate_data(
+            self,
+            data: Optional[Union[pd.DataFrame, List[Dict[str, Any]]]],
+            chunk_size: Optional[int] = None) -> Iterator[
+                Union[pd.DataFrame, Dict[str, Any]]]:
+        raise NotImplementedError
+
     def split(
             self,
             batch: Union[List[pd.DataFrame], List[Dict[str, Any]]],
@@ -200,12 +213,23 @@ class CSVMode(Mode):
         super().__init__()
         self._cols = None
         self._is_by_day = is_by_day
+        self._buffer = pd.DataFrame([])
+        self._buffer_size = 0
 
     def get_format(self) -> str:
         return "csv"
 
     def split_dates(self) -> bool:
         return self._is_by_day
+
+    def clean_buffer(self) -> None:
+        self._buffer = pd.DataFrame([])
+        self._buffer_size = 0
+
+    def get_buffer(self) -> Optional[pd.DataFrame]:
+        if not self._buffer.empty:
+            return self._buffer
+        return None
 
     def parse_result(self, resp: requests.Response) -> List[pd.DataFrame]:
         res = pd.read_csv(io.StringIO(resp.text))
@@ -270,6 +294,31 @@ class CSVMode(Mode):
         assert isinstance(df, pd.DataFrame)
         return df[df["harvested_at"] <= value]
 
+    def iterate_data(
+            self,
+            data: Optional[Union[pd.DataFrame, List[Dict[str, Any]]]],
+            chunk_size: Optional[int] = None) -> Iterator[
+                Union[pd.DataFrame, Dict[str, Any]]]:
+        assert chunk_size is not None and chunk_size > 0
+        if data is not None:
+            self._buffer = pd.concat(
+                (self._buffer, data), ignore_index=True)
+            self._buffer_size = self._buffer.shape[0]
+        while self._buffer_size >= chunk_size:
+            result = self._buffer.iloc[:chunk_size, :]
+            self._buffer.drop(
+                index=list(range(chunk_size)),
+                inplace=True)
+            self._buffer.reset_index(drop=True, inplace=True)
+            self._buffer_size = self._buffer.shape[0]
+            yield result
+
+        if self.split_dates():
+            if data is None:
+                yield self._buffer
+                self._buffer = pd.DataFrame([])
+                self._buffer_size = 0
+
 
 class JSONMode(Mode):
     def __init__(self, debug_json: bool = False) -> None:
@@ -283,6 +332,12 @@ class JSONMode(Mode):
 
     def split_dates(self) -> bool:
         return True
+
+    def clean_buffer(self) -> None:
+        pass
+
+    def get_buffer(self) -> Optional[pd.DataFrame]:
+        return None
 
     def parse_result(self, resp: requests.Response) -> List[Dict[str, Any]]:
         res_json = resp.json()
@@ -359,6 +414,15 @@ class JSONMode(Mode):
             if record["harvested_at"] <= value:
                 result.append(record)
         return result
+
+    def iterate_data(
+            self,
+            data: Optional[Union[pd.DataFrame, List[Dict[str, Any]]]],
+            chunk_size: Optional[int] = None) -> Iterator[
+                Union[pd.DataFrame, Dict[str, Any]]]:
+        if data is not None:
+            assert isinstance(data, list)
+            yield from data
 
 
 class DataClient():
@@ -666,8 +730,7 @@ class DataClient():
         else:
             valid_filters = self.parse_filters(
                 {**self.get_filters(), **self.validate_filters(filters)})
-        buffer = pd.DataFrame([])
-        buffer_size = 0
+        valid_mode.clean_buffer()
         if end_date is None:
             end_date = start_date
         for cur_date in pd.date_range(start_date, end_date):
@@ -683,35 +746,11 @@ class DataClient():
                 except StopIteration:
                     data = None
                     proceed = False
-                if valid_mode.get_format() == "json":
-                    if data is not None:
-                        assert isinstance(data, list)
-                        for rec in data:
-                            yield rec
-                elif valid_mode.get_format() == "csv":
-                    assert chunk_size is not None and chunk_size > 0
-                    if data is not None:
-                        buffer = pd.concat(
-                            (buffer, data), ignore_index=True)
-                        buffer_size = buffer.shape[0]
-
-                    while buffer_size >= chunk_size:
-                        result = buffer.iloc[:chunk_size, :]
-                        buffer.drop(
-                            index=list(range(chunk_size)),
-                            inplace=True)
-                        buffer.reset_index(drop=True, inplace=True)
-                        buffer_size = buffer.shape[0]
-                        yield result
-
-                    if valid_mode.split_dates():
-                        if data is None:
-                            yield buffer
-                            buffer = pd.DataFrame([])
-                            buffer_size = 0
-        if not buffer.empty:
-            # For remaining fragment of data in csv mode only.
-            # here buffer.shape < chunk_size
+                yield from valid_mode.iterate_data(data, chunk_size=chunk_size)
+        # For remaining fragment of data in csv mode only.
+        # here buffer.shape < chunk_size
+        buffer = valid_mode.get_buffer()
+        if buffer is not None:
             yield buffer
 
 
