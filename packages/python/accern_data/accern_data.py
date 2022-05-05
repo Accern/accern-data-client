@@ -168,7 +168,7 @@ class Mode:
 
     def add_result(
             self,
-            signal: Union[pd.DataFrame, List[Dict[str, Any]]]) -> None:
+            signal: Union[pd.DataFrame, Dict[str, Any]]) -> None:
         raise NotImplementedError()
 
     def finish_day(self) -> None:
@@ -278,7 +278,7 @@ class CSVMode(Mode):
 
     def add_result(
             self,
-            signal: Union[pd.DataFrame, List[Dict[str, Any]]]) -> None:
+            signal: Union[pd.DataFrame, Dict[str, Any]]) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
         assert isinstance(signal, pd.DataFrame)
         signal.to_csv(fname, index=False, header=False, mode="a")
@@ -314,7 +314,7 @@ class CSVMode(Mode):
             yield result
 
         if self.split_dates():
-            if data is None:
+            if data is None and not self._buffer.empty:
                 yield self._buffer
                 self._buffer = pd.DataFrame([])
                 self._buffer_size = 0
@@ -384,9 +384,9 @@ class JSONMode(Mode):
 
     def add_result(
             self,
-            signal: Union[pd.DataFrame, List[Dict[str, Any]]]) -> None:
-        assert isinstance(signal, list)
-        self._res.extend(signal)
+            signal: Union[pd.DataFrame, Dict[str, Any]]) -> None:
+        assert isinstance(signal, dict)
+        self._res.append(signal)
 
     def finish_day(self) -> None:
         fname = self.get_path(is_by_day=True)
@@ -658,65 +658,53 @@ class DataClient():
         else:
             valid_filters = self.parse_filters(
                 {**self.get_filters(), **self.validate_filters(filters)})
-
-        iterator = self.iterate_range(
-            start_date=start_date,
-            end_date=end_date,
-            mode=mode,
-            filters=filters,
-            chunk_size=100)
-        for something in iterator:
-            ...
-
-
-
         if end_date is None:
+            end_date = start_date
+
+        total = 0
+        progress_bar = ProgressBar(
+            total=len(pd.date_range(start_date, end_date)),
+            desc="Fetching info",
+            verbose=verbose)
+        for cur_date in pd.date_range(start_date, end_date):
             self._expected_records.append(
-                self._read_total(start_date, valid_filters))
-            print_fn(f"single day {start_date}")
-            print_fn(f"expected {self._expected_records[0]}")
-            progress_bar = ProgressBar(
-                    total=self._expected_records[0],
-                    desc="Downloading signals",
-                    verbose=verbose)
-            self._process_date(
-                start_date,
-                output_path,
-                output_pattern,
-                is_first_time=True,
-                mode=valid_mode,
-                filters=valid_filters,
-                progress_bar=progress_bar)
-        else:
-            is_first_time = True
-            total = 0
-            progress_bar = ProgressBar(
-                total=len(pd.date_range(start_date, end_date)),
-                desc="Fetching info",
-                verbose=verbose)
+                self._read_total(cur_date, valid_filters))
+            progress_bar.update(1)
+        total = sum(self._expected_records)
+        progress_bar.set_total(total=total)
+        progress_bar.set_description(desc="Downloading signals")
 
-            for cur_date in pd.date_range(start_date, end_date):
-                self._expected_records.append(
-                    self._read_total(cur_date, valid_filters))
-                progress_bar.update(1)
+        is_first_time = True
+        for ix, cur_date in enumerate(pd.date_range(start_date, end_date)):
+            first = True
+            print_fn(f"now processing {cur_date}")
+            print_fn(f"expected {self._expected_records[ix]}")
+            progress_bar.set_description(
+                f"Downloading signals for {cur_date.strftime('%Y-%m-%d')}")
+            iterator = self.iterate_range(
+                start_date=cur_date,
+                end_date=cur_date,  # FIXME: can be omitted
+                mode=mode,
+                filters=filters,
+                chunk_size=100)
+            for something in iterator:
+                if first:
+                    valid_mode.init_day(
+                        cur_date, output_path, output_pattern, is_first_time)
+                    first = False
+                is_empty = False
+                if isinstance(something, pd.DataFrame) and something.empty:
+                    is_empty = True
 
-            total = sum(self._expected_records)
-            progress_bar.set_total(total=total)
-            progress_bar.set_description(desc="Downloading signals")
+                if is_first_time and not is_empty:
+                    is_first_time = False
 
-            for ix, cur_date in enumerate(pd.date_range(start_date, end_date)):
-                print_fn(f"now processing {cur_date}")
-                print_fn(f"expected {self._expected_records[ix]}")
-                progress_bar.set_description(
-                    f"Downloading signals for {cur_date.strftime('%Y-%m-%d')}")
-                is_first_time = self._process_date(
-                    cur_date.strftime("%Y-%m-%d"),
-                    output_path,
-                    output_pattern,
-                    is_first_time=is_first_time,
-                    mode=valid_mode,
-                    filters=valid_filters,
-                    progress_bar=progress_bar)
+                if not is_empty:
+                    valid_mode.add_result(something)
+                    progress_bar.update(len(something))
+
+            if not first:
+                valid_mode.finish_day()
         progress_bar.close()
         self._expected_records = []
 
