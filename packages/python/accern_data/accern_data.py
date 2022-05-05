@@ -642,20 +642,20 @@ class DataClient():
         is_first_time = True
         for ix, cur_date in enumerate(pd.date_range(start_date, end_date)):
             first = True
-            print_fn(f"now processing {cur_date}")
+            date = cur_date.strftime('%Y-%m-%d')
+            print_fn(f"now processing {date}")
             print_fn(f"expected {self._expected_records[ix]}")
-            progress_bar.set_description(
-                f"Downloading signals for {cur_date.strftime('%Y-%m-%d')}")
+            progress_bar.set_description(f"Downloading signals for {date}")
             iterator = self.iterate_range(
-                start_date=cur_date,
-                end_date=cur_date,  # FIXME: can be omitted
+                start_date=date,
+                end_date=date,  # FIXME: can be omitted
                 mode=mode,
                 filters=filters,
                 chunk_size=100)
             for res in iterator:
                 if first:
                     valid_mode.init_day(
-                        cur_date, output_path, output_pattern, is_first_time)
+                        date, output_path, output_pattern, is_first_time)
                     first = False
                 is_empty = False
                 if isinstance(res, pd.DataFrame) and res.empty:
