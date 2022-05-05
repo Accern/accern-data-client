@@ -11,7 +11,7 @@ from accern_data.util import load_json
 def test_csv_full_csv_date_consistency(sheet_mode: ModeType) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_pattern = "test_csv_full_csv_date_consistency"
+    output_pattern = f"test_csv_full_csv_date_consistency_{sheet_mode}"
     output_path = "./tests/outputs/"
     client = create_data_client(
         "http://api.example.com/", "SomeRandomToken")
@@ -31,6 +31,7 @@ def test_csv_full_csv_date_consistency(sheet_mode: ModeType) -> None:
             csv_date_arr.append(df_generated)
         except FileNotFoundError:
             continue
+    print([df.shape for df in csv_date_arr])
     combined_df = pd.concat(csv_date_arr)
     combined_df.reset_index(drop=True, inplace=True)
     client.set_mode(sheet_mode, split_dates=False)
@@ -51,7 +52,7 @@ def test_csv_full_csv_date_consistency(sheet_mode: ModeType) -> None:
 def test_json_csv_date_consistency(sheet_mode: ModeType) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_pattern = "test_json_csv_date_consistency"
+    output_pattern = f"test_json_csv_date_consistency_{sheet_mode}"
     output_path = "./tests/outputs/"
     client = create_data_client(
         "http://api.example.com/", "SomeRandomToken")

@@ -28,7 +28,7 @@ def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
-    output_pattern = "test_csv_date"
+    output_pattern = f"test_csv_date_{sheet_mode}_{method_used}"
     client = create_data_client(
         "http://api.example.com/", "SomeRandomToken")
     if method_used == "method":
@@ -75,7 +75,7 @@ def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
-    output_pattern = "test_csv_full"
+    output_pattern = f"test_csv_full_{sheet_mode}_{method_used}"
     client = create_data_client(
         "http://api.example.com/", "SomeRandomToken")
 
@@ -109,7 +109,7 @@ def test_json(method_used: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
-    output_pattern = "test_json"
+    output_pattern = f"test_json_{method_used}"
     client = create_data_client(
         "http://api.example.com/", "SomeRandomToken")
     if method_used == "method":
