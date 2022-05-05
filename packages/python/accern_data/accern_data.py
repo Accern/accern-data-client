@@ -595,41 +595,6 @@ class DataClient():
             except pd.errors.EmptyDataError:
                 break
 
-    def _process_date(
-            self,
-            cur_date: str,
-            output_path: str,
-            output_pattern: Optional[str],
-            *,
-            is_first_time: bool,
-            mode: Mode,
-            filters: Dict[str, str],
-            progress_bar: ProgressBar) -> bool:
-        self._params["date"] = cur_date
-        first = True
-        for res in self._scroll("1900-01-01", mode, filters):
-            is_empty = False
-            if first:
-                mode.init_day(
-                    cur_date, output_path, output_pattern, is_first_time)
-                first = False
-
-            if isinstance(res, pd.DataFrame) and res.empty:
-                is_empty = True
-            elif isinstance(res, list) and len(res) == 0:
-                is_empty = True
-
-            if is_first_time and not is_empty:
-                is_first_time = False
-
-            if not is_empty:
-                mode.add_result(res)
-                progress_bar.update(len(res))
-
-        if not first:
-            mode.finish_day()
-        return is_first_time
-
     def download_range(
             self,
             start_date: str,
@@ -687,21 +652,19 @@ class DataClient():
                 mode=mode,
                 filters=filters,
                 chunk_size=100)
-            for something in iterator:
+            for res in iterator:
                 if first:
                     valid_mode.init_day(
                         cur_date, output_path, output_pattern, is_first_time)
                     first = False
                 is_empty = False
-                if isinstance(something, pd.DataFrame) and something.empty:
+                if isinstance(res, pd.DataFrame) and res.empty:
                     is_empty = True
-
                 if is_first_time and not is_empty:
                     is_first_time = False
-
                 if not is_empty:
-                    valid_mode.add_result(something)
-                    progress_bar.update(len(something))
+                    valid_mode.add_result(res)
+                    progress_bar.update(len(res))
 
             if not first:
                 valid_mode.finish_day()
