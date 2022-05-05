@@ -1,10 +1,11 @@
 import io
 import json
 import os
+import site
+import sys
 from typing import Any, Dict, Optional
 
 import pandas as pd
-import requests
 import tqdm
 from requests import Response
 
@@ -149,39 +150,12 @@ def generate_file_response(
     return response_obj
 
 
-def register_on_record() -> None:
-    directory, folder = os.path.split(os.path.split(__file__)[0])
-    full_directory = os.path.join(
-        directory,
-        f"{folder}-{__version__.replace('-', '')}.dist-info",
-        "RECORD")
-    lines = {
-        f"{folder}/data/data-2022.json",
-        f"{folder}/data/data-2022.csv",
-        f"{folder}/data/.DS_Store",
-        f"{folder}/.DS_Store",
-    }
-    with open(full_directory, "r") as file:
-        actual_lines = {line.strip() for line in file.readlines()}
-    content = '\n'.join(actual_lines.union(lines))
-    with open(full_directory, "w") as file:
-        file.write(content)
-
-
 def get_master_file(extension: str) -> str:
-    directory = os.path.split(__file__)[0]
-    full_dir = os.path.join(directory, "data", f"data-2022.{extension}")
-    os.makedirs(os.path.join(directory, "data"), exist_ok=True)
-    if os.path.exists(full_dir):
-        return full_dir
-    url = (
-        "https://raw.githubusercontent.com/Accern/accern-data-client/main/"
-        f"tests/data/data-2022.{extension}")
-    response = requests.get(url)
-    assert response.status_code == 200
-    with open(full_dir, "w") as file_obj:
-        file_obj.write(response.text)
-    register_on_record()
+    full_dir = os.path.join(
+        sys.prefix, "accern_data", f"data-2022.{extension}")
+    if not os.path.exists(full_dir) and site.USER_BASE is not None:
+        full_dir = os.path.join(
+            site.USER_BASE, "accern_data", f"data-2022.{extension}")
     return full_dir
 
 
