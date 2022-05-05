@@ -649,7 +649,7 @@ class DataClient():
             iterator = self.iterate_range(
                 start_date=date,
                 end_date=date,  # FIXME: can be omitted
-                mode=mode,
+                mode=valid_mode,
                 filters=filters,
                 chunk_size=100)
             for res in iterator:
