@@ -371,6 +371,9 @@ class DataClient():
         self._mode: Optional[Mode] = None
         self._error_list: Deque[str] = deque(maxlen=n_errors)
 
+    def reset_error_list(self) -> None:
+        self._error_list.clear()
+
     @staticmethod
     def validate_filters(
             filters: FiltersType) -> Dict[
@@ -578,8 +581,6 @@ class DataClient():
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
         expected_records: List[int] = []
-        n_errors = self._error_list.maxlen
-        self._error_list = deque(maxlen=n_errors)
         if mode is None:
             valid_mode = self.get_mode()
         elif isinstance(mode, Mode):
