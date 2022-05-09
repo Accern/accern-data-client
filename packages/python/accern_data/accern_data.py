@@ -428,7 +428,7 @@ class DataClient():
         assert self._mode is not None, "Set mode first."
         return self._mode
 
-    def check_for_errors(self) -> List[str]:
+    def get_last_silenced_errors(self) -> List[str]:
         return list(self._error_list)
 
     def _read_total(
@@ -636,8 +636,6 @@ class DataClient():
                     filters=valid_filters,
                     progress_bar=progress_bar)
         progress_bar.close()
-        if len(self._error_list) > 0:
-            print(self._error_list[-1])
 
 
 def create_data_client(
