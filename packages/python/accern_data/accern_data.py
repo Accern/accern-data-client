@@ -636,6 +636,8 @@ class DataClient():
                     filters=valid_filters,
                     progress_bar=progress_bar)
         progress_bar.close()
+        if len(self._error_list) > 0:
+            print(self._error_list[-1])
 
 
 def create_data_client(
