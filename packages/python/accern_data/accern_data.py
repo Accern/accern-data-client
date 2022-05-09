@@ -4,6 +4,7 @@ import time
 import traceback
 import warnings
 from collections import deque
+from copy import deepcopy
 from typing import (
     Any,
     Deque,
@@ -128,6 +129,9 @@ class Mode:
 
     def get_format(self) -> str:
         raise NotImplementedError()
+
+    def get_instance(self) -> 'Mode':
+        return deepcopy(self)
 
     def parse_result(
             self,
@@ -426,7 +430,7 @@ class DataClient():
 
     def get_mode(self) -> Mode:
         assert self._mode is not None, "Set mode first."
-        return self._mode
+        return self._mode.get_instance()
 
     def get_last_silenced_errors(self) -> List[str]:
         return list(self._error_list)
@@ -578,7 +582,7 @@ class DataClient():
         if mode is None:
             valid_mode = self.get_mode()
         elif isinstance(mode, Mode):
-            valid_mode = mode
+            valid_mode = mode.get_instance()
         elif isinstance(mode, str):
             valid_mode = self.parse_mode(mode)
         else:
