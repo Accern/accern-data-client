@@ -179,7 +179,7 @@ class Mode:
             data: Optional[Union[pd.DataFrame, List[Dict[str, Any]]]],
             chunk_size: Optional[int] = None) -> Iterator[
                 Union[pd.DataFrame, Dict[str, Any]]]:
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def split(
             self,
@@ -213,7 +213,7 @@ class CSVMode(Mode):
         super().__init__()
         self._cols = None
         self._is_by_day = is_by_day
-        self._buffer = pd.DataFrame([])
+        self._buffer: List[pd.DataFrame] = []
         self._buffer_size = 0
 
     def get_format(self) -> str:
@@ -223,12 +223,14 @@ class CSVMode(Mode):
         return self._is_by_day
 
     def clean_buffer(self) -> None:
-        self._buffer = pd.DataFrame([])
+        self._buffer = []
         self._buffer_size = 0
 
     def get_buffer(self) -> Optional[pd.DataFrame]:
-        if not self._buffer.empty:
-            return self._buffer
+        if len(self._buffer) > 0:
+            buffer = pd.concat(self._buffer)
+            if not buffer.empty:
+                return buffer
         return None
 
     def parse_result(self, resp: requests.Response) -> List[pd.DataFrame]:
@@ -301,23 +303,27 @@ class CSVMode(Mode):
                 Union[pd.DataFrame, Dict[str, Any]]]:
         assert chunk_size is not None and chunk_size > 0
         if data is not None:
-            self._buffer = pd.concat(
-                (self._buffer, data), ignore_index=True)
-            self._buffer_size = self._buffer.shape[0]
+            assert isinstance(data, pd.DataFrame)
+            self._buffer.append(data)
+            self._buffer_size += data.shape[0]
         while self._buffer_size >= chunk_size:
-            result = self._buffer.iloc[:chunk_size, :]
-            self._buffer.drop(
-                index=list(range(chunk_size)),
-                inplace=True)
-            self._buffer.reset_index(drop=True, inplace=True)
-            self._buffer_size = self._buffer.shape[0]
+            res_df = pd.concat(self._buffer)
+            result = res_df.iloc[:chunk_size]
+            remainder: pd.DataFrame = res_df.iloc[chunk_size:]
+            if remainder.empty:
+                self._buffer = []
+            else:
+                self._buffer = [remainder]
+            self._buffer_size = remainder.shape[0]
             yield result
 
-        if self.split_dates():
-            if data is None and not self._buffer.empty:
-                yield self._buffer
-                self._buffer = pd.DataFrame([])
-                self._buffer_size = 0
+        if self.split_dates() and data is None:
+            if len(self._buffer) > 0:
+                buffer = pd.concat(self._buffer)
+                if not buffer.empty:
+                    yield buffer
+            self._buffer = []
+            self._buffer_size = 0
 
 
 class JSONMode(Mode):
