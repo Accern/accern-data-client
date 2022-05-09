@@ -72,9 +72,8 @@ accern_data.create_client("http://api.example.com/", "SomeRandomToken").download
 
 ### Error logging:
 
-While downloading the data, any critical error will get raised as a stack traceback.
-There might be other non-critical errors as well, which are already handled.
-To check those errors, use:
+While downloading the data, any critical error will get raised.
+Any non-critical errors, such as API timeouts, get silenced and API calls are repeated. To see a list of the last `n` errors use:
 
 ```python
 client.get_last_silenced_errors()
