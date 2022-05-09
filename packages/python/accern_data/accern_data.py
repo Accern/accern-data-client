@@ -362,14 +362,14 @@ class DataClient():
     def __init__(
             self,
             url: str,
-            token: str) -> None:
+            token: str,
+            n_errors: int = 5) -> None:
         self._base_url = url
         self._token = token
         self._filters: Dict[str, str] = {}
         self._params: Dict[str, str] = {}
         self._mode: Optional[Mode] = None
-        self._error_list_size = 5
-        self._error_list: Deque[str] = deque(maxlen=self._error_list_size)
+        self._error_list: Deque[str] = deque(maxlen=n_errors)
 
     @staticmethod
     def validate_filters(
@@ -578,7 +578,8 @@ class DataClient():
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
         expected_records: List[int] = []
-        self._error_list = deque(maxlen=self._error_list_size)
+        n_errors = self._error_list.maxlen
+        self._error_list = deque(maxlen=n_errors)
         if mode is None:
             valid_mode = self.get_mode()
         elif isinstance(mode, Mode):
