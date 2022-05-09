@@ -3,8 +3,10 @@ import os
 import time
 import traceback
 import warnings
+from collections import deque
 from typing import (
     Any,
+    Deque,
     Dict,
     get_args,
     Iterator,
@@ -362,9 +364,8 @@ class DataClient():
         self._filters: Dict[str, str] = {}
         self._params: Dict[str, str] = {}
         self._mode: Optional[Mode] = None
-        self._first_error = True
-        self._error_list: List[str] = []
         self._error_list_size = 5
+        self._error_list: Deque[str] = deque(maxlen=self._error_list_size)
 
     @staticmethod
     def validate_filters(
@@ -427,10 +428,8 @@ class DataClient():
         assert self._mode is not None, "Set mode first."
         return self._mode
 
-    def put_error_msg(self, msg: str) -> None:
-        self._error_list.append(msg)
-        if len(self._error_list) > self._error_list_size:
-            self._error_list.pop(0)
+    def check_for_errors(self) -> List[str]:
+        return list(self._error_list)
 
     def _read_total(
             self, cur_date: str, filters: Dict[str, str]) -> int:
@@ -457,10 +456,7 @@ class DataClient():
                     AssertionError,
                     KeyError,
                     requests.exceptions.RequestException):  # FIXME: add more?
-                if self._first_error:
-                    print_fn(traceback.format_exc())
-                    self._first_error = False
-                self.put_error_msg(traceback.format_exc())
+                self._error_list.append(traceback.format_exc())
                 print_fn("unknown error...retrying...")
                 time.sleep(0.5)
 
@@ -497,10 +493,7 @@ class DataClient():
                     AssertionError,
                     KeyError,
                     requests.exceptions.RequestException):  # FIXME: add more?
-                if self._first_error:
-                    print_fn(traceback.format_exc())
-                    self._first_error = False
-                self.put_error_msg(traceback.format_exc())
+                self._error_list.append(traceback.format_exc())
                 print_fn("unknown error...retrying...")
                 time.sleep(0.5)
 
@@ -581,7 +574,7 @@ class DataClient():
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
         expected_records: List[int] = []
-        self._error_list = []
+        self._error_list = deque(maxlen=self._error_list_size)
         if mode is None:
             valid_mode = self.get_mode()
         elif isinstance(mode, Mode):
@@ -643,8 +636,6 @@ class DataClient():
                     filters=valid_filters,
                     progress_bar=progress_bar)
         progress_bar.close()
-        for msg in self._error_list:
-            print(msg)
 
 
 def create_data_client(
