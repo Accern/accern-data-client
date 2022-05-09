@@ -72,7 +72,7 @@ accern_data.create_client("http://api.example.com/", "SomeRandomToken").download
 
 ### Error logging:
 
-While downloading the data, any critical error will get raised.
+While downloading the data any critical error will get raised.
 Any non-critical errors, such as API timeouts, get silenced and API calls are repeated. To see a list of the last `n` errors use:
 
 ```python
