@@ -146,19 +146,13 @@ class Mode(Generic[T]):
     def get_instance(self) -> 'Mode':
         return deepcopy(self)
 
-    def parse_result(
-            self,
-            resp: requests.Response) -> List[T]:
+    def parse_result(self, resp: requests.Response) -> List[T]:
         raise NotImplementedError()
 
-    def size(
-            self,
-            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]]) -> int:
+    def size(self, batch: List[T]) -> int:
         raise NotImplementedError()
 
-    def max_date(
-            self,
-            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]]) -> str:
+    def max_date(self, batch: List[T]) -> str:
         raise NotImplementedError()
 
     def init_day(
@@ -175,9 +169,7 @@ class Mode(Generic[T]):
     def do_init(self, is_first_day: bool) -> None:
         raise NotImplementedError()
 
-    def add_result(
-            self,
-            signal: T) -> None:
+    def add_result(self, signal: T) -> None:
         raise NotImplementedError()
 
     def finish_day(self) -> None:
@@ -185,16 +177,12 @@ class Mode(Generic[T]):
 
     def iterate_data(
             self,
-            data: Optional[Union[pd.DataFrame, List[Dict[str, Any]]]],
+            data: Optional[List[T]],
             progress_bar: ProgressBar,
-            chunk_size: Optional[int] = None) -> Iterator[
-                Union[pd.DataFrame, Dict[str, Any]]]:
+            chunk_size: Optional[int] = None) -> Iterator[T]:
         raise NotImplementedError()
 
-    def split(
-            self,
-            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]],
-            value: pd.Timestamp) -> Union[pd.DataFrame, List[Dict[str, Any]]]:
+    def split(self, batch: List[T], value: pd.Timestamp) -> List[T]:
         raise NotImplementedError()
 
     def get_path(self, is_by_day: bool) -> str:
@@ -260,14 +248,10 @@ class CSVMode(Mode[pd.DataFrame]):
             self._cols = res.columns
         return [res]
 
-    def size(
-            self,
-            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]]) -> int:
+    def size(self, batch: List[pd.DataFrame]) -> int:
         return sum(len(cur) for cur in batch)
 
-    def max_date(
-            self,
-            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]]) -> str:
+    def max_date(self, batch: List[pd.DataFrame]) -> str:
         temp = set()
         for cur in batch:
             assert isinstance(cur, pd.DataFrame)
@@ -288,9 +272,7 @@ class CSVMode(Mode[pd.DataFrame]):
                 fname, index=False, header=True, mode="w")
         print_fn(f"current file is {fname}")
 
-    def add_result(
-            self,
-            signal: pd.DataFrame) -> None:
+    def add_result(self, signal: pd.DataFrame) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
         assert isinstance(signal, pd.DataFrame)
         signal.to_csv(fname, index=False, header=False, mode="a")
@@ -300,23 +282,20 @@ class CSVMode(Mode[pd.DataFrame]):
 
     def split(
             self,
-            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]],
-            value: pd.Timestamp) -> pd.DataFrame:
+            batch: List[pd.DataFrame],
+            value: pd.Timestamp) -> List[pd.DataFrame]:
         df = batch[0]
-        assert isinstance(df, pd.DataFrame)
-        return df[df["harvested_at"] <= value]
+        return [df[df["harvested_at"] <= value]]
 
     def iterate_data(
             self,
-            data: Optional[Union[pd.DataFrame, List[Dict[str, Any]]]],
+            data: Optional[List[pd.DataFrame]],
             progress_bar: ProgressBar,
-            chunk_size: Optional[int] = None) -> Iterator[
-                Union[pd.DataFrame, Dict[str, Any]]]:
+            chunk_size: Optional[int] = None) -> Iterator[pd.DataFrame]:
         assert chunk_size is not None and chunk_size > 0
         if data is not None:
-            assert isinstance(data, pd.DataFrame)
-            self._buffer.append(data)
-            self._buffer_size += data.shape[0]
+            self._buffer.append(data[0])
+            self._buffer_size += data[0].shape[0]
         while self._buffer_size >= chunk_size:
             res_df = pd.concat(self._buffer)
             result: pd.DataFrame = res_df.iloc[:chunk_size]
@@ -378,14 +357,10 @@ class JSONMode(Mode[Dict[str, Any]]):
             for signal in res_json["signals"]
         ]
 
-    def size(
-            self,
-            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]]) -> int:
+    def size(self, batch: List[Dict[str, Any]]) -> int:
         return len(batch)
 
-    def max_date(
-            self,
-            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]]) -> str:
+    def max_date(self, batch: List[Dict[str, Any]]) -> str:
         assert isinstance(batch[0], dict)
         temp = set()
         for cur in batch:
@@ -401,9 +376,7 @@ class JSONMode(Mode[Dict[str, Any]]):
     def do_init(self, is_first_day: bool) -> None:
         self._res = []
 
-    def add_result(
-            self,
-            signal: Dict[str, Any]) -> None:
+    def add_result(self, signal: Dict[str, Any]) -> None:
         assert isinstance(signal, dict)
         self._res.append(signal)
 
@@ -425,7 +398,7 @@ class JSONMode(Mode[Dict[str, Any]]):
 
     def split(
             self,
-            batch: Union[List[pd.DataFrame], List[Dict[str, Any]]],
+            batch: List[Dict[str, Any]],
             value: pd.Timestamp) -> List[Dict[str, Any]]:
         result = []
         for record in batch:
@@ -436,10 +409,9 @@ class JSONMode(Mode[Dict[str, Any]]):
 
     def iterate_data(
             self,
-            data: Optional[Union[pd.DataFrame, List[Dict[str, Any]]]],
+            data: Optional[List[Dict[str, Any]]],
             progress_bar: ProgressBar,
-            chunk_size: Optional[int] = None) -> Iterator[
-                Union[pd.DataFrame, Dict[str, Any]]]:
+            chunk_size: Optional[int] = None) -> Iterator[Dict[str, Any]]:
         if data is not None:
             assert isinstance(data, list)
             for rec in data:
@@ -598,7 +570,7 @@ class DataClient:
             start_date: str,
             mode: Mode,
             filters: Dict[str, str]) -> Iterator[
-                Union[pd.DataFrame, List[Dict[str, Any]]]]:
+                Union[List[pd.DataFrame], List[Dict[str, Any]]]]:
         print_fn("new day")
         self._params["harvested_after"] = start_date
         batch = self._read_date(mode, filters)

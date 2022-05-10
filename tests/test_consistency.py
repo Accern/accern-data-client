@@ -31,7 +31,6 @@ def test_csv_full_csv_date_consistency(sheet_mode: ModeType) -> None:
             csv_date_arr.append(df_generated)
         except FileNotFoundError:
             continue
-    print([df.shape for df in csv_date_arr])
     combined_df = pd.concat(csv_date_arr)
     combined_df.reset_index(drop=True, inplace=True)
     client.set_mode(sheet_mode, split_dates=False)
