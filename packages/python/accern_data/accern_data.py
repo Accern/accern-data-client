@@ -698,7 +698,7 @@ class DataClient:
             end_date = start_date
         local = False
         if progress_bar is None:
-            progress_bar = ProgressBar(total=0, desc="", verbose=True)
+            progress_bar = ProgressBar(verbose=True)
         elif progress_bar.get_total() is None:
             local = True
             progress_bar, _ = self._fetch_info(

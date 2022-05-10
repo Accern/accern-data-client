@@ -184,6 +184,10 @@ class ProgressBar:
         self._verbosity = verbose
         if verbose:
             self._pbar: Optional[tqdm.tqdm] = None
+            self._total: Optional[int] = -1
+        elif total is None:
+            self._pbar = None
+            self._total = None
         elif is_jupyter():
             self._pbar = tqdm.tqdm_notebook(
                 total=total,
@@ -212,7 +216,7 @@ class ProgressBar:
     def get_total(self) -> Optional[int]:
         if self._pbar is not None:
             return self._pbar.total
-        return None
+        return self._total
 
     def close(self) -> None:
         if self._pbar is not None:
