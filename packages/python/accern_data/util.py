@@ -177,9 +177,9 @@ def is_jupyter() -> bool:
 class ProgressBar:
     def __init__(
             self,
-            total: int,
-            desc: str,
-            verbose: bool,
+            total: Optional[int] = None,
+            desc: Optional[str] = None,
+            verbose: bool = False,
             unit_scale: bool = True) -> None:
         self._verbosity = verbose
         if verbose:
@@ -208,6 +208,11 @@ class ProgressBar:
     def set_total(self, total: int) -> None:
         if self._pbar is not None:
             self._pbar.reset(total=total)
+
+    def get_total(self) -> Optional[int]:
+        if self._pbar is not None:
+            return self._pbar.total
+        return None
 
     def close(self) -> None:
         if self._pbar is not None:
