@@ -9,6 +9,7 @@ from typing import (
     Any,
     Deque,
     Dict,
+    Generic,
     get_args,
     Iterator,
     List,
@@ -17,6 +18,7 @@ from typing import (
     Set,
     Tuple,
     TypedDict,
+    TypeVar,
     Union,
 )
 
@@ -115,13 +117,15 @@ ALL_MODES: Set[ModeType] = {"csv", "df", "json"}
 DT_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 VERBOSE = False
 
+T = TypeVar('T')
+
 
 def print_fn(msg: str) -> None:
     if VERBOSE:
         print(msg)
 
 
-class Mode:
+class Mode(Generic[T]):
     def __init__(self) -> None:
         self._cur_date: Optional[str] = None
         self._cur_path: Optional[str] = None
@@ -144,8 +148,7 @@ class Mode:
 
     def parse_result(
             self,
-            resp: requests.Response) -> Union[
-                List[pd.DataFrame], List[Dict[str, Any]]]:
+            resp: requests.Response) -> List[T]:
         raise NotImplementedError()
 
     def size(
@@ -174,7 +177,7 @@ class Mode:
 
     def add_result(
             self,
-            signal: Union[pd.DataFrame, Dict[str, Any]]) -> None:
+            signal: T) -> None:
         raise NotImplementedError()
 
     def finish_day(self) -> None:
@@ -215,7 +218,7 @@ class Mode:
         return os.path.join(self._cur_path, fname)
 
 
-class CSVMode(Mode):
+class CSVMode(Mode[pd.DataFrame]):
     def __init__(self, is_by_day: bool) -> None:
         super().__init__()
         self._cols = None
@@ -287,7 +290,7 @@ class CSVMode(Mode):
 
     def add_result(
             self,
-            signal: Union[pd.DataFrame, Dict[str, Any]]) -> None:
+            signal: pd.DataFrame) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
         assert isinstance(signal, pd.DataFrame)
         signal.to_csv(fname, index=False, header=False, mode="a")
@@ -336,7 +339,7 @@ class CSVMode(Mode):
             self._buffer_size = 0
 
 
-class JSONMode(Mode):
+class JSONMode(Mode[Dict[str, Any]]):
     def __init__(self, debug_json: bool = False) -> None:
         super().__init__()
         self._res: List[Dict[str, Any]] = []
@@ -400,7 +403,7 @@ class JSONMode(Mode):
 
     def add_result(
             self,
-            signal: Union[pd.DataFrame, Dict[str, Any]]) -> None:
+            signal: Dict[str, Any]) -> None:
         assert isinstance(signal, dict)
         self._res.append(signal)
 
