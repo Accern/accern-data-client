@@ -68,3 +68,13 @@ client.download_range(
 ```python
 accern_data.create_client("http://api.example.com/", "SomeRandomToken").download(start_date="2022-01-03", output_path="./", output_pattern="data", end_date="2022-03-04", mode="csv", filters={"entity_ticker": "HURC"})
 ```
+
+
+### Error logging:
+
+While downloading the data any critical error will get raised.
+Any non-critical errors, such as API timeouts, get silenced and API calls are repeated. To see a list of the last `n` errors use:
+
+```python
+client.get_last_silenced_errors()
+```

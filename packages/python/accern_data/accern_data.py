@@ -3,8 +3,11 @@ import os
 import time
 import traceback
 import warnings
+from collections import deque
+from copy import deepcopy
 from typing import (
     Any,
+    Deque,
     Dict,
     get_args,
     Iterator,
@@ -135,6 +138,8 @@ class Mode:
 
     def get_buffer(self) -> Optional[pd.DataFrame]:
         raise NotImplementedError
+    def get_instance(self) -> 'Mode':
+        return deepcopy(self)
 
     def parse_result(
             self,
@@ -435,14 +440,17 @@ class DataClient():
     def __init__(
             self,
             url: str,
-            token: str) -> None:
+            token: str,
+            n_errors: int = 5) -> None:
         self._base_url = url
         self._token = token
         self._filters: Dict[str, str] = {}
         self._params: Dict[str, str] = {}
         self._mode: Optional[Mode] = None
-        self._first_error = True
-        self._expected_records: List[int] = []
+        self._error_list: Deque[str] = deque(maxlen=n_errors)
+
+    def reset_error_list(self) -> None:
+        self._error_list.clear()
 
     @staticmethod
     def validate_filters(
@@ -487,7 +495,7 @@ class DataClient():
             if not split_dates:
                 warnings.warn(
                     "In json mode, there is no difference between "
-                    "split_date=True or split_date=False. Both will work "
+                    "split_dates=True or split_dates=False. Both will work "
                     "the same way.",
                     Warning,
                     stacklevel=2)
@@ -503,7 +511,10 @@ class DataClient():
 
     def get_mode(self) -> Mode:
         assert self._mode is not None, "Set mode first."
-        return self._mode
+        return self._mode.get_instance()
+
+    def get_last_silenced_errors(self) -> List[str]:
+        return list(self._error_list)
 
     def _read_total(
             self, cur_date: str, filters: Dict[str, str]) -> int:
@@ -530,9 +541,7 @@ class DataClient():
                     AssertionError,
                     KeyError,
                     requests.exceptions.RequestException):  # FIXME: add more?
-                if self._first_error:
-                    print_fn(traceback.format_exc())
-                    self._first_error = False
+                self._error_list.append(traceback.format_exc())
                 print_fn("unknown error...retrying...")
                 time.sleep(0.5)
 
@@ -569,9 +578,7 @@ class DataClient():
                     AssertionError,
                     KeyError,
                     requests.exceptions.RequestException):  # FIXME: add more?
-                if self._first_error:
-                    print_fn(traceback.format_exc())
-                    self._first_error = False
+                self._error_list.append(traceback.format_exc())
                 print_fn("unknown error...retrying...")
                 time.sleep(0.5)
 
@@ -616,10 +623,11 @@ class DataClient():
         if output_path is None:
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
+        expected_records: List[int] = []
         if mode is None:
             valid_mode = self.get_mode()
         elif isinstance(mode, Mode):
-            valid_mode = mode
+            valid_mode = mode.get_instance()
         elif isinstance(mode, str):
             valid_mode = self.parse_mode(mode)
         else:
@@ -675,7 +683,6 @@ class DataClient():
             if not first:
                 valid_mode.finish_day()
         progress_bar.close()
-        self._expected_records = []
 
     def iterate_range(
             self,
