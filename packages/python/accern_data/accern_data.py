@@ -593,12 +593,14 @@ class DataClient:
 
     def _get_valid_mode(
             self,
-            mode: Optional[
-                Union[Mode, ModeType, Tuple[ModeType, bool]]]) -> Mode:
+            mode: Optional[Union[Mode, ModeType, Tuple[ModeType, bool]]],
+            deep_copy: bool) -> Mode:
         if mode is None:
             return self.get_mode()
         if isinstance(mode, Mode):
-            return mode.get_instance()
+            if deep_copy:
+                return mode.get_instance()
+            return mode
         if isinstance(mode, str):
             return self.parse_mode(mode)
         return self.parse_mode(*mode)
@@ -644,7 +646,7 @@ class DataClient:
         if output_path is None:
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
-        valid_mode = self._get_valid_mode(mode)
+        valid_mode = self._get_valid_mode(mode, deep_copy=True)
         valid_filters = self._get_valid_filters(filters)
         if end_date is None:
             end_date = start_date
@@ -664,7 +666,8 @@ class DataClient:
                 mode=valid_mode,
                 filters=filters,
                 chunk_size=100,
-                progress_bar=progress_bar)
+                progress_bar=progress_bar,
+                deep_copy=False)
             for res in iterator:
                 if first:
                     valid_mode.init_day(
@@ -689,9 +692,10 @@ class DataClient:
                 Union[Mode, ModeType, Tuple[ModeType, bool]]] = None,
             filters: Optional[FiltersType] = None,
             chunk_size: Optional[int] = None,
-            progress_bar: Optional[ProgressBar] = ProgressBar()) -> Iterator[
+            progress_bar: Optional[ProgressBar] = ProgressBar(),
+            deep_copy: bool = True) -> Iterator[
                 Union[pd.DataFrame, Dict[str, Any]]]:
-        valid_mode = self._get_valid_mode(mode)
+        valid_mode = self._get_valid_mode(mode, deep_copy=deep_copy)
         valid_filters = self._get_valid_filters(filters)
         valid_mode.clean_buffer()
         if end_date is None:
