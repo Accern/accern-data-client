@@ -138,6 +138,7 @@ class Mode:
 
     def get_buffer(self) -> Optional[pd.DataFrame]:
         raise NotImplementedError
+
     def get_instance(self) -> 'Mode':
         return deepcopy(self)
 
@@ -646,10 +647,9 @@ class DataClient():
             desc="Fetching info",
             verbose=verbose)
         for cur_date in pd.date_range(start_date, end_date):
-            self._expected_records.append(
-                self._read_total(cur_date, valid_filters))
+            expected_records.append(self._read_total(cur_date, valid_filters))
             progress_bar.update(1)
-        total = sum(self._expected_records)
+        total = sum(expected_records)
         progress_bar.set_total(total=total)
         progress_bar.set_description(desc="Downloading signals")
 
@@ -658,7 +658,7 @@ class DataClient():
             first = True
             date = cur_date.strftime('%Y-%m-%d')
             print_fn(f"now processing {date}")
-            print_fn(f"expected {self._expected_records[ix]}")
+            print_fn(f"expected {expected_records[ix]}")
             progress_bar.set_description(f"Downloading signals for {date}")
             iterator = self.iterate_range(
                 start_date=date,
