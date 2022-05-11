@@ -3,14 +3,15 @@ from typing import Optional, Tuple, Union
 import pandas as pd
 import pandas.testing as pd_test
 import pytest
-from accern_data.accern_data import (
+
+from packages.python.accern_data.accern_data import (
     create_data_client,
     CSVMode,
     JSONMode,
     Mode,
     ModeType,
 )
-from accern_data.util import load_json
+from packages.python.accern_data.util import load_json
 
 
 @pytest.mark.parametrize(
