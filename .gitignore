@@ -15,4 +15,5 @@ dist/
 tests/outputs/
 
 # Coverage
-htmlcov/
+coverage/html_report/
+coverage/xml_report.xml

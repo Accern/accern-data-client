@@ -22,5 +22,6 @@ for CUR in $(find 'tests' \( -name '*.py' -and -name 'test_*' \) \
 done
 
 coverage report
+coverage xml
 coverage html
 coverage erase

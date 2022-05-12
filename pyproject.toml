@@ -101,3 +101,23 @@
     markers = [
         "local: marks tests as local only (deselect with '-m \"not local\"')",
     ]
+
+[tool.coverage.run]
+    branch = true
+    omit = [
+        "*/__init__*",
+        "*/sitecustomize*",
+        "*/tests/*",
+    ]
+
+[tool.coverage.report]
+    exclude_lines = [
+        "if TYPE_CHECKING:",
+        "raise NotImplementedError()",
+    ]
+
+[tool.coverage.html]
+    directory = "coverage/html_report"
+
+[tool.coverage.xml]
+    output = "coverage/xml_report.xml"
