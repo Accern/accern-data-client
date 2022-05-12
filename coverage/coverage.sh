@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
+export IS_TEST=1
 
 coverage erase
 
