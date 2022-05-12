@@ -249,12 +249,11 @@ class CSVMode(Mode[pd.DataFrame]):
         return [res]
 
     def size(self, batch: List[pd.DataFrame]) -> int:
-        return sum(len(cur) for cur in batch)
+        return sum(cur.shape[0] for cur in batch)
 
     def max_date(self, batch: List[pd.DataFrame]) -> str:
         temp = set()
         for cur in batch:
-            assert isinstance(cur, pd.DataFrame)
             harvested_at_list = cur["harvested_at"].to_list()
             for harvested_at in harvested_at_list:
                 assert isinstance(harvested_at, pd.Timestamp)
@@ -274,7 +273,6 @@ class CSVMode(Mode[pd.DataFrame]):
 
     def add_result(self, signal: pd.DataFrame) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
-        assert isinstance(signal, pd.DataFrame)
         signal.to_csv(fname, index=False, header=False, mode="a")
 
     def finish_day(self) -> None:
@@ -361,10 +359,8 @@ class JSONMode(Mode[Dict[str, Any]]):
         return len(batch)
 
     def max_date(self, batch: List[Dict[str, Any]]) -> str:
-        assert isinstance(batch[0], dict)
         temp = set()
         for cur in batch:
-            assert isinstance(cur, dict)
             harvested_at = cur["harvested_at"]
             assert isinstance(harvested_at, pd.Timestamp)
             temp.add(harvested_at)
@@ -377,7 +373,6 @@ class JSONMode(Mode[Dict[str, Any]]):
         self._res = []
 
     def add_result(self, signal: Dict[str, Any]) -> None:
-        assert isinstance(signal, dict)
         self._res.append(signal)
 
     def finish_day(self) -> None:
@@ -402,7 +397,6 @@ class JSONMode(Mode[Dict[str, Any]]):
             value: pd.Timestamp) -> List[Dict[str, Any]]:
         result = []
         for record in batch:
-            assert isinstance(record, dict)
             if record["harvested_at"] <= value:
                 result.append(record)
         return result
@@ -413,7 +407,6 @@ class JSONMode(Mode[Dict[str, Any]]):
             progress_bar: ProgressBar,
             chunk_size: Optional[int] = None) -> Iterator[Dict[str, Any]]:
         if data is not None:
-            assert isinstance(data, list)
             for rec in data:
                 progress_bar.update(1)
                 yield rec
