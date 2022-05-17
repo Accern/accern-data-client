@@ -46,7 +46,7 @@ def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
         output_pattern=output_pattern,
         end_date=end_date,
         mode=mode,
-        verbose=True)
+        indicator="message")
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime("%Y-%m-%d")
         try:
@@ -93,7 +93,7 @@ def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
         output_pattern=output_pattern,
         end_date=end_date,
         mode=mode,
-        verbose=True)
+        indicator="message")
 
     df_actual = pd.read_csv("tests/data/data-2022.csv")
     df_generated = pd.read_csv(f"{output_path}{output_pattern}.csv")
@@ -127,7 +127,7 @@ def test_json(method_used: str) -> None:
         output_pattern=output_pattern,
         end_date=end_date,
         mode=mode,
-        verbose=True)
+        indicator="message")
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime("%Y-%m-%d")
         try:

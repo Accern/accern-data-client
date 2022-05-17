@@ -36,7 +36,7 @@ def test_filters_csv_full(
         output_pattern=output_pattern,
         end_date=end_date,
         filters=filters,
-        verbose=True)
+        indicator="message")
 
     df = pd.read_csv(f"{output_path}{output_pattern}.csv")
     for key, value in client.get_filters().items():
@@ -68,7 +68,7 @@ def test_filters_csv_date(
         output_pattern=output_pattern,
         end_date=end_date,
         filters=filters,
-        verbose=True)
+        indicator="message")
 
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime("%Y-%m-%d")
@@ -103,7 +103,7 @@ def test_filters_json(uses_filter_method: bool) -> None:
         output_pattern=output_pattern,
         end_date=end_date,
         filters=filters,
-        verbose=True)
+        indicator="message")
 
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime("%Y-%m-%d")
