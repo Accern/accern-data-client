@@ -183,7 +183,7 @@ class Mode(Generic[T]):
     def iterate_data(
             self,
             data: Optional[List[T]],
-            progress_bar: ProgressIndicator,
+            indicator: ProgressIndicator,
             chunk_size: Optional[int] = None) -> Iterator[T]:
         raise NotImplementedError()
 
@@ -293,9 +293,9 @@ class CSVMode(Mode[pd.DataFrame]):
     def iterate_data(
             self,
             data: Optional[List[pd.DataFrame]],
-            progress_bar: ProgressIndicator,
+            indicator: ProgressIndicator,
             chunk_size: Optional[int] = None) -> Iterator[pd.DataFrame]:
-        assert chunk_size is not None and chunk_size > 0 #chunk == None use whatever you get
+        assert chunk_size is not None and chunk_size > 0  # FIXEME: chunk == None use whatever you get
         if data is not None:
             self._buffer.append(data[0])
             self._buffer_size += data[0].shape[0]
@@ -308,14 +308,14 @@ class CSVMode(Mode[pd.DataFrame]):
             else:
                 self._buffer = [remainder]
             self._buffer_size = remainder.shape[0]
-            progress_bar.update(result.shape[0])
+            indicator.update(result.shape[0])
             yield result
 
         if self.split_dates() and data is None:
             if len(self._buffer) > 0:
                 buffer = pd.concat(self._buffer)
                 if not buffer.empty:
-                    progress_bar.update(buffer.shape[0])
+                    indicator.update(buffer.shape[0])
                     yield buffer
             self._buffer = []
             self._buffer_size = 0
@@ -409,11 +409,11 @@ class JSONMode(Mode[Dict[str, Any]]):
     def iterate_data(
             self,
             data: Optional[List[Dict[str, Any]]],
-            progress_bar: ProgressIndicator,
+            indicator: ProgressIndicator,
             chunk_size: Optional[int] = None) -> Iterator[Dict[str, Any]]:
         if data is not None:
             for rec in data:
-                progress_bar.update(1)
+                indicator.update(1)
                 yield rec
 
 
@@ -636,7 +636,7 @@ class DataClient:
             mode: Optional[
                 Union[Mode, ModeType, Tuple[ModeType, bool]]] = None,
             filters: Optional[FiltersType] = None,
-            progress_bar: Optional[BarIndicator] = BarIndicator()) -> None:
+            indicator: Optional[Indicators] = "pbar",) -> None:
         if output_path is None:
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
@@ -650,13 +650,14 @@ class DataClient:
             valid_mode = mode
             cur_date = date
 
+        is_first_time = True
         for res in self.iterate_range(
                 start_date=start_date,
                 end_date=end_date,
                 mode=mode,
                 filters=filters,
                 chunk_size=100,  # FIXME: Keep it None
-                indicator=progress_bar,
+                indicator=indicator,
                 set_active_mode=set_active_mode):
             assert valid_mode is not None
             assert cur_date is not None
@@ -664,9 +665,14 @@ class DataClient:
             if cur_date != prev_date:
                 if prev_date is not None:
                     valid_mode.finish_day()
-                valid_mode.init_day(cur_date, output_path, output_pattern)
+                valid_mode.init_day(
+                    cur_date.strftime('%Y-%m-%d'),
+                    output_path,
+                    output_pattern,
+                    is_first_time)
             valid_mode.add_result(res)
             prev_date = cur_date
+            is_first_time = False
 
         if prev_date is not None:
             assert valid_mode is not None
@@ -719,9 +725,9 @@ class DataClient:
                 "1900-01-01", valid_mode, valid_filters)
             for data in iterator:
                 yield from valid_mode.iterate_data(
-                    data, progress_bar=indicator_obj, chunk_size=chunk_size)
+                    data, indicator=indicator_obj, chunk_size=chunk_size)
             yield from valid_mode.iterate_data(
-                None, progress_bar=indicator_obj, chunk_size=chunk_size)
+                None, indicator=indicator_obj, chunk_size=chunk_size)
         # For remaining fragment of data in csv mode only.
         # here buffer.shape < chunk_size
         buffer = valid_mode.get_buffer()
