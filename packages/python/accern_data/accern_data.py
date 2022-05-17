@@ -7,6 +7,7 @@ from collections import deque
 from copy import deepcopy
 from typing import (
     Any,
+    Callable,
     Deque,
     Dict,
     Generic,
@@ -26,11 +27,14 @@ import pandas as pd
 import requests
 
 from .util import (
+    BarIndicator,
     field_transformation,
     generate_file_response,
     get_overall_total_from_dummy,
     is_example_url,
-    ProgressBar,
+    MessageIndicator,
+    ProgressIndicator,
+    SilentIndicator,
     write_json,
 )
 
@@ -110,7 +114,8 @@ FiltersType = TypedDict(
     total=False)
 
 ModeType = Literal["csv", "df", "json"]
-
+Indicators = Literal["pbar", "silent", "message"]
+INDICATORS = get_args(Indicators)
 FILTER_FIELD = get_args(FilterField)
 EXCLUDED_FILTER_FIELD = get_args(ExcludedFilterField)
 ALL_MODES: Set[ModeType] = {"csv", "df", "json"}
@@ -178,7 +183,7 @@ class Mode(Generic[T]):
     def iterate_data(
             self,
             data: Optional[List[T]],
-            progress_bar: ProgressBar,
+            progress_bar: ProgressIndicator,
             chunk_size: Optional[int] = None) -> Iterator[T]:
         raise NotImplementedError()
 
@@ -288,9 +293,9 @@ class CSVMode(Mode[pd.DataFrame]):
     def iterate_data(
             self,
             data: Optional[List[pd.DataFrame]],
-            progress_bar: ProgressBar,
+            progress_bar: ProgressIndicator,
             chunk_size: Optional[int] = None) -> Iterator[pd.DataFrame]:
-        assert chunk_size is not None and chunk_size > 0
+        assert chunk_size is not None and chunk_size > 0 #chunk == None use whatever you get
         if data is not None:
             self._buffer.append(data[0])
             self._buffer_size += data[0].shape[0]
@@ -404,7 +409,7 @@ class JSONMode(Mode[Dict[str, Any]]):
     def iterate_data(
             self,
             data: Optional[List[Dict[str, Any]]],
-            progress_bar: ProgressBar,
+            progress_bar: ProgressIndicator,
             chunk_size: Optional[int] = None) -> Iterator[Dict[str, Any]]:
         if data is not None:
             for rec in data:
@@ -504,7 +509,7 @@ class DataClient:
                         self._base_url,
                         params={
                             "token": self._token,
-                            **filters.items(),
+                            **filters,
                             "date": cur_date,
                             "format": "json",
                         })
@@ -541,7 +546,7 @@ class DataClient:
                         self._base_url,
                         params={
                             "token": self._token,
-                            **filters.items(),
+                            **filters,
                             **self._params,
                             **{"format": mode.get_format()}
                         })
@@ -587,13 +592,11 @@ class DataClient:
     def _get_valid_mode(
             self,
             mode: Optional[Union[Mode, ModeType, Tuple[ModeType, bool]]],
-            deep_copy: bool) -> Mode:
+            ) -> Mode:
         if mode is None:
             return self.get_mode()
         if isinstance(mode, Mode):
-            if deep_copy:
-                return mode.get_instance()
-            return mode
+            return mode.get_instance()
         if isinstance(mode, str):
             return self.parse_mode(mode)
         return self.parse_mode(*mode)
@@ -610,10 +613,10 @@ class DataClient:
             start_date: str,
             end_date: str,
             filters: Dict[str, str],
-            verbose: bool) -> Tuple[ProgressBar, List[int]]:
+            verbose: bool) -> Tuple[BarIndicator, List[int]]:
         total = 0
         expected_records: List[int] = []
-        progress_bar = ProgressBar(
+        progress_bar = BarIndicator(
             total=len(pd.date_range(start_date, end_date)),
             desc="Fetching info",
             verbose=verbose)
@@ -633,49 +636,41 @@ class DataClient:
             mode: Optional[
                 Union[Mode, ModeType, Tuple[ModeType, bool]]] = None,
             filters: Optional[FiltersType] = None,
-            verbose: bool = False) -> None:
-        global VERBOSE
-        VERBOSE = verbose
+            progress_bar: Optional[BarIndicator] = BarIndicator()) -> None:
         if output_path is None:
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
-        valid_mode = self._get_valid_mode(mode, deep_copy=True)
-        valid_filters = self._get_valid_filters(filters)
-        if end_date is None:
-            end_date = start_date
 
-        progress_bar, expected_records = self._fetch_info(
-            start_date, end_date, valid_filters, verbose)
-        progress_bar.set_description(desc="Downloading signals")
-        is_first_time = True
-        for ix, cur_date in enumerate(pd.date_range(start_date, end_date)):
-            first = True
-            date = cur_date.strftime('%Y-%m-%d')
-            print_fn(f"now processing {date}")
-            print_fn(f"expected {expected_records[ix]}")
-            iterator = self.iterate_range(
-                start_date=date,
-                end_date=date,  # FIXME: can be omitted
-                mode=valid_mode,
+        valid_mode: Optional[Mode] = None
+        cur_date: Optional[pd.Timestamp] = None
+        prev_date: Optional[pd.Timestamp] = None
+
+        def set_active_mode(mode: Mode, date: pd.Timestamp) -> None:
+            nonlocal valid_mode, cur_date
+            valid_mode = mode
+            cur_date = date
+
+        for res in self.iterate_range(
+                start_date=start_date,
+                end_date=end_date,
+                mode=mode,
                 filters=filters,
-                chunk_size=100,
-                progress_bar=progress_bar,
-                deep_copy=False)
-            for res in iterator:
-                if first:
-                    valid_mode.init_day(
-                        date, output_path, output_pattern, is_first_time)
-                    first = False
-                is_empty = False
-                if isinstance(res, pd.DataFrame) and res.empty:
-                    is_empty = True
-                if is_first_time and not is_empty:
-                    is_first_time = False
-                if not is_empty:
-                    valid_mode.add_result(res)
-            if not first:
-                valid_mode.finish_day()
-        progress_bar.close()
+                chunk_size=100,  # FIXME: Keep it None
+                indicator=progress_bar,
+                set_active_mode=set_active_mode):
+            assert valid_mode is not None
+            assert cur_date is not None
+
+            if cur_date != prev_date:
+                if prev_date is not None:
+                    valid_mode.finish_day()
+                valid_mode.init_day(cur_date, output_path, output_pattern)
+            valid_mode.add_result(res)
+            prev_date = cur_date
+
+        if prev_date is not None:
+            assert valid_mode is not None
+            valid_mode.finish_day()
 
     def iterate_range(
             self,
@@ -685,41 +680,55 @@ class DataClient:
                 Union[Mode, ModeType, Tuple[ModeType, bool]]] = None,
             filters: Optional[FiltersType] = None,
             chunk_size: Optional[int] = None,
-            progress_bar: Optional[ProgressBar] = ProgressBar(),
-            deep_copy: bool = True) -> Iterator[
-                Union[pd.DataFrame, Dict[str, Any]]]:
-        valid_mode = self._get_valid_mode(mode, deep_copy=deep_copy)
+            indicator: Optional[Indicators] = "pbar",
+            set_active_mode: Optional[
+                Callable[[Mode, pd.Timestamp], None]] = None,
+            ) -> Iterator[Union[pd.DataFrame, Dict[str, Any]]]:
+        valid_mode = self._get_valid_mode(mode)
         valid_filters = self._get_valid_filters(filters)
         valid_mode.clean_buffer()
         if end_date is None:
             end_date = start_date
-        local = False
-        if progress_bar is None:
-            progress_bar = ProgressBar(verbose=True)
-        elif progress_bar.get_total() is None:
-            local = True
-            progress_bar, _ = self._fetch_info(
-                start_date, end_date, valid_filters, verbose=False)
-            progress_bar.set_description(desc="Downloading signals")
+        if indicator not in INDICATORS:
+            raise ValueError(
+                f"Indicator should be None or one of {INDICATORS}. "
+                f"It cannot be '{indicator}'.")
+        if indicator == "pbar":
+            indicator_obj: ProgressIndicator = BarIndicator(
+                total=len(pd.date_range(start_date, end_date)),
+                desc="Fetching info")
+        elif indicator is None or indicator == "silent":
+            indicator_obj = SilentIndicator()
+        else:
+            indicator_obj = MessageIndicator()
+        total = 0
+        expected_records: List[int] = []
         for cur_date in pd.date_range(start_date, end_date):
+            expected_records.append(self._read_total(cur_date, valid_filters))
+            indicator_obj.update(1)
+        total = sum(expected_records)
+        indicator_obj.set_total(total=total)
+        indicator_obj.set_description(desc="Downloading signals")
+        for cur_date in pd.date_range(start_date, end_date):
+            if set_active_mode is not None:
+                set_active_mode(valid_mode, cur_date)
             date = cur_date.strftime("%Y-%m-%d")
-            progress_bar.set_description(f"Downloading signals for {date}")
+            indicator_obj.set_description(f"Downloading signals for {date}")
             self._params["date"] = date
             iterator = self._scroll(
                 "1900-01-01", valid_mode, valid_filters)
             for data in iterator:
                 yield from valid_mode.iterate_data(
-                    data, progress_bar=progress_bar, chunk_size=chunk_size)
+                    data, progress_bar=indicator_obj, chunk_size=chunk_size)
             yield from valid_mode.iterate_data(
-                None, progress_bar=progress_bar, chunk_size=chunk_size)
+                None, progress_bar=indicator_obj, chunk_size=chunk_size)
         # For remaining fragment of data in csv mode only.
         # here buffer.shape < chunk_size
         buffer = valid_mode.get_buffer()
         if buffer is not None:
-            progress_bar.update(buffer.shape[0])
+            indicator_obj.update(buffer.shape[0])
             yield buffer
-        if local:
-            progress_bar.close()
+        indicator_obj.close()
 
 
 def create_data_client(
