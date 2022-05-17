@@ -10,18 +10,23 @@ find * \( -name '*.py' -o -name '*.pyi' \) -and -not -path './venv/*' \
 
 
 run_coverage() {
-    python -m pytest -xvv $1 --cov --cov-append
+    echo $@
+    python -m pytest -xvv $@ --cov --cov-append
+    coverage report
+    coverage xml -o coverage/directory/xml_report.xml
+    coverage html -d coverage/directory/html_report
+    coverage erase
 }
 export -f run_coverage
 
-for CUR in $(find 'tests' \( -name '*.py' -and -name 'test_*' \) \
+ALL=$(find 'tests' \( -name '*.py' -and -name 'test_*' \) \
             -and -not -path 'tests/data/*' \
             -and -not -path 'tests/__pycache__/*' |
-            sort -sf); do
-    run_coverage ${CUR}
-done
-
-coverage report
-coverage xml
-coverage html
-coverage erase
+            sort -sf)
+# for CUR in $(find 'tests' \( -name '*.py' -and -name 'test_*' \) \
+#             -and -not -path 'tests/data/*' \
+#             -and -not -path 'tests/__pycache__/*' |
+#             sort -sf); do
+#     ALL="${ALL} ${CUR}"
+# done
+run_coverage ${ALL[@]}

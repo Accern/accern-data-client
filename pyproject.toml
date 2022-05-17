@@ -115,9 +115,3 @@
         "if TYPE_CHECKING:",
         "raise NotImplementedError()",
     ]
-
-[tool.coverage.html]
-    directory = "coverage/html_report"
-
-[tool.coverage.xml]
-    output = "coverage/xml_report.xml"
