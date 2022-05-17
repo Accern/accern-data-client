@@ -295,31 +295,37 @@ class CSVMode(Mode[pd.DataFrame]):
             data: Optional[List[pd.DataFrame]],
             indicator: ProgressIndicator,
             chunk_size: Optional[int] = None) -> Iterator[pd.DataFrame]:
-        assert chunk_size is not None and chunk_size > 0
-        # FIXEME: chunk == None use whatever you get
-        if data is not None:
-            self._buffer.append(data[0])
-            self._buffer_size += data[0].shape[0]
-        while self._buffer_size >= chunk_size:
-            res_df = pd.concat(self._buffer)
-            result: pd.DataFrame = res_df.iloc[:chunk_size]
-            remainder: pd.DataFrame = res_df.iloc[chunk_size:]
-            if remainder.empty:
-                self._buffer = []
-            else:
-                self._buffer = [remainder]
-            self._buffer_size = remainder.shape[0]
-            indicator.update(result.shape[0])
-            yield result
+        assert chunk_size is None or chunk_size > 0
+        if chunk_size is None:
+            if data is not None:
+                df = data[0]
+                print(f"shape {df.shape[0]}")
+                indicator.update(df.shape[0])
+                yield df
+        else:
+            if data is not None:
+                self._buffer.append(data[0])
+                self._buffer_size += data[0].shape[0]
+            while self._buffer_size >= chunk_size:
+                res_df = pd.concat(self._buffer)
+                result: pd.DataFrame = res_df.iloc[:chunk_size]
+                remainder: pd.DataFrame = res_df.iloc[chunk_size:]
+                if remainder.empty:
+                    self._buffer = []
+                else:
+                    self._buffer = [remainder]
+                self._buffer_size = remainder.shape[0]
+                indicator.update(result.shape[0])
+                yield result
 
-        if self.split_dates() and data is None:
-            if len(self._buffer) > 0:
-                buffer = pd.concat(self._buffer)
-                if not buffer.empty:
-                    indicator.update(buffer.shape[0])
-                    yield buffer
-            self._buffer = []
-            self._buffer_size = 0
+            if self.split_dates() and data is None:
+                if len(self._buffer) > 0:
+                    buffer = pd.concat(self._buffer)
+                    if not buffer.empty:
+                        indicator.update(buffer.shape[0])
+                        yield buffer
+                self._buffer = []
+                self._buffer_size = 0
 
 
 class JSONMode(Mode[Dict[str, Any]]):
@@ -638,7 +644,7 @@ class DataClient:
                 end_date=end_date,
                 mode=mode,
                 filters=filters,
-                chunk_size=100,  # FIXME: Keep it None
+                chunk_size=None,
                 indicator=indicator,
                 set_active_mode=set_active_mode):
             assert valid_mode is not None
