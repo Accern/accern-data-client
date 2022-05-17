@@ -295,7 +295,8 @@ class CSVMode(Mode[pd.DataFrame]):
             data: Optional[List[pd.DataFrame]],
             indicator: ProgressIndicator,
             chunk_size: Optional[int] = None) -> Iterator[pd.DataFrame]:
-        assert chunk_size is not None and chunk_size > 0  # FIXEME: chunk == None use whatever you get
+        assert chunk_size is not None and chunk_size > 0
+        # FIXEME: chunk == None use whatever you get
         if data is not None:
             self._buffer.append(data[0])
             self._buffer_size += data[0].shape[0]
@@ -607,25 +608,6 @@ class DataClient:
             return self.get_filters()
         return self.parse_filters(
             {**self.get_filters(), **self.validate_filters(filters)})
-
-    def _fetch_info(
-            self,
-            start_date: str,
-            end_date: str,
-            filters: Dict[str, str],
-            verbose: bool) -> Tuple[BarIndicator, List[int]]:
-        total = 0
-        expected_records: List[int] = []
-        progress_bar = BarIndicator(
-            total=len(pd.date_range(start_date, end_date)),
-            desc="Fetching info",
-            verbose=verbose)
-        for cur_date in pd.date_range(start_date, end_date):
-            expected_records.append(self._read_total(cur_date, filters))
-            progress_bar.update(1)
-        total = sum(expected_records)
-        progress_bar.set_total(total=total)
-        return progress_bar, expected_records
 
     def download_range(
             self,
