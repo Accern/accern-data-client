@@ -174,22 +174,34 @@ def is_jupyter() -> bool:
     return IS_JUPYTER
 
 
-class ProgressBar:
+class ProgressIndicator:
+    def log(self, msg: str) -> None:
+        raise NotImplementedError()
+
+    def update(self, num: int) -> None:
+        raise NotImplementedError()
+
+    def set_description(self, desc: str) -> None:
+        raise NotImplementedError()
+
+    def set_total(self, total: int) -> None:
+        raise NotImplementedError()
+
+    def get_total(self) -> Optional[int]:
+        raise NotImplementedError()
+
+    def close(self) -> None:
+        raise NotImplementedError()
+
+
+class BarIndicator(ProgressIndicator):
     def __init__(
             self,
-            total: Optional[int] = None,
-            desc: Optional[str] = None,
-            verbose: bool = False,
+            total: int,
+            desc: str,
             unit_scale: bool = True) -> None:
-        self._verbosity = verbose
-        if verbose:
-            self._pbar: Optional[tqdm.tqdm] = None
-            self._total: Optional[int] = -1
-        elif total is None:
-            self._pbar = None
-            self._total = None
-        elif is_jupyter():
-            self._pbar = tqdm.tqdm_notebook(
+        if is_jupyter():
+            self._pbar: tqdm.tqdm = tqdm.tqdm_notebook(
                 total=total,
                 desc=desc,
                 unit_scale=unit_scale,
@@ -202,22 +214,59 @@ class ProgressBar:
                 bar_format=BAR_FMT)
 
     def update(self, num: int) -> None:
-        if self._pbar is not None:
-            self._pbar.update(num)
+        self._pbar.update(num)
 
     def set_description(self, desc: str) -> None:
-        if self._pbar is not None:
-            self._pbar.set_description_str(desc)
+        self._pbar.set_description_str(desc)
 
     def set_total(self, total: int) -> None:
-        if self._pbar is not None:
-            self._pbar.reset(total=total)
+        self._pbar.reset(total=total)
 
     def get_total(self) -> Optional[int]:
-        if self._pbar is not None:
-            return self._pbar.total
-        return self._total
+        return self._pbar.total
 
     def close(self) -> None:
-        if self._pbar is not None:
-            self._pbar.close()
+        self._pbar.close()
+
+    def log(self, msg: str) -> None:
+        pass
+
+
+class MessageIndicator(ProgressIndicator):
+    def log(self, msg: str) -> None:
+        print(msg)
+
+    def update(self, num: int) -> None:
+        pass
+
+    def set_description(self, desc: str) -> None:
+        print(desc)
+
+    def set_total(self, total: int) -> None:
+        pass
+
+    def get_total(self) -> Optional[int]:
+        pass
+
+    def close(self) -> None:
+        pass
+
+
+class SilentIndicator(ProgressIndicator):
+    def log(self, msg: str) -> None:
+        pass
+
+    def update(self, num: int) -> None:
+        pass
+
+    def set_description(self, desc: str) -> None:
+        pass
+
+    def set_total(self, total: int) -> None:
+        pass
+
+    def get_total(self) -> Optional[int]:
+        pass
+
+    def close(self) -> None:
+        pass
