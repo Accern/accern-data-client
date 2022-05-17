@@ -125,11 +125,6 @@ VERBOSE = False
 T = TypeVar('T')
 
 
-def print_fn(msg: str) -> None:
-    if VERBOSE:
-        print(msg)
-
-
 class Mode(Generic[T]):
     def __init__(self) -> None:
         self._cur_date: Optional[str] = None
@@ -145,7 +140,7 @@ class Mode(Generic[T]):
     def clean_buffer(self) -> None:
         raise NotImplementedError
 
-    def get_buffer(self) -> Optional[pd.DataFrame]:
+    def get_buffer(self) -> Optional[T]:
         raise NotImplementedError
 
     def get_instance(self) -> 'Mode':
@@ -165,19 +160,21 @@ class Mode(Generic[T]):
             cur_date: str,
             path: str,
             pattern: Optional[str],
-            is_first_day: bool) -> None:
+            is_first_day: bool,
+            indicator: ProgressIndicator) -> None:
         self._cur_date = cur_date
         self._cur_path = path
         self._cur_pattern = pattern
-        self.do_init(is_first_day)
+        self.do_init(is_first_day, indicator)
 
-    def do_init(self, is_first_day: bool) -> None:
+    def do_init(
+            self, is_first_day: bool, indicator: ProgressIndicator) -> None:
         raise NotImplementedError()
 
     def add_result(self, signal: T) -> None:
         raise NotImplementedError()
 
-    def finish_day(self) -> None:
+    def finish_day(self, indicator: ProgressIndicator) -> None:
         raise NotImplementedError()
 
     def iterate_data(
@@ -269,18 +266,19 @@ class CSVMode(Mode[pd.DataFrame]):
         # Second last date.
         return max(dates[:-1]).strftime(DT_FORMAT)
 
-    def do_init(self, is_first_day: bool) -> None:
+    def do_init(
+            self, is_first_day: bool, indicator: ProgressIndicator) -> None:
         fname = self.get_path(self._is_by_day)
         if is_first_day or self._is_by_day:
             pd.DataFrame([], columns=self._cols).to_csv(
                 fname, index=False, header=True, mode="w")
-        print_fn(f"current file is {fname}")
+        indicator.log(f"current file is {fname}")
 
     def add_result(self, signal: pd.DataFrame) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
         signal.to_csv(fname, index=False, header=False, mode="a")
 
-    def finish_day(self) -> None:
+    def finish_day(self, indicator: ProgressIndicator) -> None:
         pass
 
     def split(
@@ -344,7 +342,7 @@ class JSONMode(Mode[Dict[str, Any]]):
     def clean_buffer(self) -> None:
         pass
 
-    def get_buffer(self) -> Optional[pd.DataFrame]:
+    def get_buffer(self) -> Optional[Dict[str, Any]]:
         return None
 
     def parse_result(self, resp: requests.Response) -> List[Dict[str, Any]]:
@@ -381,15 +379,16 @@ class JSONMode(Mode[Dict[str, Any]]):
             return dates[0].strftime(DT_FORMAT)
         return max(dates[:-1]).strftime(DT_FORMAT)
 
-    def do_init(self, is_first_day: bool) -> None:
+    def do_init(
+            self, is_first_day: bool, indicator: ProgressIndicator) -> None:
         self._res = []
 
     def add_result(self, signal: Dict[str, Any]) -> None:
         self._res.append(signal)
 
-    def finish_day(self) -> None:
+    def finish_day(self, indicator: ProgressIndicator) -> None:
         fname = self.get_path(is_by_day=True)
-        print_fn(f"writing results to {fname}")
+        indicator.log(f"writing results to {fname}")
 
         def stringify_dates(obj: Dict[str, Any]) -> Dict[str, Any]:
             if "harvested_at" in obj:
@@ -505,7 +504,10 @@ class DataClient:
         return list(self._error_list)
 
     def _read_total(
-            self, cur_date: str, filters: Dict[str, str]) -> int:
+            self,
+            cur_date: str,
+            filters: Dict[str, str],
+            indicator: ProgressIndicator) -> int:
         while True:
             try:
                 if is_example_url(self._base_url):
@@ -530,13 +532,14 @@ class DataClient:
                     KeyError,
                     requests.exceptions.RequestException):  # FIXME: add more?
                 self._error_list.append(traceback.format_exc())
-                print_fn("unknown error...retrying...")
+                indicator.log("unknown error...retrying...")
                 time.sleep(0.5)
 
     def _read_date(
             self,
             mode: Mode,
-            filters: Dict[str, str]) -> Union[
+            filters: Dict[str, str],
+            indicator: ProgressIndicator) -> Union[
                 List[pd.DataFrame], List[Dict[str, Any]]]:
         while True:
             try:
@@ -567,18 +570,18 @@ class DataClient:
                     KeyError,
                     requests.exceptions.RequestException):  # FIXME: add more?
                 self._error_list.append(traceback.format_exc())
-                print_fn("unknown error...retrying...")
+                indicator.log("unknown error...retrying...")
                 time.sleep(0.5)
 
     def _scroll(
             self,
             start_date: str,
             mode: Mode,
-            filters: Dict[str, str]) -> Iterator[
+            filters: Dict[str, str],
+            indicator: ProgressIndicator) -> Iterator[
                 Union[List[pd.DataFrame], List[Dict[str, Any]]]]:
-        print_fn("new day")
         self._params["harvested_after"] = start_date
-        batch = self._read_date(mode, filters)
+        batch = self._read_date(mode, filters, indicator)
         total = mode.size(batch)
         prev_start = start_date
         while mode.size(batch) > 0:
@@ -586,7 +589,7 @@ class DataClient:
                 start_date = mode.max_date(batch)
                 yield mode.split(batch, pd.to_datetime(start_date))
                 self._params["harvested_after"] = start_date
-                batch = self._read_date(mode, filters)
+                batch = self._read_date(mode, filters, indicator)
                 total += mode.size(batch)
                 if start_date == prev_start:
                     # FIXME: redundant check? batch_size becomes 0
@@ -632,11 +635,16 @@ class DataClient:
         valid_mode: Optional[Mode] = None
         cur_date: Optional[pd.Timestamp] = None
         prev_date: Optional[pd.Timestamp] = None
+        indicator_obj: Optional[ProgressIndicator] = None
 
-        def set_active_mode(mode: Mode, date: pd.Timestamp) -> None:
-            nonlocal valid_mode, cur_date
+        def set_active_mode(
+                mode: Mode,
+                date: pd.Timestamp,
+                indicator: ProgressIndicator) -> None:
+            nonlocal valid_mode, cur_date, indicator_obj
             valid_mode = mode
             cur_date = date
+            indicator_obj = indicator
 
         is_first_time = True
         for res in self.iterate_range(
@@ -649,22 +657,25 @@ class DataClient:
                 set_active_mode=set_active_mode):
             assert valid_mode is not None
             assert cur_date is not None
+            assert indicator_obj is not None
 
             if cur_date != prev_date:
                 if prev_date is not None:
-                    valid_mode.finish_day()
+                    valid_mode.finish_day(indicator_obj)
                 valid_mode.init_day(
                     cur_date.strftime('%Y-%m-%d'),
                     output_path,
                     output_pattern,
-                    is_first_time)
+                    is_first_time,
+                    indicator_obj)
             valid_mode.add_result(res)
             prev_date = cur_date
             is_first_time = False
 
         if prev_date is not None:
             assert valid_mode is not None
-            valid_mode.finish_day()
+            assert indicator_obj is not None
+            valid_mode.finish_day(indicator_obj)
 
     def iterate_range(
             self,
@@ -676,7 +687,8 @@ class DataClient:
             chunk_size: Optional[int] = None,
             indicator: Optional[Indicators] = "pbar",
             set_active_mode: Optional[
-                Callable[[Mode, pd.Timestamp], None]] = None,
+                Callable[
+                    [Mode, pd.Timestamp, ProgressIndicator], None]] = None,
             ) -> Iterator[Union[pd.DataFrame, Dict[str, Any]]]:
         valid_mode = self._get_valid_mode(mode)
         valid_filters = self._get_valid_filters(filters)
@@ -698,19 +710,24 @@ class DataClient:
         total = 0
         expected_records: List[int] = []
         for cur_date in pd.date_range(start_date, end_date):
-            expected_records.append(self._read_total(cur_date, valid_filters))
+            expected_records.append(
+                self._read_total(
+                    cur_date, valid_filters, indicator=indicator_obj))
             indicator_obj.update(1)
         total = sum(expected_records)
         indicator_obj.set_total(total=total)
         indicator_obj.set_description(desc="Downloading signals")
         for cur_date in pd.date_range(start_date, end_date):
             if set_active_mode is not None:
-                set_active_mode(valid_mode, cur_date)
+                set_active_mode(valid_mode, cur_date, indicator_obj)
             date = cur_date.strftime("%Y-%m-%d")
             indicator_obj.set_description(f"Downloading signals for {date}")
             self._params["date"] = date
             iterator = self._scroll(
-                "1900-01-01", valid_mode, valid_filters)
+                "1900-01-01",
+                valid_mode,
+                valid_filters,
+                indicator=indicator_obj)
             for data in iterator:
                 yield from valid_mode.iterate_data(
                     data, indicator=indicator_obj, chunk_size=chunk_size)
