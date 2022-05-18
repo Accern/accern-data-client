@@ -297,7 +297,6 @@ class CSVMode(Mode[pd.DataFrame]):
         if chunk_size is None:
             if data is not None:
                 df = data[0]
-                print(f"shape {df.shape[0]}")
                 indicator.update(df.shape[0])
                 yield df
         else:
