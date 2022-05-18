@@ -763,5 +763,7 @@ class DataClient:
 
 def create_data_client(
         url: str,
-        token: str) -> DataClient:
-    return DataClient(url, token)
+        token: str,
+        n_errors: int = 5,
+        indicator: Optional[Indicators] = "pbar") -> DataClient:
+    return DataClient(url, token, n_errors, indicator)
