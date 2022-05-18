@@ -39,6 +39,12 @@ jobs:
         git status -sb --porcelain
         [ -z "$(git status --porcelain)" ]
 
+    - name: Check
+      run: |
+        echo "details"
+        echo ${SONAR_HOST_URL}
+        echo ${SONAR_TOKEN}
+
     - name: Lint Code (use uppercase TODO, XXX, FIXME, NOTE and explain nopep8)
       run: |
         make lint-comment
