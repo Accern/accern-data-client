@@ -89,7 +89,7 @@ jobs:
 
     - name: Check Before
       run: |
-        echo ${SONAR_HOST_URL} ${env.SONAR_HOST_URL} ${secrets.SONAR_HOST_URL} ${env.secrets.SONAR_HOST_URL}
+        echo ${SONAR_HOST_URL}
         echo ${SONAR_TOKEN}
 
     - name: SonarQube
