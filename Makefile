@@ -23,6 +23,9 @@ ENV ?= venv
 VERSION=`echo "from packages.python.accern_data import __version__;import sys;out = sys.stdout;out.write(__version__);out.flush();" | python3 2>/dev/null`
 TS_VERSION=`echo "import json;fin=open('package.json', 'r');version=json.loads(fin.read())['version'];fin.close();print(version)" | python3 2>/dev/null`
 
+coverage-report:
+	./coverage/coverage.sh
+
 create-env:
 	python3 -m venv $(ENV)
 	. $(ENV)/bin/activate
