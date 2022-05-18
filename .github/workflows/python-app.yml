@@ -97,10 +97,12 @@ jobs:
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        TEST_VAR: 900000
       run: |
         printenv
         echo "SONAR_HOST_URL: ${SONAR_HOST_URL}"
         echo "SONAR_TOKEN: ${SONAR_TOKEN}"
+        echo "TEST_VAR: ${TEST_VAR}"
 
     - name: Check After
       run: |
