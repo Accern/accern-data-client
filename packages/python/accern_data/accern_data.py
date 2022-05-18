@@ -428,12 +428,16 @@ class DataClient:
             self,
             url: str,
             token: str,
-            n_errors: int = 5) -> None:
+            n_errors: int = 5,
+            indicator: Optional[Indicators] = "pbar") -> None:
         self._base_url = url
         self._token = token
         self._filters: Dict[str, str] = {}
         self._params: Dict[str, str] = {}
         self._mode: Optional[Mode] = None
+        self._indicator_obj: Optional[ProgressIndicator] = None
+        if indicator is not None:
+            self.set_indicator(indicator)
         self._error_list: Deque[str] = deque(maxlen=n_errors)
 
     def reset_error_list(self) -> None:
@@ -465,6 +469,26 @@ class DataClient:
             if value is not None:
                 proper_filters[key] = field_transformation(value)
         return proper_filters
+
+    def set_indicator(self, indicator: Indicators) -> None:
+        self._indicator_obj = self.parse_indicator(indicator)
+
+    @staticmethod
+    def parse_indicator(indicator: Indicators) -> ProgressIndicator:
+        if indicator not in INDICATORS:
+            raise ValueError(
+                f"Indicator should be None or one of {INDICATORS}. "
+                f"It cannot be '{indicator}'.")
+        if indicator == "pbar":
+            return BarIndicator()
+        if indicator == "silent":
+            return SilentIndicator()
+        return MessageIndicator()
+
+    def get_indicator(self) -> ProgressIndicator:
+        if self._indicator_obj is None:
+            raise ValueError("Set indicator first.")
+        return self._indicator_obj
 
     def set_filters(self, filters: FiltersType) -> None:
         self.set_raw_filters(self.validate_filters(filters))
@@ -627,7 +651,7 @@ class DataClient:
             mode: Optional[
                 Union[Mode, ModeType, Tuple[ModeType, bool]]] = None,
             filters: Optional[FiltersType] = None,
-            indicator: Optional[Indicators] = "pbar",) -> None:
+            indicator: Optional[Indicators] = None) -> None:
         if output_path is None:
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
@@ -685,7 +709,7 @@ class DataClient:
                 Union[Mode, ModeType, Tuple[ModeType, bool]]] = None,
             filters: Optional[FiltersType] = None,
             chunk_size: Optional[int] = None,
-            indicator: Optional[Indicators] = "pbar",
+            indicator: Optional[Indicators] = None,
             set_active_mode: Optional[
                 Callable[
                     [Mode, pd.Timestamp, ProgressIndicator], None]] = None,
@@ -695,18 +719,14 @@ class DataClient:
         valid_mode.clean_buffer()
         if end_date is None:
             end_date = start_date
-        if indicator not in INDICATORS:
-            raise ValueError(
-                f"Indicator should be None or one of {INDICATORS}. "
-                f"It cannot be '{indicator}'.")
-        if indicator == "pbar":
-            indicator_obj: ProgressIndicator = BarIndicator(
-                total=len(pd.date_range(start_date, end_date)),
-                desc="Fetching info")
-        elif indicator is None or indicator == "silent":
-            indicator_obj = SilentIndicator()
+        if indicator is None:
+            indicator_obj = self.get_indicator()
         else:
-            indicator_obj = MessageIndicator()
+            indicator_obj = self.parse_indicator(indicator)
+
+        indicator_obj.generate_bar(
+            total=len(pd.date_range(start_date, end_date)))
+        indicator_obj.set_description(desc="Fetching info")
         total = 0
         expected_records: List[int] = []
         for cur_date in pd.date_range(start_date, end_date):

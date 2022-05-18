@@ -187,7 +187,7 @@ class ProgressIndicator:
     def set_total(self, total: int) -> None:
         raise NotImplementedError()
 
-    def get_total(self) -> Optional[int]:
+    def generate_bar(self, total: int) -> None:
         raise NotImplementedError()
 
     def close(self) -> None:
@@ -195,37 +195,29 @@ class ProgressIndicator:
 
 
 class BarIndicator(ProgressIndicator):
-    def __init__(
-            self,
-            total: int,
-            desc: str,
-            unit_scale: bool = True) -> None:
+    def __init__(self) -> None:
+        self._pbar: Optional[tqdm.tqdm] = None
+
+    def generate_bar(self, total: int) -> None:
         if is_jupyter():
-            self._pbar: tqdm.tqdm = tqdm.tqdm_notebook(
-                total=total,
-                desc=desc,
-                unit_scale=unit_scale,
-                bar_format=BAR_FMT)
+            self._pbar = tqdm.tqdm_notebook(total=total, bar_format=BAR_FMT)
         else:
-            self._pbar = tqdm.tqdm(
-                total=total,
-                desc=desc,
-                unit_scale=unit_scale,
-                bar_format=BAR_FMT)
+            self._pbar = tqdm.tqdm(total=total, bar_format=BAR_FMT)
 
     def update(self, num: int) -> None:
+        assert self._pbar is not None
         self._pbar.update(num)
 
     def set_description(self, desc: str) -> None:
+        assert self._pbar is not None
         self._pbar.set_description_str(desc)
 
     def set_total(self, total: int) -> None:
+        assert self._pbar is not None
         self._pbar.reset(total=total)
 
-    def get_total(self) -> Optional[int]:
-        return self._pbar.total
-
     def close(self) -> None:
+        assert self._pbar is not None
         self._pbar.close()
 
     def log(self, msg: str) -> None:
@@ -245,7 +237,7 @@ class MessageIndicator(ProgressIndicator):
     def set_total(self, total: int) -> None:
         pass
 
-    def get_total(self) -> Optional[int]:
+    def generate_bar(self, total: int) -> None:
         pass
 
     def close(self) -> None:
@@ -265,7 +257,7 @@ class SilentIndicator(ProgressIndicator):
     def set_total(self, total: int) -> None:
         pass
 
-    def get_total(self) -> Optional[int]:
+    def generate_bar(self, total: int) -> None:
         pass
 
     def close(self) -> None:
