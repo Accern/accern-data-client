@@ -93,10 +93,13 @@ jobs:
         echo "SONAR_TOKEN: ${SONAR_TOKEN}"
 
     - name: SonarQube
-      uses: sonarsource/sonarqube-scan-action@master
+      # uses: sonarsource/sonarqube-scan-action@master
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      run: |
+        echo "SONAR_HOST_URL: ${SONAR_HOST_URL}"
+        echo "SONAR_TOKEN: ${SONAR_TOKEN}"
 
     - name: Check After
       run: |
