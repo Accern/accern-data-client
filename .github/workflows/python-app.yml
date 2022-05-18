@@ -101,6 +101,9 @@ jobs:
       run: |
         printenv
         echo "SONAR_HOST_URL: ${SONAR_HOST_URL}"
+        echo "env.SONAR_HOST_URL: ${env.SONAR_HOST_URL}"
+        echo "secrets.SONAR_HOST_URL: ${secrets.SONAR_HOST_URL}"
+        echo "env.secrets.SONAR_HOST_URL: ${env.secrets.SONAR_HOST_URL}"
         echo "SONAR_TOKEN: ${SONAR_TOKEN}"
         echo "TEST_VAR: ${TEST_VAR}"
 
