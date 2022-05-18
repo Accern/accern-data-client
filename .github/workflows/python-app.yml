@@ -41,7 +41,6 @@ jobs:
 
     - name: Check
       run: |
-        echo "details"
         echo ${SONAR_HOST_URL}
         echo ${SONAR_TOKEN}
 
