@@ -4,8 +4,8 @@ set -e
 export IS_TEST=1
 
 echo "details"
-echo ${secrets.SONAR_HOST_URL}
-echo ${secrets.SONAR_TOKEN}
+echo ${SONAR_HOST_URL}
+echo ${SONAR_TOKEN}
 coverage erase
 
 find * \( -name '*.py' -o -name '*.pyi' \) -and -not -path './venv/*' \
