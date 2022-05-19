@@ -557,10 +557,9 @@ class DataClient:
 
     def _read_date(
             self,
-            mode: Mode,
+            mode: Mode[T],
             filters: Dict[str, str],
-            indicator: ProgressIndicator) -> Union[
-                List[pd.DataFrame], List[Dict[str, Any]]]:
+            indicator: ProgressIndicator) -> List[T]:
         while True:
             try:
                 if is_example_url(self._base_url):
@@ -596,10 +595,9 @@ class DataClient:
     def _scroll(
             self,
             start_date: str,
-            mode: Mode,
+            mode: Mode[T],
             filters: Dict[str, str],
-            indicator: ProgressIndicator) -> Iterator[
-                Union[List[pd.DataFrame], List[Dict[str, Any]]]]:
+            indicator: ProgressIndicator) -> Iterator[List[T]]:
         self._params["harvested_after"] = start_date
         batch = self._read_date(mode, filters, indicator)
         total = mode.size(batch)
@@ -699,14 +697,14 @@ class DataClient:
             start_date: str,
             end_date: Optional[str] = None,
             mode: Optional[
-                Union[Mode, ModeType, Tuple[ModeType, bool]]] = None,
+                Union[Mode[T], ModeType, Tuple[ModeType, bool]]] = None,
             filters: Optional[FiltersType] = None,
             chunk_size: Optional[int] = None,
             indicator: Optional[Indicators] = None,
             set_active_mode: Optional[
                 Callable[
-                    [Mode, pd.Timestamp, ProgressIndicator], None]] = None,
-            ) -> Iterator[Union[pd.DataFrame, Dict[str, Any]]]:
+                    [Mode[T], pd.Timestamp, ProgressIndicator], None]] = None,
+            ) -> Iterator[T]:
         valid_mode = self._get_valid_mode(mode)
         valid_filters = self._get_valid_filters(filters)
         valid_mode.clean_buffer()
