@@ -160,15 +160,13 @@ class Mode(Generic[T]):
             cur_date: str,
             path: str,
             pattern: Optional[str],
-            is_first_day: bool,
             indicator: ProgressIndicator) -> None:
         self._cur_date = cur_date
         self._cur_path = path
         self._cur_pattern = pattern
-        self.do_init(is_first_day, indicator)
+        self.do_init(indicator)
 
-    def do_init(
-            self, is_first_day: bool, indicator: ProgressIndicator) -> None:
+    def do_init(self, indicator: ProgressIndicator) -> None:
         raise NotImplementedError()
 
     def add_result(self, signal: T) -> None:
@@ -215,6 +213,7 @@ class CSVMode(Mode[pd.DataFrame]):
         self._is_by_day = is_by_day
         self._buffer: List[pd.DataFrame] = []
         self._buffer_size = 0
+        self._begining_of_file = True
 
     def get_format(self) -> str:
         return "csv"
@@ -266,10 +265,9 @@ class CSVMode(Mode[pd.DataFrame]):
         # Second last date.
         return max(dates[:-1]).strftime(DT_FORMAT)
 
-    def do_init(
-            self, is_first_day: bool, indicator: ProgressIndicator) -> None:
+    def do_init(self, indicator: ProgressIndicator) -> None:
         fname = self.get_path(self._is_by_day)
-        if is_first_day or self._is_by_day:
+        if self._begining_of_file or self._is_by_day:
             pd.DataFrame([], columns=self._cols).to_csv(
                 fname, index=False, header=True, mode="w")
         indicator.log(f"current file is {fname}")
@@ -279,7 +277,7 @@ class CSVMode(Mode[pd.DataFrame]):
         signal.to_csv(fname, index=False, header=False, mode="a")
 
     def finish_day(self, indicator: ProgressIndicator) -> None:
-        pass
+        self._begining_of_file = self._is_by_day
 
     def split(
             self,
@@ -378,8 +376,7 @@ class JSONMode(Mode[Dict[str, Any]]):
             return dates[0].strftime(DT_FORMAT)
         return max(dates[:-1]).strftime(DT_FORMAT)
 
-    def do_init(
-            self, is_first_day: bool, indicator: ProgressIndicator) -> None:
+    def do_init(self, indicator: ProgressIndicator) -> None:
         self._res = []
 
     def add_result(self, signal: Dict[str, Any]) -> None:
@@ -669,7 +666,6 @@ class DataClient:
             cur_date = date
             indicator_obj = indicator
 
-        is_first_time = True
         for res in self.iterate_range(
                 start_date=start_date,
                 end_date=end_date,
@@ -689,11 +685,9 @@ class DataClient:
                     cur_date.strftime('%Y-%m-%d'),
                     output_path,
                     output_pattern,
-                    is_first_time,
                     indicator_obj)
             valid_mode.add_result(res)
             prev_date = cur_date
-            is_first_time = False
 
         if prev_date is not None:
             assert valid_mode is not None
