@@ -260,6 +260,7 @@ class CSVMode(Mode):
         signal.to_csv(fname, index=False, header=False, mode="a")
 
     def finish_day(self) -> None:
+        # csv files are saved intermediately by add_result
         pass
 
     def split(
@@ -462,7 +463,7 @@ class DataClient():
             except (
                     AssertionError,
                     KeyError,
-                    requests.exceptions.RequestException):  # FIXME: add more?
+                    requests.exceptions.RequestException):  # NOTE: add more?
                 self._error_list.append(traceback.format_exc())
                 print_fn("unknown error...retrying...")
                 time.sleep(0.5)
@@ -499,7 +500,7 @@ class DataClient():
             except (
                     AssertionError,
                     KeyError,
-                    requests.exceptions.RequestException):  # FIXME: add more?
+                    requests.exceptions.RequestException):  # NOTE: add more?
                 self._error_list.append(traceback.format_exc())
                 print_fn("unknown error...retrying...")
                 time.sleep(0.5)
@@ -513,7 +514,6 @@ class DataClient():
         print_fn("new day")
         self._params["harvested_after"] = start_date
         batch = self._read_date(mode, filters)
-        total = mode.size(batch)
         prev_start = start_date
         while mode.size(batch) > 0:
             try:
@@ -521,7 +521,6 @@ class DataClient():
                 yield mode.split(batch, pd.to_datetime(start_date))
                 self._params["harvested_after"] = start_date
                 batch = self._read_date(mode, filters)
-                total += mode.size(batch)
                 if start_date == prev_start:
                     # FIXME: redundant check? batch_size becomes 0
                     # loop gets terminated.
