@@ -662,15 +662,6 @@ class DataClient:
             valid_mode = mode
             cur_date = date
             indicator_obj = indicator
-            assert output_path is not None
-            if cur_date != prev_date:
-                if prev_date is not None:
-                    valid_mode.finish_day(indicator_obj)
-                valid_mode.init_day(
-                    cur_date.strftime('%Y-%m-%d'),
-                    output_path,
-                    output_pattern,
-                    indicator_obj)
 
         for res in self.iterate_range(
                 start_date=start_date,
@@ -684,6 +675,14 @@ class DataClient:
             assert cur_date is not None
             assert indicator_obj is not None
 
+            if cur_date != prev_date:
+                if prev_date is not None:
+                    valid_mode.finish_day(indicator_obj)
+                valid_mode.init_day(
+                    cur_date.strftime('%Y-%m-%d'),
+                    output_path,
+                    output_pattern,
+                    indicator_obj)
             valid_mode.add_result(res)
             prev_date = cur_date
 
