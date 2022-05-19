@@ -277,6 +277,7 @@ class CSVMode(Mode[pd.DataFrame]):
         signal.to_csv(fname, index=False, header=False, mode="a")
 
     def finish_day(self, indicator: ProgressIndicator) -> None:
+        # csv files are saved by add_result
         self._begining_of_file = self._is_by_day
 
     def split(
@@ -550,7 +551,7 @@ class DataClient:
             except (
                     AssertionError,
                     KeyError,
-                    requests.exceptions.RequestException):  # FIXME: add more?
+                    requests.exceptions.RequestException):  # NOTE: add more?
                 self._error_list.append(traceback.format_exc())
                 indicator.log("unknown error...retrying...")
                 time.sleep(0.5)
@@ -587,7 +588,7 @@ class DataClient:
             except (
                     AssertionError,
                     KeyError,
-                    requests.exceptions.RequestException):  # FIXME: add more?
+                    requests.exceptions.RequestException):  # NOTE: add more?
                 self._error_list.append(traceback.format_exc())
                 indicator.log("unknown error...retrying...")
                 time.sleep(0.5)
@@ -599,16 +600,14 @@ class DataClient:
             filters: Dict[str, str],
             indicator: ProgressIndicator) -> Iterator[List[T]]:
         self._params["harvested_after"] = start_date
-        batch = self._read_date(mode, filters, indicator)
-        total = mode.size(batch)
+        batch = self._read_date(mode, filters)
         prev_start = start_date
         while mode.size(batch) > 0:
             try:
                 start_date = mode.max_date(batch)
                 yield mode.split(batch, pd.to_datetime(start_date))
                 self._params["harvested_after"] = start_date
-                batch = self._read_date(mode, filters, indicator)
-                total += mode.size(batch)
+                batch = self._read_date(mode, filters)
                 if start_date == prev_start:
                     # FIXME: redundant check? batch_size becomes 0
                     # loop gets terminated.

@@ -99,11 +99,12 @@ def generate_file_response(
     date_dt = pd.to_datetime(date, utc=True)
     harvested_after_dt = pd.to_datetime(harvested_after, utc=True)
 
+    if is_test():
+        path = f"tests/data/data-2022.{mode}"
+    else:
+        path = get_master_file(mode)
+
     if mode == "csv":
-        if is_test():
-            path = "tests/data/data-2022.csv"
-        else:
-            path = get_master_file(mode)
         df = pd.read_csv(path)
         df["harvested_at"] = pd.to_datetime(df["harvested_at"])
         df["published_at"] = pd.to_datetime(df["published_at"])
@@ -123,10 +124,6 @@ def generate_file_response(
         obj = io.BytesIO()
         filtered_df.to_csv(obj, index=False)
     else:
-        if is_test():
-            path = "tests/data/data-2022.json"
-        else:
-            path = get_master_file(mode)
         json_obj = load_json(path)
         filtered_json = {
             key: val

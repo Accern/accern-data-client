@@ -107,7 +107,6 @@
     omit = [
         "*/__init__*",
         "*/sitecustomize*",
-        "*/tests/*",
     ]
 
 [tool.coverage.report]
