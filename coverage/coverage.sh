@@ -21,6 +21,6 @@ for CUR in $(find 'tests' \( -name '*.py' -and -name 'test_*' \) \
             sort -sf); do
     run_coverage ${CUR}
 done
-coverage xml -o coverage/directory/xml_report.xml
-coverage html -d coverage/directory/html_report
+coverage xml -o coverage/reports/xml_report.xml
+coverage html -d coverage/reports/html_report
 coverage erase
