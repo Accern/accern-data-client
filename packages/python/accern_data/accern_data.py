@@ -260,7 +260,7 @@ class CSVMode(Mode):
         signal.to_csv(fname, index=False, header=False, mode="a")
 
     def finish_day(self) -> None:
-        # csv files are saved intermediately by add_result
+        # csv files are saved by add_result
         pass
 
     def split(
