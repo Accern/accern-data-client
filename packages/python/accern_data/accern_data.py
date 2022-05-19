@@ -581,7 +581,7 @@ class DataClient:
                             **{"format": mode.get_format()}
                         })
                 if not str(resp.text).strip():
-                    return []  # type: ignore
+                    return []
                 return mode.parse_result(resp)
             except KeyboardInterrupt as err:
                 raise err
@@ -600,14 +600,14 @@ class DataClient:
             filters: Dict[str, str],
             indicator: ProgressIndicator) -> Iterator[List[T]]:
         self._params["harvested_after"] = start_date
-        batch = self._read_date(mode, filters)
+        batch = self._read_date(mode, filters, indicator)
         prev_start = start_date
         while mode.size(batch) > 0:
             try:
                 start_date = mode.max_date(batch)
                 yield mode.split(batch, pd.to_datetime(start_date))
                 self._params["harvested_after"] = start_date
-                batch = self._read_date(mode, filters)
+                batch = self._read_date(mode, filters, indicator)
                 if start_date == prev_start:
                     # FIXME: redundant check? batch_size becomes 0
                     # loop gets terminated.
