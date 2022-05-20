@@ -635,6 +635,12 @@ class DataClient:
         return self.parse_filters(
             {**self.get_filters(), **self.validate_filters(filters)})
 
+    def _get_valid_indicator(
+            self, indicator: Optional[Indicators]) -> ProgressIndicator:
+        if indicator is None:
+            return self.get_indicator()
+        return self.parse_indicator(indicator)
+
     def download_range(
             self,
             start_date: str,
@@ -709,11 +715,7 @@ class DataClient:
         valid_mode.clean_buffer()
         if end_date is None:
             end_date = start_date
-        if indicator is None:
-            indicator_obj = self.get_indicator()
-        else:
-            indicator_obj = self.parse_indicator(indicator)
-
+        indicator_obj = self._get_valid_indicator(indicator)
         indicator_obj.generate_bar(
             total=len(pd.date_range(start_date, end_date)))
         indicator_obj.set_description(desc="Fetching info")
