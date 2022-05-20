@@ -297,7 +297,8 @@ class CSVMode(Mode[pd.DataFrame]):
             if data is not None:
                 df = data[0]
                 indicator.update(df.shape[0])
-                yield df
+                if not df.empty:
+                    yield df
         else:
             if data is not None:
                 self._buffer.append(data[0])
