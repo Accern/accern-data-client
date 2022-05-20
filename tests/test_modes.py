@@ -11,7 +11,7 @@ from packages.python.accern_data.accern_data import (
     Mode,
     ModeType,
 )
-from packages.python.accern_data.util import load_json
+from packages.python.accern_data.util import EXAMPLE_URL, load_json
 
 
 @pytest.mark.parametrize(
@@ -30,8 +30,7 @@ def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
     output_pattern = f"test_csv_date_{sheet_mode}_{method_used}"
-    client = create_data_client(
-        "http://api.example.com/", "SomeRandomToken")
+    client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     if method_used == "method":
         client.set_mode(sheet_mode, split_dates=True)
         mode: Optional[Union[Mode, ModeType, Tuple[ModeType, bool]]] = None
@@ -77,8 +76,7 @@ def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
     output_pattern = f"test_csv_full_{sheet_mode}_{method_used}"
-    client = create_data_client(
-        "http://api.example.com/", "SomeRandomToken")
+    client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
 
     if method_used == "method":
         client.set_mode(sheet_mode, split_dates=False)
@@ -111,8 +109,7 @@ def test_json(method_used: str) -> None:
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
     output_pattern = f"test_json_{method_used}"
-    client = create_data_client(
-        "http://api.example.com/", "SomeRandomToken")
+    client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     if method_used == "method":
         client.set_mode("json", split_dates=True)
         mode: Optional[Union[Mode, ModeType, Tuple[ModeType, bool]]] = None

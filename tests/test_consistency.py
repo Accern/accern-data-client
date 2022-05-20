@@ -9,7 +9,7 @@ from packages.python.accern_data.accern_data import (
     DT_FORMAT,
     ModeType,
 )
-from packages.python.accern_data.util import load_json
+from packages.python.accern_data.util import EXAMPLE_URL, load_json
 
 
 @pytest.mark.parametrize("sheet_mode", ["csv", "df"])
@@ -18,8 +18,7 @@ def test_csv_full_csv_date_consistency(sheet_mode: ModeType) -> None:
     end_date = "2022-03-04"
     output_pattern = f"test_csv_full_csv_date_consistency_{sheet_mode}"
     output_path = "./tests/outputs/"
-    client = create_data_client(
-        "http://api.example.com/", "SomeRandomToken")
+    client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=True)
     client.download_range(
         start_date=start_date,
@@ -58,8 +57,7 @@ def test_json_csv_date_consistency(sheet_mode: ModeType) -> None:
     end_date = "2022-03-04"
     output_pattern = f"test_json_csv_date_consistency_{sheet_mode}"
     output_path = "./tests/outputs/"
-    client = create_data_client(
-        "http://api.example.com/", "SomeRandomToken")
+    client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=True)
     client.download_range(
         start_date=start_date,

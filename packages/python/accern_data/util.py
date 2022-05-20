@@ -11,7 +11,7 @@ from requests import Response
 
 from . import __version__
 
-EXAMPLE_URL = "http://api.example.com/"
+EXAMPLE_URL = "https://api.example.com/"
 IS_JUPYTER: Optional[bool] = None
 IS_TEST: Optional[bool] = None
 L_BAR = """{desc}: |"""

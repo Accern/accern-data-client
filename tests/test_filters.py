@@ -6,7 +6,11 @@ from packages.python.accern_data.accern_data import (
     FiltersType,
     ModeType,
 )
-from packages.python.accern_data.util import field_transformation, load_json
+from packages.python.accern_data.util import (
+    EXAMPLE_URL,
+    field_transformation,
+    load_json,
+)
 
 FILTERS: FiltersType = {
     "provider_id": 5,
@@ -26,8 +30,7 @@ def test_filters_csv_full(
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
     output_pattern = f"test_filters_csv_full_{sheet_mode}_{uses_filter_method}"
-    client = create_data_client(
-        "http://api.example.com/", "SomeRandomToken")
+    client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=False)
     if uses_filter_method:
         client.set_filters(FILTERS)
@@ -58,8 +61,7 @@ def test_filters_csv_date(
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
     output_pattern = f"test_filters_csv_date_{sheet_mode}_{uses_filter_method}"
-    client = create_data_client(
-        "http://api.example.com/", "SomeRandomToken")
+    client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=True)
     if uses_filter_method:
         client.set_filters(FILTERS)
@@ -93,8 +95,7 @@ def test_filters_json(uses_filter_method: bool) -> None:
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
     output_pattern = f"test_filters_json_{uses_filter_method}"
-    client = create_data_client(
-        "http://api.example.com/", "SomeRandomToken")
+    client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode("json", split_dates=True)
     if uses_filter_method:
         client.set_filters(FILTERS)
