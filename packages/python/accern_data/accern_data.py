@@ -426,15 +426,17 @@ class DataClient:
             url: str,
             token: str,
             n_errors: int = 5,
-            indicator: Optional[Indicators] = "pbar") -> None:
+            indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
+            ) -> None:
         self._base_url = url
         self._token = token
         self._filters: Dict[str, str] = {}
         self._params: Dict[str, str] = {}
         self._mode: Optional[Mode] = None
-        self._indicator_obj: Optional[ProgressIndicator] = None
         if indicator is not None:
             self.set_indicator(indicator)
+        else:
+            self._indicator_obj = self.parse_indicator("pbar")
         self._error_list: Deque[str] = deque(maxlen=n_errors)
 
     def reset_error_list(self) -> None:
@@ -467,8 +469,12 @@ class DataClient:
                 proper_filters[key] = field_transformation(value)
         return proper_filters
 
-    def set_indicator(self, indicator: Indicators) -> None:
-        self._indicator_obj = self.parse_indicator(indicator)
+    def set_indicator(
+            self, indicator: Union[Indicators, ProgressIndicator]) -> None:
+        if isinstance(indicator, ProgressIndicator):
+            self._indicator_obj = indicator
+        else:
+            self._indicator_obj = self.parse_indicator(indicator)
 
     @staticmethod
     def parse_indicator(indicator: Indicators) -> ProgressIndicator:
@@ -636,9 +642,12 @@ class DataClient:
             {**self.get_filters(), **self.validate_filters(filters)})
 
     def _get_valid_indicator(
-            self, indicator: Optional[Indicators]) -> ProgressIndicator:
+            self, indicator: Optional[Union[Indicators, ProgressIndicator]],
+            ) -> ProgressIndicator:
         if indicator is None:
             return self.get_indicator()
+        if isinstance(indicator, ProgressIndicator):
+            return indicator
         return self.parse_indicator(indicator)
 
     def download_range(
@@ -650,7 +659,8 @@ class DataClient:
             mode: Optional[
                 Union[Mode, ModeType, Tuple[ModeType, bool]]] = None,
             filters: Optional[FiltersType] = None,
-            indicator: Optional[Indicators] = None) -> None:
+            indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
+            ) -> None:
         if output_path is None:
             output_path = "./"
         os.makedirs(output_path, exist_ok=True)
@@ -705,7 +715,7 @@ class DataClient:
                 Union[Mode[T], ModeType, Tuple[ModeType, bool]]] = None,
             filters: Optional[FiltersType] = None,
             chunk_size: Optional[int] = None,
-            indicator: Optional[Indicators] = None,
+            indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
             set_active_mode: Optional[
                 Callable[
                     [Mode[T], pd.Timestamp, ProgressIndicator], None]] = None,
@@ -758,5 +768,6 @@ def create_data_client(
         url: str,
         token: str,
         n_errors: int = 5,
-        indicator: Optional[Indicators] = "pbar") -> DataClient:
+        indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
+        ) -> DataClient:
     return DataClient(url, token, n_errors, indicator)
