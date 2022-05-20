@@ -178,8 +178,7 @@ class Mode(Generic[T]):
     def iterate_data(
             self,
             data: Optional[List[T]],
-            indicator: ProgressIndicator,
-            chunk_size: Optional[int] = None) -> Iterator[T]:
+            indicator: ProgressIndicator) -> Iterator[T]:
         raise NotImplementedError()
 
     def split(self, batch: List[T], value: pd.Timestamp) -> List[T]:
@@ -207,10 +206,12 @@ class Mode(Generic[T]):
 
 
 class CSVMode(Mode[pd.DataFrame]):
-    def __init__(self, is_by_day: bool) -> None:
+    def __init__(
+            self, is_by_day: bool, chunk_size: Optional[int] = None) -> None:
         super().__init__()
         self._cols = None
         self._is_by_day = is_by_day
+        self._chunk_size = chunk_size
         self._buffer: List[pd.DataFrame] = []
         self._buffer_size = 0
         self._begining_of_file = True
@@ -290,10 +291,9 @@ class CSVMode(Mode[pd.DataFrame]):
     def iterate_data(
             self,
             data: Optional[List[pd.DataFrame]],
-            indicator: ProgressIndicator,
-            chunk_size: Optional[int] = None) -> Iterator[pd.DataFrame]:
-        assert chunk_size is None or chunk_size > 0
-        if chunk_size is None:
+            indicator: ProgressIndicator) -> Iterator[pd.DataFrame]:
+        assert self._chunk_size is None or self._chunk_size > 0
+        if self._chunk_size is None:
             if data is not None:
                 df = data[0]
                 indicator.update(df.shape[0])
@@ -303,10 +303,10 @@ class CSVMode(Mode[pd.DataFrame]):
             if data is not None:
                 self._buffer.append(data[0])
                 self._buffer_size += data[0].shape[0]
-            while self._buffer_size >= chunk_size:
+            while self._buffer_size >= self._chunk_size:
                 res_df = pd.concat(self._buffer)
-                result: pd.DataFrame = res_df.iloc[:chunk_size]
-                remainder: pd.DataFrame = res_df.iloc[chunk_size:]
+                result: pd.DataFrame = res_df.iloc[:self._chunk_size]
+                remainder: pd.DataFrame = res_df.iloc[self._chunk_size:]
                 if remainder.empty:
                     self._buffer = []
                 else:
@@ -413,8 +413,7 @@ class JSONMode(Mode[Dict[str, Any]]):
     def iterate_data(
             self,
             data: Optional[List[Dict[str, Any]]],
-            indicator: ProgressIndicator,
-            chunk_size: Optional[int] = None) -> Iterator[Dict[str, Any]]:
+            indicator: ProgressIndicator) -> Iterator[Dict[str, Any]]:
         if data is not None:
             for rec in data:
                 indicator.update(1)
@@ -505,7 +504,10 @@ class DataClient:
         return self._filters
 
     @staticmethod
-    def parse_mode(mode: ModeType, split_dates: bool = True) -> Mode:
+    def _parse_mode(
+            mode: ModeType,
+            split_dates: bool = True,
+            chunk_size: Optional[int] = None) -> Mode:
         if mode == "json":
             if not split_dates:
                 warnings.warn(
@@ -514,15 +516,25 @@ class DataClient:
                     "the same way.",
                     Warning,
                     stacklevel=2)
+            if chunk_size is not None:
+                warnings.warn(
+                    "In json mode, the number of results are always one at "
+                    "a time, i.e. one object at a time.",
+                    Warning,
+                    stacklevel=2)
             return JSONMode()
         if mode in {"csv", "df"}:
-            return CSVMode(is_by_day=split_dates)
+            return CSVMode(is_by_day=split_dates, chunk_size=chunk_size)
         raise ValueError(
             f"Please set proper mode. It is '{mode}' which is not in "
             f"{ALL_MODES}")
 
-    def set_mode(self, mode: ModeType, split_dates: bool) -> None:
-        self._mode = self.parse_mode(mode, split_dates)
+    def set_mode(
+            self,
+            mode: ModeType,
+            split_dates: bool,
+            chunk_size: Optional[int] = None) -> None:
+        self._mode = self._parse_mode(mode, split_dates, chunk_size)
 
     def get_mode(self) -> Mode:
         assert self._mode is not None, "Set mode first."
@@ -625,15 +637,20 @@ class DataClient:
 
     def _get_valid_mode(
             self,
-            mode: Optional[Union[Mode, ModeType, Tuple[ModeType, bool]]],
+            mode: Optional[Union[
+                Mode,
+                ModeType,
+                Tuple[ModeType, bool],
+                Tuple[ModeType, bool, Optional[int]]
+                ]],
             ) -> Mode:
         if mode is None:
             return self.get_mode()
         if isinstance(mode, Mode):
             return mode.get_instance()
         if isinstance(mode, str):
-            return self.parse_mode(mode)
-        return self.parse_mode(*mode)
+            return self._parse_mode(mode)
+        return self._parse_mode(*mode)
 
     def _get_valid_filters(
             self, filters: Optional[FiltersType]) -> Dict[str, str]:
@@ -657,8 +674,12 @@ class DataClient:
             output_path: Optional[str] = None,
             output_pattern: Optional[str] = None,
             end_date: Optional[str] = None,
-            mode: Optional[
-                Union[Mode, ModeType, Tuple[ModeType, bool]]] = None,
+            mode: Optional[Union[
+                Mode[T],
+                ModeType,
+                Tuple[ModeType, bool],
+                Tuple[ModeType, bool, Optional[int]]]
+                ] = None,
             filters: Optional[FiltersType] = None,
             indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
             ) -> None:
@@ -685,7 +706,6 @@ class DataClient:
                 end_date=end_date,
                 mode=mode,
                 filters=filters,
-                chunk_size=None,
                 indicator=indicator,
                 set_active_mode=set_active_mode):
             assert valid_mode is not None
@@ -712,10 +732,13 @@ class DataClient:
             self,
             start_date: str,
             end_date: Optional[str] = None,
-            mode: Optional[
-                Union[Mode[T], ModeType, Tuple[ModeType, bool]]] = None,
+            mode: Optional[Union[
+                Mode[T],
+                ModeType,
+                Tuple[ModeType, bool],
+                Tuple[ModeType, bool, Optional[int]]]
+                ] = None,
             filters: Optional[FiltersType] = None,
-            chunk_size: Optional[int] = None,
             indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
             set_active_mode: Optional[
                 Callable[
@@ -753,9 +776,8 @@ class DataClient:
                 indicator=indicator_obj)
             for data in iterator:
                 yield from valid_mode.iterate_data(
-                    data, indicator=indicator_obj, chunk_size=chunk_size)
-            yield from valid_mode.iterate_data(
-                None, indicator=indicator_obj, chunk_size=chunk_size)
+                    data, indicator=indicator_obj)
+            yield from valid_mode.iterate_data(None, indicator=indicator_obj)
         # For remaining fragment of data in csv mode only.
         # here buffer.shape < chunk_size
         buffer = valid_mode.get_buffer()
