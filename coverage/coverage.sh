@@ -20,6 +20,7 @@ for CUR in $(find 'tests' \( -name '*.py' -and -name 'test_*' \) \
             -and -not -path 'tests/__pycache__/*' |
             sort -sf); do
     run_coverage ${CUR}
+    break
 done
 coverage xml -o coverage/reports/xml_report.xml
 coverage html -d coverage/reports/html_report
