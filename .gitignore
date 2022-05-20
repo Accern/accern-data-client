@@ -15,5 +15,5 @@ dist/
 tests/outputs/
 
 # Coverage
-coverage/html_report/
-coverage/xml_report.xml
+.coverage
+coverage/reports
