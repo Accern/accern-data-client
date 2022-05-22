@@ -214,7 +214,7 @@ class CSVMode(Mode[pd.DataFrame]):
         self._chunk_size = chunk_size
         self._buffer: List[pd.DataFrame] = []
         self._buffer_size = 0
-        self._begining_of_file = True
+        self._first_time = True
 
     def get_format(self) -> str:
         return "csv"
@@ -268,18 +268,19 @@ class CSVMode(Mode[pd.DataFrame]):
 
     def do_init(self, indicator: ProgressIndicator) -> None:
         fname = self.get_path(self._is_by_day)
-        if self._begining_of_file or self._is_by_day:
-            pd.DataFrame([], columns=self._cols).to_csv(
-                fname, index=False, header=True, mode="w")
         indicator.log(f"current file is {fname}")
 
     def add_result(self, signal: pd.DataFrame) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
-        signal.to_csv(fname, index=False, header=False, mode="a")
+        if self._first_time:
+            signal.to_csv(fname, index=False, header=True, mode="w")
+            self._first_time = False
+        else:
+            signal.to_csv(fname, index=False, header=False, mode="a")
 
     def finish_day(self, indicator: ProgressIndicator) -> None:
         # csv files are saved by add_result
-        self._begining_of_file = self._is_by_day
+        self._first_time = self._is_by_day
 
     def split(
             self,
