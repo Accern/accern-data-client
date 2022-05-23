@@ -681,9 +681,8 @@ class DataClient:
             filters: Optional[FiltersType] = None,
             indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
             ) -> None:
-        if output_path is None:
-            output_path = "./"
-        os.makedirs(output_path, exist_ok=True)
+        opath = "." if output_path is None else output_path
+        os.makedirs(opath, exist_ok=True)
 
         valid_mode: Optional[Mode] = None
         cur_date: Optional[pd.Timestamp] = None
@@ -698,14 +697,13 @@ class DataClient:
             valid_mode = mode
             cur_date = date
             indicator_obj = indicator
-            assert output_path is not None
 
             if cur_date != prev_date:
                 if prev_date is not None:
                     valid_mode.finish_day(indicator_obj)
                 valid_mode.init_day(
-                    cur_date.strftime('%Y-%m-%d'),
-                    output_path,
+                    cur_date.strftime("%Y-%m-%d"),
+                    opath,
                     output_pattern,
                     indicator_obj)
 
@@ -717,9 +715,6 @@ class DataClient:
                 indicator=indicator,
                 set_active_mode=set_active_mode):
             assert valid_mode is not None
-            assert cur_date is not None
-            assert indicator_obj is not None
-
             valid_mode.add_result(res)
             prev_date = cur_date
 
