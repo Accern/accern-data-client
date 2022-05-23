@@ -218,6 +218,7 @@ class BarIndicator(ProgressIndicator):
         self._pbar.close()
 
     def log(self, msg: str) -> None:
+        # not required in progress bar.
         pass
 
 
@@ -226,36 +227,46 @@ class MessageIndicator(ProgressIndicator):
         print(msg)
 
     def update(self, num: int) -> None:
+        # not required in message logging.
         pass
 
     def set_description(self, desc: str) -> None:
         print(desc)
 
     def set_total(self, total: int) -> None:
+        # not required in message logging.
         pass
 
     def generate_bar(self, total: int) -> None:
+        # not required in message logging.
         pass
 
     def close(self) -> None:
+        # not required in message logging.
         pass
 
 
 class SilentIndicator(ProgressIndicator):
     def log(self, msg: str) -> None:
+        # not required in silent logging.
         pass
 
     def update(self, num: int) -> None:
+        # not required in silent logging.
         pass
 
     def set_description(self, desc: str) -> None:
+        # not required in silent logging.
         pass
 
     def set_total(self, total: int) -> None:
+        # not required in silent logging.
         pass
 
     def generate_bar(self, total: int) -> None:
+        # not required in silent logging.
         pass
 
     def close(self) -> None:
+        # not required in silent logging.
         pass

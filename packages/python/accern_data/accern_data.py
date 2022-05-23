@@ -337,6 +337,7 @@ class JSONMode(Mode[Dict[str, Any]]):
         return True
 
     def clean_buffer(self) -> None:
+        # json mode has no buffer
         pass
 
     def get_buffer(self) -> Optional[Dict[str, Any]]:
