@@ -89,6 +89,57 @@ def get_overall_total_from_dummy(
     return response_obj
 
 
+def generate_csv_object(
+        path: str,
+        date: pd.Timestamp,
+        harvested_after: pd.Timestamp,
+        filters: Dict[str, str],
+        encoding: str) -> io.BytesIO:
+    df = pd.read_csv(path)
+    df["harvested_at"] = pd.to_datetime(df["harvested_at"])
+    df["published_at"] = pd.to_datetime(df["published_at"])
+
+    valid_df: pd.DataFrame = df[
+        (df["published_at"] == date) &
+        (df["harvested_at"] > harvested_after)
+    ]
+    if valid_df.empty:
+        filtered_df = valid_df
+    else:
+        result = pd.Series(
+            [True for _ in range(valid_df.shape[0])], index=valid_df.index)
+        for key, val in filters.items():
+            result &= (valid_df[key].apply(field_transformation) == val)
+        filtered_df = valid_df[result]
+    obj = io.BytesIO()
+    filtered_df.to_csv(obj, index=False, encoding=encoding)
+    return obj
+
+
+def generate_json_object(
+        path: str,
+        date: pd.Timestamp,
+        harvested_after: pd.Timestamp,
+        filters: Dict[str, str],
+        encoding: str) -> io.BytesIO:
+    json_obj = load_json(path)
+    filtered_json = {
+        key: val
+        for key, val in json_obj.items()
+        if key != "signals"
+    }
+    filtered_json["signals"] = []
+    for record in json_obj["signals"]:
+        if (
+                pd.to_datetime(record["published_at"]) == date
+                and
+                pd.to_datetime(record["harvested_at"]) > harvested_after
+                ) and check_filters(record, filters):
+            filtered_json["signals"].append(record)
+    obj = io.BytesIO(json.dumps(filtered_json).encode(encoding))
+    return obj
+
+
 def generate_file_response(
         date: str,
         harvested_after: str,
@@ -105,40 +156,11 @@ def generate_file_response(
         path = get_master_file(mode)
 
     if mode == "csv":
-        df = pd.read_csv(path)
-        df["harvested_at"] = pd.to_datetime(df["harvested_at"])
-        df["published_at"] = pd.to_datetime(df["published_at"])
-
-        valid_df: pd.DataFrame = df[
-            (df["published_at"] == date_dt) &
-            (df["harvested_at"] > harvested_after_dt)
-        ]
-        if valid_df.empty:
-            filtered_df = valid_df
-        else:
-            result = pd.Series(
-                [True for _ in range(valid_df.shape[0])], index=valid_df.index)
-            for key, val in filters.items():
-                result &= (valid_df[key].apply(field_transformation) == val)
-            filtered_df = valid_df[result]
-        obj = io.BytesIO()
-        filtered_df.to_csv(obj, index=False)
+        obj = generate_csv_object(
+            path, date_dt, harvested_after_dt, filters, encoding)
     else:
-        json_obj = load_json(path)
-        filtered_json = {
-            key: val
-            for key, val in json_obj.items()
-            if key != "signals"
-        }
-        filtered_json["signals"] = []
-        for record in json_obj["signals"]:
-            if (
-                    pd.to_datetime(record["published_at"]) == date_dt
-                    and
-                    pd.to_datetime(record["harvested_at"]) > harvested_after_dt
-                    ) and check_filters(record, filters):
-                filtered_json["signals"].append(record)
-        obj = io.BytesIO(json.dumps(filtered_json).encode(encoding))
+        obj = generate_json_object(
+            path, date_dt, harvested_after_dt, filters, encoding)
     obj.seek(0)
     response_obj._content = obj.read()
     response_obj.encoding = encoding
