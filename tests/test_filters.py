@@ -6,7 +6,11 @@ from packages.python.accern_data.accern_data import (
     FiltersType,
     ModeType,
 )
-from packages.python.accern_data.util import field_transformation, load_json
+from packages.python.accern_data.util import (
+    EXAMPLE_URL,
+    field_transformation,
+    load_json,
+)
 
 FILTERS: FiltersType = {
     "provider_id": 5,
@@ -25,9 +29,8 @@ def test_filters_csv_full(
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
-    output_pattern = "test_filters_csv_full"
-    client = create_data_client(
-        "http://api.example.com/", "SomeRandomToken")
+    output_pattern = f"test_filters_csv_full_{sheet_mode}_{uses_filter_method}"
+    client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=False)
     if uses_filter_method:
         client.set_filters(FILTERS)
@@ -41,7 +44,7 @@ def test_filters_csv_full(
         output_pattern=output_pattern,
         end_date=end_date,
         filters=filters,
-        verbose=True)
+        indicator="message")
 
     df = pd.read_csv(f"{output_path}{output_pattern}.csv")
     for key, value in client.get_filters().items():
@@ -57,9 +60,8 @@ def test_filters_csv_date(
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
-    output_pattern = "test_filters_csv_date"
-    client = create_data_client(
-        "http://api.example.com/", "SomeRandomToken")
+    output_pattern = f"test_filters_csv_date_{sheet_mode}_{uses_filter_method}"
+    client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=True)
     if uses_filter_method:
         client.set_filters(FILTERS)
@@ -73,7 +75,7 @@ def test_filters_csv_date(
         output_pattern=output_pattern,
         end_date=end_date,
         filters=filters,
-        verbose=True)
+        indicator="message")
 
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime("%Y-%m-%d")
@@ -92,9 +94,8 @@ def test_filters_json(uses_filter_method: bool) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
-    output_pattern = "test_filters_json"
-    client = create_data_client(
-        "http://api.example.com/", "SomeRandomToken")
+    output_pattern = f"test_filters_json_{uses_filter_method}"
+    client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode("json", split_dates=True)
     if uses_filter_method:
         client.set_filters(FILTERS)
@@ -108,7 +109,7 @@ def test_filters_json(uses_filter_method: bool) -> None:
         output_pattern=output_pattern,
         end_date=end_date,
         filters=filters,
-        verbose=True)
+        indicator="message")
 
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime("%Y-%m-%d")

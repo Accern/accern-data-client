@@ -11,7 +11,7 @@ from requests import Response
 
 from . import __version__
 
-EXAMPLE_URL = "http://api.example.com/"
+EXAMPLE_URL = "https://api.example.com/"
 IS_JUPYTER: Optional[bool] = None
 IS_TEST: Optional[bool] = None
 L_BAR = """{desc}: |"""
@@ -171,41 +171,91 @@ def is_jupyter() -> bool:
     return IS_JUPYTER
 
 
-class ProgressBar:
-    def __init__(
-            self,
-            total: int,
-            desc: str,
-            verbose: bool,
-            unit_scale: bool = True) -> None:
-        self._verbosity = verbose
-        if verbose:
-            self._pbar: Optional[tqdm.tqdm] = None
-        elif is_jupyter():
-            self._pbar = tqdm.tqdm_notebook(
-                total=total,
-                desc=desc,
-                unit_scale=unit_scale,
-                bar_format=BAR_FMT)
-        else:
-            self._pbar = tqdm.tqdm(
-                total=total,
-                desc=desc,
-                unit_scale=unit_scale,
-                bar_format=BAR_FMT)
+class ProgressIndicator:
+    def log(self, msg: str) -> None:
+        raise NotImplementedError()
 
     def update(self, num: int) -> None:
-        if self._pbar is not None:
-            self._pbar.update(num)
+        raise NotImplementedError()
 
     def set_description(self, desc: str) -> None:
-        if self._pbar is not None:
-            self._pbar.set_description_str(desc)
+        raise NotImplementedError()
 
     def set_total(self, total: int) -> None:
-        if self._pbar is not None:
-            self._pbar.reset(total=total)
+        raise NotImplementedError()
+
+    def generate_bar(self, total: int) -> None:
+        raise NotImplementedError()
 
     def close(self) -> None:
-        if self._pbar is not None:
-            self._pbar.close()
+        raise NotImplementedError()
+
+
+class BarIndicator(ProgressIndicator):
+    def __init__(self) -> None:
+        self._pbar: Optional[tqdm.tqdm] = None
+
+    def generate_bar(self, total: int) -> None:
+        if is_jupyter():
+            self._pbar = tqdm.tqdm_notebook(total=total, bar_format=BAR_FMT)
+        else:
+            self._pbar = tqdm.tqdm(total=total, bar_format=BAR_FMT)
+
+    def update(self, num: int) -> None:
+        assert self._pbar is not None
+        self._pbar.update(num)
+
+    def set_description(self, desc: str) -> None:
+        assert self._pbar is not None
+        self._pbar.set_description_str(desc)
+
+    def set_total(self, total: int) -> None:
+        assert self._pbar is not None
+        self._pbar.reset(total=total)
+
+    def close(self) -> None:
+        assert self._pbar is not None
+        self._pbar.close()
+
+    def log(self, msg: str) -> None:
+        pass
+
+
+class MessageIndicator(ProgressIndicator):
+    def log(self, msg: str) -> None:
+        print(msg)
+
+    def update(self, num: int) -> None:
+        pass
+
+    def set_description(self, desc: str) -> None:
+        print(desc)
+
+    def set_total(self, total: int) -> None:
+        pass
+
+    def generate_bar(self, total: int) -> None:
+        pass
+
+    def close(self) -> None:
+        pass
+
+
+class SilentIndicator(ProgressIndicator):
+    def log(self, msg: str) -> None:
+        pass
+
+    def update(self, num: int) -> None:
+        pass
+
+    def set_description(self, desc: str) -> None:
+        pass
+
+    def set_total(self, total: int) -> None:
+        pass
+
+    def generate_bar(self, total: int) -> None:
+        pass
+
+    def close(self) -> None:
+        pass

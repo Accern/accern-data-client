@@ -11,7 +11,7 @@ from packages.python.accern_data.accern_data import (
     Mode,
     ModeType,
 )
-from packages.python.accern_data.util import load_json
+from packages.python.accern_data.util import EXAMPLE_URL, load_json
 
 
 @pytest.mark.parametrize(
@@ -29,9 +29,8 @@ def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
-    output_pattern = "test_csv_date"
-    client = create_data_client(
-        "http://api.example.com/", "SomeRandomToken")
+    output_pattern = f"test_csv_date_{sheet_mode}_{method_used}"
+    client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     if method_used == "method":
         client.set_mode(sheet_mode, split_dates=True)
         mode: Optional[Union[Mode, ModeType, Tuple[ModeType, bool]]] = None
@@ -47,7 +46,7 @@ def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
         output_pattern=output_pattern,
         end_date=end_date,
         mode=mode,
-        verbose=True)
+        indicator="message")
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime("%Y-%m-%d")
         try:
@@ -76,9 +75,8 @@ def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
-    output_pattern = "test_csv_full"
-    client = create_data_client(
-        "http://api.example.com/", "SomeRandomToken")
+    output_pattern = f"test_csv_full_{sheet_mode}_{method_used}"
+    client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
 
     if method_used == "method":
         client.set_mode(sheet_mode, split_dates=False)
@@ -94,7 +92,7 @@ def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
         output_pattern=output_pattern,
         end_date=end_date,
         mode=mode,
-        verbose=True)
+        indicator="message")
 
     df_actual = pd.read_csv("tests/data/data-2022.csv")
     df_generated = pd.read_csv(f"{output_path}{output_pattern}.csv")
@@ -110,9 +108,8 @@ def test_json(method_used: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = "./tests/outputs/"
-    output_pattern = "test_json"
-    client = create_data_client(
-        "http://api.example.com/", "SomeRandomToken")
+    output_pattern = f"test_json_{method_used}"
+    client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     if method_used == "method":
         client.set_mode("json", split_dates=True)
         mode: Optional[Union[Mode, ModeType, Tuple[ModeType, bool]]] = None
@@ -128,7 +125,7 @@ def test_json(method_used: str) -> None:
         output_pattern=output_pattern,
         end_date=end_date,
         mode=mode,
-        verbose=True)
+        indicator="message")
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime("%Y-%m-%d")
         try:

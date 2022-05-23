@@ -9,24 +9,23 @@ from packages.python.accern_data.accern_data import (
     DT_FORMAT,
     ModeType,
 )
-from packages.python.accern_data.util import load_json
+from packages.python.accern_data.util import EXAMPLE_URL, load_json
 
 
 @pytest.mark.parametrize("sheet_mode", ["csv", "df"])
 def test_csv_full_csv_date_consistency(sheet_mode: ModeType) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_pattern = "test_csv_full_csv_date_consistency"
+    output_pattern = f"test_csv_full_csv_date_consistency_{sheet_mode}"
     output_path = "./tests/outputs/"
-    client = create_data_client(
-        "http://api.example.com/", "SomeRandomToken")
+    client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=True)
     client.download_range(
         start_date=start_date,
         output_path=output_path,
         output_pattern=output_pattern,
         end_date=end_date,
-        verbose=True)
+        indicator="message")
     csv_date_arr = []
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime("%Y-%m-%d")
@@ -44,7 +43,7 @@ def test_csv_full_csv_date_consistency(sheet_mode: ModeType) -> None:
         output_path=output_path,
         output_pattern=output_pattern,
         end_date=end_date,
-        verbose=True)
+        indicator="message")
     df_csv_full = pd.read_csv(f"{output_path}{output_pattern}.csv")
 
     pd_test.assert_frame_equal(
@@ -56,17 +55,16 @@ def test_csv_full_csv_date_consistency(sheet_mode: ModeType) -> None:
 def test_json_csv_date_consistency(sheet_mode: ModeType) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_pattern = "test_json_csv_date_consistency"
+    output_pattern = f"test_json_csv_date_consistency_{sheet_mode}"
     output_path = "./tests/outputs/"
-    client = create_data_client(
-        "http://api.example.com/", "SomeRandomToken")
+    client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=True)
     client.download_range(
         start_date=start_date,
         output_path=output_path,
         output_pattern=output_pattern,
         end_date=end_date,
-        verbose=True)
+        indicator="message")
 
     client.set_mode("json", split_dates=True)
     client.download_range(
@@ -74,7 +72,7 @@ def test_json_csv_date_consistency(sheet_mode: ModeType) -> None:
         output_path=output_path,
         output_pattern=output_pattern,
         end_date=end_date,
-        verbose=True)
+        indicator="message")
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime("%Y-%m-%d")
         try:
