@@ -517,7 +517,7 @@ class DataClient:
             if chunk_size is not None:
                 warnings.warn(
                     "In json mode, the number of results are always one at "
-                    "a time, i.e. one object at a time.",
+                    "a time, i.e., one object at a time.",
                     Warning,
                     stacklevel=2)
             return JSONMode()
@@ -770,12 +770,11 @@ class DataClient:
             date = cur_date.strftime("%Y-%m-%d")
             indicator_obj.set_description(f"Downloading signals for {date}")
             self._params["date"] = date
-            iterator = self._scroll(
-                "1900-01-01",
-                valid_mode,
-                valid_filters,
-                indicator=indicator_obj)
-            for data in iterator:
+            for data in self._scroll(
+                    "1900-01-01",
+                    valid_mode,
+                    valid_filters,
+                    indicator=indicator_obj):
                 yield from valid_mode.iterate_data(
                     data, indicator=indicator_obj)
             yield from valid_mode.iterate_data(None, indicator=indicator_obj)
