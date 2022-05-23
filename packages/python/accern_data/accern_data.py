@@ -698,6 +698,16 @@ class DataClient:
             valid_mode = mode
             cur_date = date
             indicator_obj = indicator
+            assert output_path is not None
+
+            if cur_date != prev_date:
+                if prev_date is not None:
+                    valid_mode.finish_day(indicator_obj)
+                valid_mode.init_day(
+                    cur_date.strftime('%Y-%m-%d'),
+                    output_path,
+                    output_pattern,
+                    indicator_obj)
 
         for res in self.iterate_range(
                 start_date=start_date,
@@ -710,14 +720,6 @@ class DataClient:
             assert cur_date is not None
             assert indicator_obj is not None
 
-            if cur_date != prev_date:
-                if prev_date is not None:
-                    valid_mode.finish_day(indicator_obj)
-                valid_mode.init_day(
-                    cur_date.strftime('%Y-%m-%d'),
-                    output_path,
-                    output_pattern,
-                    indicator_obj)
             valid_mode.add_result(res)
             prev_date = cur_date
 
@@ -761,7 +763,8 @@ class DataClient:
         total = sum(expected_records)
         indicator_obj.set_total(total=total)
         indicator_obj.set_description(desc="Downloading signals")
-        for cur_date in pd.date_range(start_date, end_date):
+        for idx, cur_date in enumerate(pd.date_range(start_date, end_date)):
+            indicator_obj.log(f"Expected {expected_records[idx]} signals.")
             if set_active_mode is not None:
                 set_active_mode(valid_mode, cur_date, indicator_obj)
             date = cur_date.strftime("%Y-%m-%d")
