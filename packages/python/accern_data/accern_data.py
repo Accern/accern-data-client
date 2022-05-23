@@ -214,7 +214,6 @@ class CSVMode(Mode[pd.DataFrame]):
         self._chunk_size = chunk_size
         self._buffer: List[pd.DataFrame] = []
         self._buffer_size = 0
-        self._first_time = True
 
     def get_format(self) -> str:
         return "csv"
@@ -244,10 +243,6 @@ class CSVMode(Mode[pd.DataFrame]):
             res["published_at"] = pd.to_datetime(res["published_at"])
         if "crawled_at" in res:
             res["crawled_at"] = pd.to_datetime(res["crawled_at"])
-        if self._cols is not None:
-            res = res[self._cols]
-        else:
-            self._cols = res.columns
         return [res]
 
     def size(self, batch: List[pd.DataFrame]) -> int:
@@ -272,15 +267,17 @@ class CSVMode(Mode[pd.DataFrame]):
 
     def add_result(self, signal: pd.DataFrame) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
-        if self._first_time:
+        if self._cols is None:
             signal.to_csv(fname, index=False, header=True, mode="w")
-            self._first_time = False
+            self._cols = signal.columns
         else:
-            signal.to_csv(fname, index=False, header=False, mode="a")
+            signal[self._cols].to_csv(
+                fname, index=False, header=False, mode="a")
 
     def finish_day(self, indicator: ProgressIndicator) -> None:
         # csv files are saved by add_result
-        self._first_time = self._is_by_day
+        if self._is_by_day:
+            self._cols = None
 
     def split(
             self,
