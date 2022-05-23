@@ -437,14 +437,14 @@ class DataClient:
         if indicator is not None:
             self.set_indicator(indicator)
         else:
-            self._indicator_obj = self.parse_indicator("pbar")
+            self._indicator_obj = self._parse_indicator("pbar")
         self._error_list: Deque[str] = deque(maxlen=n_errors)
 
     def reset_error_list(self) -> None:
         self._error_list.clear()
 
     @staticmethod
-    def validate_filters(
+    def _validate_filters(
             filters: FiltersType) -> Dict[
                 str, Optional[Union[bool, int, str]]]:
         valid_filters: Dict[str, Optional[Union[bool, int, str]]] = {}
@@ -458,7 +458,7 @@ class DataClient:
         return valid_filters
 
     @staticmethod
-    def parse_filters(
+    def _parse_filters(
             filters: Dict[str, Optional[Union[bool, int, str]]]) -> Dict[
                 str, str]:
         proper_filters: Dict[str, str] = {}
@@ -475,10 +475,10 @@ class DataClient:
         if isinstance(indicator, ProgressIndicator):
             self._indicator_obj = indicator
         else:
-            self._indicator_obj = self.parse_indicator(indicator)
+            self._indicator_obj = self._parse_indicator(indicator)
 
     @staticmethod
-    def parse_indicator(indicator: Indicators) -> ProgressIndicator:
+    def _parse_indicator(indicator: Indicators) -> ProgressIndicator:
         if indicator not in INDICATORS:
             raise ValueError(
                 f"Indicator should be None or one of {INDICATORS}. "
@@ -495,11 +495,11 @@ class DataClient:
         return self._indicator_obj
 
     def set_filters(self, filters: FiltersType) -> None:
-        self.set_raw_filters(self.validate_filters(filters))
+        self._set_raw_filters(self._validate_filters(filters))
 
-    def set_raw_filters(
+    def _set_raw_filters(
             self, filters: Dict[str, Optional[Union[bool, int, str]]]) -> None:
-        self._filters = self.parse_filters(filters)
+        self._filters = self._parse_filters(filters)
 
     def get_filters(self) -> Dict[str, str]:
         return self._filters
@@ -657,8 +657,8 @@ class DataClient:
             self, filters: Optional[FiltersType]) -> Dict[str, str]:
         if filters is None:
             return self.get_filters()
-        return self.parse_filters(
-            {**self.get_filters(), **self.validate_filters(filters)})
+        return self._parse_filters(
+            {**self.get_filters(), **self._validate_filters(filters)})
 
     def _get_valid_indicator(
             self, indicator: Optional[Union[Indicators, ProgressIndicator]],
@@ -667,7 +667,7 @@ class DataClient:
             return self.get_indicator()
         if isinstance(indicator, ProgressIndicator):
             return indicator
-        return self.parse_indicator(indicator)
+        return self._parse_indicator(indicator)
 
     def download_range(
             self,
