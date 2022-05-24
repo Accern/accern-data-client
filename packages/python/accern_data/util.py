@@ -106,7 +106,7 @@ def generate_csv_object(
     if valid_df.empty:
         filtered_df = valid_df
     else:
-        result = pd.Series(True, index=df.index)
+        result = pd.Series(True, index=valid_df.index)
         for key, val in filters.items():
             result &= (valid_df[key].apply(field_transformation) == val)
         filtered_df = valid_df[result]
