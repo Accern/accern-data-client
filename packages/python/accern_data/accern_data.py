@@ -312,14 +312,14 @@ class CSVMode(Mode[pd.DataFrame]):
                     self._buffer = [remainder]
                 self._buffer_size = remainder.shape[0]
                 indicator.update(result.shape[0])
-                yield result
+                yield result.reset_index(drop=True)
 
             if self.split_dates() and data is None:
                 if len(self._buffer) > 0:
                     buffer = pd.concat(self._buffer)
                     if not buffer.empty:
                         indicator.update(buffer.shape[0])
-                        yield buffer
+                        yield buffer.reset_index(drop=True)
                 self._buffer = []
                 self._buffer_size = 0
 
