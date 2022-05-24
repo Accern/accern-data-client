@@ -44,6 +44,7 @@ ExcludedFilterField = Literal[
     "format",
     "harvested_at",
     "published_at",
+    "size",
     "token",
 ]
 
@@ -627,8 +628,8 @@ class DataClient:
                 self._params["harvested_after"] = start_date
                 batch = self._read_date(mode, filters, indicator)
                 if start_date == prev_start:
-                    # FIXME: redundant check? batch_size becomes 0
-                    # loop gets terminated.
+                    # NOTE: redundant check?
+                    # batch_size becomes 0, loop gets terminated.
                     break
                 prev_start = start_date
             except pd.errors.EmptyDataError:
