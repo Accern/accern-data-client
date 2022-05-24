@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from packages.python.accern_data.accern_data import (
+from packages.python.accern_data import (
     create_data_client,
     FiltersType,
     ModeType,

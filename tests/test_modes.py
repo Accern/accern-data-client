@@ -4,7 +4,7 @@ import pandas as pd
 import pandas.testing as pd_test
 import pytest
 
-from packages.python.accern_data.accern_data import (
+from packages.python.accern_data import (
     create_data_client,
     CSVMode,
     JSONMode,
