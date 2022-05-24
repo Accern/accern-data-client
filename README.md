@@ -70,6 +70,28 @@ accern_data.create_client("https://api.example.com/", "SomeRandomToken").downloa
 ```
 
 
+### Getting data using iterator:
+```python
+iterator = client.iterate_range(
+    start_date="2022-01-03",
+    output_path=".",
+    output_pattern="data",
+    end_date="2022-03-04")
+```
+Now, we can use this iterator in a loop or in list(or any other collection).
+
+Using loop:
+```python
+for res in iterator:
+    do_something(res)
+```
+
+Using list:
+```python
+list(iterator)
+```
+
+
 ### Error logging:
 
 While downloading the data any critical error will get raised.
