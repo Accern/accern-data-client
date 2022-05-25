@@ -66,29 +66,16 @@ client.download_range(
 
 ### One-liner download:
 ```python
-accern_data.create_client("https://api.example.com/", "SomeRandomToken").download(start_date="2022-01-03", output_path=".", output_pattern="data", end_date="2022-03-04", mode="csv", filters={"entity_ticker": "HURC"})
+accern_data.create_data_client("https://api.example.com/", "SomeRandomToken").download_range(start_date="2022-01-03", output_path=".", output_pattern="data", end_date="2022-03-04", mode="csv", filters={"entity_ticker": "HURC"})
 ```
 
 
 ### Getting data using iterator:
 ```python
-iterator = client.iterate_range(
-    start_date="2022-01-03",
-    output_path=".",
-    output_pattern="data",
-    end_date="2022-03-04")
-```
-Now, we can use this iterator in a loop or in list(or any other collection).
-
-Using loop:
-```python
-for res in iterator:
+for res in client.iterate_range(
+        start_date="2022-01-03",
+        end_date="2022-03-04"):
     do_something(res)
-```
-
-Using list:
-```python
-list(iterator)
 ```
 
 
