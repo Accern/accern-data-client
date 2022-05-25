@@ -121,7 +121,6 @@ FILTER_FIELD = get_args(FilterField)
 EXCLUDED_FILTER_FIELD = get_args(ExcludedFilterField)
 ALL_MODES: Set[ModeType] = {"csv", "df", "json"}
 DT_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-VERBOSE = False
 
 T = TypeVar('T')
 
