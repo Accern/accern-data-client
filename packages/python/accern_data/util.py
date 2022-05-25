@@ -17,6 +17,7 @@ IS_TEST: Optional[bool] = None
 L_BAR = """{desc}: |"""
 R_BAR = """| {percentage:3.0f}% [{n}/{total}]"""
 BAR_FMT = f"{L_BAR}{{bar}}{R_BAR}"
+DEFAULT_CHUNK_SIZE =100
 
 
 def is_example_url(url: str) -> bool:
@@ -111,7 +112,8 @@ def generate_csv_object(
             result &= (valid_df[key].apply(field_transformation) == val)
         filtered_df = valid_df[result]
     obj = io.BytesIO()
-    filtered_df.to_csv(obj, index=False, encoding=encoding)
+    filtered_df.iloc[:DEFAULT_CHUNK_SIZE, :].to_csv(
+        obj, index=False, encoding=encoding)
     return obj
 
 

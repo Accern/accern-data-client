@@ -1,3 +1,4 @@
+from re import L
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
@@ -5,7 +6,11 @@ import pandas.testing as pd_test
 import pytest
 
 from packages.python.accern_data import create_data_client, DT_FORMAT
-from packages.python.accern_data.util import EXAMPLE_URL, load_json
+from packages.python.accern_data.util import (
+    DEFAULT_CHUNK_SIZE,
+    EXAMPLE_URL,
+    load_json,
+)
 
 
 @pytest.mark.parametrize("chunk_size", [1, 5, 1000, None])
@@ -18,7 +23,7 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
     if chunk_size is not None:
         n_full_chunks = dataframe.shape[0]//chunk_size
     df_lengths = []
-    dfs = []
+    dfs: List[pd.DataFrame] = []
     for df in client.iterate_range(start_date=start_date, end_date=end_date):
         df_lengths.append(df.shape[0])
         dfs.append(df)
@@ -28,6 +33,9 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
     if chunk_size is not None:
         for idx in range(n_full_chunks):
             assert df_lengths[idx] == chunk_size
+    else:
+        for df in dfs:
+            assert df.shape[0] <= DEFAULT_CHUNK_SIZE
     assert dataframe.shape[0] == sum(df_lengths)
 
 
@@ -57,6 +65,8 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
         for idx in range(beg, end+1):
             if chunk_size is not None:
                 assert dfs[idx].shape[0] <= chunk_size
+            else:
+                assert dfs[idx].shape[0] <= DEFAULT_CHUNK_SIZE
             df_date.append(dfs[idx])
         concat_df: pd.DataFrame = pd.concat(df_date).reset_index(drop=True)
         for dt in {"crawled_at", "harvested_at", "published_at"}:
