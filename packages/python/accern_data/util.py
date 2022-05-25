@@ -17,7 +17,7 @@ IS_TEST: Optional[bool] = None
 L_BAR = """{desc}: |"""
 R_BAR = """| {percentage:3.0f}% [{n}/{total}]"""
 BAR_FMT = f"{L_BAR}{{bar}}{R_BAR}"
-DEFAULT_CHUNK_SIZE =100
+DEFAULT_CHUNK_SIZE = 100
 
 
 def is_example_url(url: str) -> bool:
