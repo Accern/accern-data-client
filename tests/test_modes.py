@@ -14,17 +14,9 @@ from packages.python.accern_data import (
 from packages.python.accern_data.util import EXAMPLE_URL, load_json
 
 
+@pytest.mark.parametrize("sheet_mode", ["csv", "df"])
 @pytest.mark.parametrize(
-    "sheet_mode, method_used",
-    [
-        ("csv", "method"),
-        ("csv", "string"),
-        ("csv", "tuple"),
-        ("csv", "object"),
-        ("df", "method"),
-        ("df", "string"),
-        ("df", "tuple"),
-    ])
+    "method_used", ["method", "string", "tuple", "object"])
 def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
@@ -71,6 +63,8 @@ def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
         ("df", "method"),
         ("df", "tuple"),
     ])
+@pytest.mark.parametrize("sheet_mode", ["csv", "df"])
+@pytest.mark.parametrize("method_used", ["method", "tuple", "object"])
 def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"

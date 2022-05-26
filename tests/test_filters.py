@@ -21,9 +21,8 @@ FILTERS: FiltersType = {
 }
 
 
-@pytest.mark.parametrize(
-    "sheet_mode, uses_filter_method",
-    [("csv", True), ("csv", False), ("df", True), ("df", False)])
+@pytest.mark.parametrize("sheet_mode", ["csv", "df"])
+@pytest.mark.parametrize("uses_filter_method", [True, False])
 def test_filters_csv_full(
         sheet_mode: ModeType, uses_filter_method: bool) -> None:
     start_date = "2022-01-03"
@@ -52,9 +51,8 @@ def test_filters_csv_full(
             f"Column {key} of dataframe does not match with the value: {value}"
 
 
-@pytest.mark.parametrize(
-    "sheet_mode, uses_filter_method",
-    [("csv", True), ("csv", False), ("df", True), ("df", False)])
+@pytest.mark.parametrize("sheet_mode", ["csv", "df"])
+@pytest.mark.parametrize("uses_filter_method", [True, False])
 def test_filters_csv_date(
         sheet_mode: ModeType, uses_filter_method: bool) -> None:
     start_date = "2022-01-03"
