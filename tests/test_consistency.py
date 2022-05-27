@@ -13,7 +13,7 @@ def test_csv_full_csv_date_consistency(sheet_mode: ModeType) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_pattern = f"test_csv_full_csv_date_consistency_{sheet_mode}"
-    output_path = "./tests/outputs/"
+    output_path = "tests/outputs/"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=True)
     client.download_range(
@@ -24,7 +24,7 @@ def test_csv_full_csv_date_consistency(sheet_mode: ModeType) -> None:
         indicator="message")
     csv_date_arr = []
     for cur_date in pd.date_range(start_date, end_date):
-        date = cur_date.strftime("%Y-%m-%d")
+        date = cur_date.strftime(r"%Y-%m-%d")
         try:
             df_generated = pd.read_csv(
                 f"{output_path}{output_pattern}-{date}.csv")
@@ -52,7 +52,7 @@ def test_json_csv_date_consistency(sheet_mode: ModeType) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_pattern = f"test_json_csv_date_consistency_{sheet_mode}"
-    output_path = "./tests/outputs/"
+    output_path = "tests/outputs/"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=True)
     client.download_range(
@@ -70,7 +70,7 @@ def test_json_csv_date_consistency(sheet_mode: ModeType) -> None:
         end_date=end_date,
         indicator="message")
     for cur_date in pd.date_range(start_date, end_date):
-        date = cur_date.strftime("%Y-%m-%d")
+        date = cur_date.strftime(r"%Y-%m-%d")
         try:
             json_obj = load_json(f"{output_path}{output_pattern}-{date}.json")
             csv_obj = pd.read_csv(f"{output_path}{output_pattern}-{date}.csv")

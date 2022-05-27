@@ -27,7 +27,7 @@ def test_filters_csv_full(
         sheet_mode: ModeType, uses_filter_method: bool) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "./tests/outputs/"
+    output_path = "tests/outputs/"
     output_pattern = f"test_filters_csv_full_{sheet_mode}_{uses_filter_method}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=False)
@@ -57,7 +57,7 @@ def test_filters_csv_date(
         sheet_mode: ModeType, uses_filter_method: bool) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "./tests/outputs/"
+    output_path = "tests/outputs/"
     output_pattern = f"test_filters_csv_date_{sheet_mode}_{uses_filter_method}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=True)
@@ -76,7 +76,7 @@ def test_filters_csv_date(
         indicator="message")
 
     for cur_date in pd.date_range(start_date, end_date):
-        date = cur_date.strftime("%Y-%m-%d")
+        date = cur_date.strftime(r"%Y-%m-%d")
         try:
             df = pd.read_csv(f"{output_path}{output_pattern}-{date}.csv")
         except FileNotFoundError:
@@ -91,7 +91,7 @@ def test_filters_csv_date(
 def test_filters_json(uses_filter_method: bool) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "./tests/outputs/"
+    output_path = "tests/outputs/"
     output_pattern = f"test_filters_json_{uses_filter_method}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode("json", split_dates=True)
@@ -110,7 +110,7 @@ def test_filters_json(uses_filter_method: bool) -> None:
         indicator="message")
 
     for cur_date in pd.date_range(start_date, end_date):
-        date = cur_date.strftime("%Y-%m-%d")
+        date = cur_date.strftime(r"%Y-%m-%d")
         try:
             json_obj = load_json(f"{output_path}{output_pattern}-{date}.json")
         except FileNotFoundError:

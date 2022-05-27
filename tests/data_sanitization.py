@@ -57,7 +57,7 @@ if __name__ == "__main__":
         prog="accern_data", description="Accern feed API library")
     argparser.add_argument(
         "--directory",
-        default="./tests/data/",
+        default="tests/data/",
         type=str,
         help=(
             "The location for the data directory with appropriate directory "

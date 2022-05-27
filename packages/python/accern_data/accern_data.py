@@ -120,7 +120,7 @@ INDICATORS = get_args(Indicators)
 FILTER_FIELD = get_args(FilterField)
 EXCLUDED_FILTER_FIELD = get_args(ExcludedFilterField)
 ALL_MODES: Set[ModeType] = {"csv", "df", "json"}
-DT_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+DT_FORMAT = r"%Y-%m-%dT%H:%M:%S.%fZ"
 
 T = TypeVar('T')
 
@@ -703,7 +703,7 @@ class DataClient:
                 if prev_date is not None:
                     valid_mode.finish_day(indicator_obj)
                 valid_mode.init_day(
-                    cur_date.strftime("%Y-%m-%d"),
+                    cur_date.strftime(r"%Y-%m-%d"),
                     opath,
                     output_pattern,
                     indicator_obj)
@@ -763,7 +763,7 @@ class DataClient:
             indicator_obj.log(f"Expected {expected_records[idx]} signals.")
             if set_active_mode is not None:
                 set_active_mode(valid_mode, cur_date, indicator_obj)
-            date = cur_date.strftime("%Y-%m-%d")
+            date = cur_date.strftime(r"%Y-%m-%d")
             indicator_obj.set_description(f"Downloading signals for {date}")
             self._params["date"] = date
             for data in self._scroll(
