@@ -195,7 +195,7 @@ class Mode(Generic[T]):
         if pattern is None:
             pattern = ""
         assert pattern.strip() or day_str is not None, \
-            "csv_full should have an output pattern."
+            "csv mode with split_dates=False should have an output pattern."
         if self._cur_pattern is None:
             fname = f"{day_str}.{self.get_format()}"
         elif day_str is None:
