@@ -12,6 +12,12 @@ from packages.python.accern_data.util import (
     load_json,
 )
 
+DEFAULT_CHUNK_SIZE_LIST = [
+    1, 5, 8, 3, 57, 13, 88, 86, 18, 9, 91, 68, 1, 99, 1, 22, 1, 12, 3, 8, 16,
+    2, 68, 1, 71, 2, 81, 3, 89, 69, 1, 96, 97, 93, 17, 1, 98, 92, 97, 14, 90,
+    48, 1, 99, 98, 32, 7, 95, 96, 14, 1, 98, 98, 98, 34, 5, 98, 40, 3,
+]
+
 
 @pytest.mark.parametrize("chunk_size", [1, 5, 1000, None])
 def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
@@ -20,6 +26,7 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode("csv", split_dates=False, chunk_size=chunk_size)
     dataframe = pd.read_csv("tests/data/data-2022.csv")
+    n_full_chunks = None
     if chunk_size is not None:
         n_full_chunks = dataframe.shape[0] // chunk_size
     df_lengths = []
@@ -29,14 +36,14 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
         dfs.append(df)
     concat_df = pd.concat(dfs)
     assert (~concat_df.duplicated()).all(), "Duplicate entry is present."
-    if chunk_size is not None:
+    if chunk_size is not None and n_full_chunks is not None:
         for idx in range(n_full_chunks):
             assert df_lengths[idx] == chunk_size
         if dataframe.shape[0] % chunk_size != 0:
             assert df_lengths[-1] == dataframe.shape[0] % chunk_size
     else:
-        for df in dfs:
-            assert df.shape[0] <= DEFAULT_CHUNK_SIZE
+        for idx, df in enumerate(dfs):
+            assert df.shape[0] == DEFAULT_CHUNK_SIZE_LIST[idx]
     assert dataframe.shape[0] == sum(df_lengths)
 
 
@@ -56,6 +63,7 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
             df = pd.read_csv(f"tests/data/csv_date/{date}.csv")
         except FileNotFoundError:
             continue
+        n_full_chunks = None
         if chunk_size is not None:
             n_full_chunks = df.shape[0] // chunk_size
 
@@ -65,14 +73,14 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
                     dfs[idx]["published_at"][0]).strftime(r"%Y-%m-%d") != date:
                 break
             end = idx
-        if chunk_size is not None:
+        if chunk_size is not None and n_full_chunks is not None:
             for idx in range(n_full_chunks):
                 assert dfs[beg+idx].shape[0] == chunk_size
             if df.shape[0] % chunk_size != 0:
                 assert dfs[end].shape[0] == df.shape[0] % chunk_size
         else:
             for idx in range(beg, end+1):
-                assert dfs[idx].shape[0] <= DEFAULT_CHUNK_SIZE
+                assert dfs[idx].shape[0] == DEFAULT_CHUNK_SIZE_LIST[idx]
         df_date = [dfs[idx] for idx in range(beg, end+1)]
         concat_df: pd.DataFrame = pd.concat(df_date).reset_index(drop=True)
         for dt in {"crawled_at", "harvested_at", "published_at"}:
@@ -113,4 +121,3 @@ def test_json_iterator() -> None:
 
         assert js == json_date
         beg = end + 1
-
