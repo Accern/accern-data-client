@@ -34,7 +34,7 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
     for df in client.iterate_range(start_date=start_date, end_date=end_date):
         df_lengths.append(df.shape[0])
         dfs.append(df)
-    concat_df = pd.concat(dfs)
+    concat_df = pd.concat(dfs).reset_index(drop=True)
     assert (~concat_df.duplicated()).all(), "Duplicate entry is present."
     if chunk_size is not None and n_full_chunks is not None:
         for idx in range(n_full_chunks):
@@ -45,6 +45,8 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
         for idx, df in enumerate(dfs):
             assert df.shape[0] == DEFAULT_CHUNK_SIZE_LIST[idx]
     assert dataframe.shape[0] == sum(df_lengths)
+    for dt in {"crawled_at", "harvested_at", "published_at"}:
+        concat_df[dt] = concat_df[dt].astype("str")
     pd_test.assert_frame_equal(
         dataframe[sorted(dataframe.columns)],
         concat_df[sorted(concat_df.columns)])
