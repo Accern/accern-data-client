@@ -45,6 +45,9 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
         for idx, df in enumerate(dfs):
             assert df.shape[0] == DEFAULT_CHUNK_SIZE_LIST[idx]
     assert dataframe.shape[0] == sum(df_lengths)
+    pd_test.assert_frame_equal(
+        dataframe[sorted(dataframe.columns)],
+        concat_df[sorted(concat_df.columns)])
 
 
 @pytest.mark.parametrize("chunk_size", [1, 10, 1000, None])
