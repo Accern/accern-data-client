@@ -4,7 +4,7 @@ import pandas as pd
 import pandas.testing as pd_test
 import pytest
 
-from packages.python.accern_data.accern_data import (
+from packages.python.accern_data import (
     create_data_client,
     CSVMode,
     JSONMode,
@@ -14,21 +14,13 @@ from packages.python.accern_data.accern_data import (
 from packages.python.accern_data.util import EXAMPLE_URL, load_json
 
 
+@pytest.mark.parametrize("sheet_mode", ["csv", "df"])
 @pytest.mark.parametrize(
-    "sheet_mode, method_used",
-    [
-        ("csv", "method"),
-        ("csv", "string"),
-        ("csv", "tuple"),
-        ("csv", "object"),
-        ("df", "method"),
-        ("df", "string"),
-        ("df", "tuple"),
-    ])
+    "method_used", ["method", "string", "tuple", "object"])
 def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "./tests/outputs/"
+    output_path = "tests/outputs/"
     output_pattern = f"test_csv_date_{sheet_mode}_{method_used}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     if method_used == "method":
@@ -48,7 +40,7 @@ def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
         mode=mode,
         indicator="message")
     for cur_date in pd.date_range(start_date, end_date):
-        date = cur_date.strftime("%Y-%m-%d")
+        date = cur_date.strftime(r"%Y-%m-%d")
         try:
             df_actual = pd.read_csv(
                 f"tests/data/csv_date/{date}.csv")
@@ -62,19 +54,12 @@ def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
             df_generated[sorted(df_generated.columns)])
 
 
-@pytest.mark.parametrize(
-    "sheet_mode, method_used",
-    [
-        ("csv", "method"),
-        ("csv", "tuple"),
-        ("csv", "object"),
-        ("df", "method"),
-        ("df", "tuple"),
-    ])
+@pytest.mark.parametrize("sheet_mode", ["csv", "df"])
+@pytest.mark.parametrize("method_used", ["method", "tuple", "object"])
 def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "./tests/outputs/"
+    output_path = "tests/outputs/"
     output_pattern = f"test_csv_full_{sheet_mode}_{method_used}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
 
@@ -107,7 +92,7 @@ def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
 def test_json(method_used: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "./tests/outputs/"
+    output_path = "tests/outputs/"
     output_pattern = f"test_json_{method_used}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     if method_used == "method":
@@ -127,7 +112,7 @@ def test_json(method_used: str) -> None:
         mode=mode,
         indicator="message")
     for cur_date in pd.date_range(start_date, end_date):
-        date = cur_date.strftime("%Y-%m-%d")
+        date = cur_date.strftime(r"%Y-%m-%d")
         try:
             json_actual = load_json(f"tests/data/json/{date}.json")
             json_generated = load_json(

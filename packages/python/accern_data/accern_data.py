@@ -44,6 +44,7 @@ ExcludedFilterField = Literal[
     "format",
     "harvested_at",
     "published_at",
+    "size",
     "token",
 ]
 
@@ -119,8 +120,7 @@ INDICATORS = get_args(Indicators)
 FILTER_FIELD = get_args(FilterField)
 EXCLUDED_FILTER_FIELD = get_args(ExcludedFilterField)
 ALL_MODES: Set[ModeType] = {"csv", "df", "json"}
-DT_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-VERBOSE = False
+DT_FORMAT = r"%Y-%m-%dT%H:%M:%S.%fZ"
 
 T = TypeVar('T')
 
@@ -195,7 +195,7 @@ class Mode(Generic[T]):
         if pattern is None:
             pattern = ""
         assert pattern.strip() or day_str is not None, \
-            "csv_full should have an output pattern."
+            "csv mode with split_dates=False should have an output pattern."
         if self._cur_pattern is None:
             fname = f"{day_str}.{self.get_format()}"
         elif day_str is None:
@@ -311,14 +311,14 @@ class CSVMode(Mode[pd.DataFrame]):
                     self._buffer = [remainder]
                 self._buffer_size = remainder.shape[0]
                 indicator.update(result.shape[0])
-                yield result
+                yield result.reset_index(drop=True)
 
             if self.split_dates() and data is None:
                 if len(self._buffer) > 0:
                     buffer = pd.concat(self._buffer)
                     if not buffer.empty:
                         indicator.update(buffer.shape[0])
-                        yield buffer
+                        yield buffer.reset_index(drop=True)
                 self._buffer = []
                 self._buffer_size = 0
 
@@ -337,6 +337,7 @@ class JSONMode(Mode[Dict[str, Any]]):
         return True
 
     def clean_buffer(self) -> None:
+        # json mode has no buffer
         pass
 
     def get_buffer(self) -> Optional[Dict[str, Any]]:
@@ -626,8 +627,8 @@ class DataClient:
                 self._params["harvested_after"] = start_date
                 batch = self._read_date(mode, filters, indicator)
                 if start_date == prev_start:
-                    # FIXME: redundant check? batch_size becomes 0
-                    # loop gets terminated.
+                    # NOTE: redundant check?
+                    # batch_size becomes 0, loop gets terminated.
                     break
                 prev_start = start_date
             except pd.errors.EmptyDataError:
@@ -702,7 +703,7 @@ class DataClient:
                 if prev_date is not None:
                     valid_mode.finish_day(indicator_obj)
                 valid_mode.init_day(
-                    cur_date.strftime("%Y-%m-%d"),
+                    cur_date.strftime(r"%Y-%m-%d"),
                     opath,
                     output_pattern,
                     indicator_obj)
@@ -762,7 +763,7 @@ class DataClient:
             indicator_obj.log(f"Expected {expected_records[idx]} signals.")
             if set_active_mode is not None:
                 set_active_mode(valid_mode, cur_date, indicator_obj)
-            date = cur_date.strftime("%Y-%m-%d")
+            date = cur_date.strftime(r"%Y-%m-%d")
             indicator_obj.set_description(f"Downloading signals for {date}")
             self._params["date"] = date
             for data in self._scroll(

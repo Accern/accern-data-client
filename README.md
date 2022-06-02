@@ -17,7 +17,7 @@ pip install accern-data
 ```python
 import accern_data
 # Create a data client.
-client = accern_data.create_data_client("http://api.example.com/", "SomeRandomToken")
+client = accern_data.create_data_client("https://api.example.com/", "SomeRandomToken")
 # Set a data format/mode in which the data has to be downloaded.
 # Split dates lets you divide files on the basis of dates.
 client.set_mode(mode="csv", split_dates=True)  # Other modes: {"df", "json"}
@@ -41,7 +41,7 @@ client.set_filters({
 ```python
 client.download_range(
     start_date="2022-01-03",
-    output_path="./",
+    output_path=".",
     output_pattern="data",
     end_date="2022-03-04")
 ```
@@ -50,7 +50,7 @@ Note: To download single day's data, set `end_date=None` or can leave that unset
 ```python
 client.download_range(
     start_date="2022-01-03",
-    output_path="./",
+    output_path=".",
     output_pattern="data",
     end_date=None)
 ```
@@ -59,14 +59,23 @@ OR
 ```python
 client.download_range(
     start_date="2022-01-03",
-    output_path="./",
+    output_path=".",
     output_pattern="data")
 ```
 
 
 ### One-liner download:
 ```python
-accern_data.create_client("http://api.example.com/", "SomeRandomToken").download(start_date="2022-01-03", output_path="./", output_pattern="data", end_date="2022-03-04", mode="csv", filters={"entity_ticker": "HURC"})
+accern_data.create_data_client("https://api.example.com/", "SomeRandomToken").download_range(start_date="2022-01-03", output_path=".", output_pattern="data", end_date="2022-03-04", mode="csv", filters={"entity_ticker": "HURC"})
+```
+
+
+### Getting data using iterator:
+```python
+for res in client.iterate_range(
+        start_date="2022-01-03",
+        end_date="2022-03-04"):
+    do_something(res)
 ```
 
 
