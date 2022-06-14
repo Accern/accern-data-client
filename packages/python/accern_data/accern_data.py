@@ -90,7 +90,7 @@ FiltersType = TypedDict(
         "doc_title": Optional[str],
         "doc_type": Optional[str],
         "doc_url": Optional[str],
-        "end_date": str,
+        "end_time": str,
         "entity_accern_id": Optional[str],
         "entity_country": Optional[str],
         "entity_exchcode": Optional[str],
@@ -114,7 +114,7 @@ FiltersType = TypedDict(
         "provider_id": Optional[int],
         "signal_id": Optional[str],
         "signal_tag": Optional[str],
-        "start_date": str,
+        "start_time": str,
     },
     total=False)
 

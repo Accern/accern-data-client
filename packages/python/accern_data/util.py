@@ -96,11 +96,11 @@ def get_overall_total_from_dummy(
 def create_start_end_date(
         date: str,
         params: Dict[str, str]) -> Tuple[pd.Timestamp, pd.Timestamp]:
-    if 'start_time' in params.keys():
+    if "start_time" in params.keys():
         start_dt = pd.to_datetime(f"{date}T{params['start_time']}", utc=True)
     else:
         start_dt = pd.to_datetime(date, utc=True)
-    if 'end_time' in params.keys():
+    if "end_time" in params.keys():
         end_dt = pd.to_datetime(f"{date}T{params['end_time']}", utc=True)
     else:
         end_dt = pd.to_datetime(f"{date}T23:59:59.999Z", utc=True)
