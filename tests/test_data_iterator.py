@@ -5,7 +5,11 @@ import pandas as pd
 import pandas.testing as pd_test
 import pytest
 
-from packages.python.accern_data import create_data_client, DATETIME_FORMAT
+from packages.python.accern_data import (
+    create_data_client,
+    DATE_FORMAT,
+    DATETIME_FORMAT,
+)
 from packages.python.accern_data.util import (
     DEFAULT_CHUNK_SIZE,
     EXAMPLE_URL,

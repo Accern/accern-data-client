@@ -46,8 +46,9 @@ def is_test() -> int:
 def check_filters(
         record: Dict[str, Any], filters: Dict[str, str]) -> bool:
     for key, value in filters.items():
-        if field_transformation(record[key]) != value:
-            return False
+        if key not in {"start_time", "end_time"}:
+            if field_transformation(record[key]) != value:
+                return False
     return True
 
 

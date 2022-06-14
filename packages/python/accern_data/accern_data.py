@@ -395,9 +395,11 @@ class JSONMode(Mode[Dict[str, Any]]):
 
         def stringify_dates(obj: Dict[str, Any]) -> Dict[str, Any]:
             if "harvested_at" in obj:
-                obj["harvested_at"] = obj["harvested_at"].strftime(DATETIME_FORMAT)
+                obj["harvested_at"] = obj["harvested_at"].strftime(
+                    DATETIME_FORMAT)
             if "published_at" in obj:
-                obj["published_at"] = obj["published_at"].strftime(DATETIME_FORMAT)
+                obj["published_at"] = obj["published_at"].strftime(
+                    DATETIME_FORMAT)
             if "crawled_at" in obj:
                 obj["crawled_at"] = obj["crawled_at"].strftime(DATETIME_FORMAT)
             return obj
@@ -778,10 +780,11 @@ class DataClient:
             return valid_params
 
         for cur_date in pd.date_range(start_date_only, end_date_only):
+            date = cur_date.strftime(DATE_FORMAT)
             expected_records.append(
                 self._read_total(
-                    cur_date,
-                    parse_time(cur_date.strftime(DATE_FORMAT), valid_filters),
+                    date,
+                    parse_time(date, valid_filters),
                     indicator=indicator_obj))
             indicator_obj.update(1)
         total = sum(expected_records)
