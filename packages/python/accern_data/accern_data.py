@@ -546,6 +546,7 @@ class DataClient:
             self,
             cur_date: str,
             filters: Dict[str, str],
+            times: Dict[str, str],
             indicator: ProgressIndicator) -> int:
         while True:
             try:
@@ -559,6 +560,7 @@ class DataClient:
                             "token": self._token,
                             **filters,
                             "date": cur_date,
+                            **times,
                             "format": "json",
                         })
                 if not str(resp.text).strip():  # if nothing is fetched
@@ -751,21 +753,42 @@ class DataClient:
         indicator_obj.set_description(desc="Fetching info")
         total = 0
         expected_records: List[int] = []
-        for cur_date in pd.date_range(start_date, end_date):
+
+        start_date_dt = pd.to_datetime(start_date)
+        end_date_dt = pd.to_datetime(end_date)
+        start_date_only = start_date_dt.strftime(r"%Y-%m-%d")
+        end_date_only = end_date_dt.strftime(r"%Y-%m-%d")
+
+        def parse_time(date: str) -> Dict[str, str]:
+            times: Dict[str, str] = {}
+            if date == start_date_only:
+                start_time = f"{start_date_dt.strftime(r'%H-%M-%S.%f')[:-3]}Z"
+                times["start_time"] = start_time
+            if date == end_date_only:
+                end_time = f"{end_date_dt.strftime(r'%H-%M-%S.%f')[:-3]}Z"
+                times["end_time"] = end_time
+            return times
+
+        for cur_date in pd.date_range(start_date_only, end_date_only):
             expected_records.append(
                 self._read_total(
-                    cur_date, valid_filters, indicator=indicator_obj))
+                    cur_date,
+                    valid_filters,
+                    times=parse_time(cur_date.strftime(r"%Y-%m-%d")),
+                    indicator=indicator_obj))
             indicator_obj.update(1)
         total = sum(expected_records)
         indicator_obj.set_total(total=total)
         indicator_obj.set_description(desc="Downloading signals")
-        for idx, cur_date in enumerate(pd.date_range(start_date, end_date)):
+        for idx, cur_date in enumerate(
+                pd.date_range(start_date_only, end_date_only)):
             indicator_obj.log(f"Expected {expected_records[idx]} signals.")
             if set_active_mode is not None:
                 set_active_mode(valid_mode, cur_date, indicator_obj)
             date = cur_date.strftime(r"%Y-%m-%d")
             indicator_obj.set_description(f"Downloading signals for {date}")
             self._params["date"] = date
+            self._params.update(parse_time(date))
             for data in self._scroll(
                     "1900-01-01",
                     valid_mode,
