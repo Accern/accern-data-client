@@ -55,7 +55,7 @@ FilterField = Literal[
     "doc_title",
     "doc_type",
     "doc_url",
-    "end_date",
+    "end_time",
     "entity_accern_id",
     "entity_country",
     "entity_exchcode",
@@ -79,7 +79,7 @@ FilterField = Literal[
     "provider_id",
     "signal_id",
     "signal_tag",
-    "start_date",
+    "start_time",
 ]
 FiltersType = TypedDict(
     "FiltersType",
