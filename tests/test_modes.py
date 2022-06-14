@@ -40,7 +40,7 @@ def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
         mode=mode,
         indicator="message")
     for cur_date in pd.date_range(start_date, end_date):
-        date = cur_date.strftime(r"%Y-%m-%d")
+        date = cur_date.strftime(DATE_FORMAT)
         try:
             df_actual = pd.read_csv(
                 f"tests/data/csv_date/{date}.csv")
@@ -112,7 +112,7 @@ def test_json(method_used: str) -> None:
         mode=mode,
         indicator="message")
     for cur_date in pd.date_range(start_date, end_date):
-        date = cur_date.strftime(r"%Y-%m-%d")
+        date = cur_date.strftime(DATE_FORMAT)
         try:
             json_actual = load_json(f"tests/data/json/{date}.json")
             json_generated = load_json(

@@ -76,7 +76,7 @@ def test_filters_csv_date(
         indicator="message")
 
     for cur_date in pd.date_range(start_date, end_date):
-        date = cur_date.strftime(r"%Y-%m-%d")
+        date = cur_date.strftime(DATE_FORMAT)
         try:
             df = pd.read_csv(f"{output_path}{output_pattern}-{date}.csv")
         except FileNotFoundError:
@@ -110,7 +110,7 @@ def test_filters_json(uses_filter_method: bool) -> None:
         indicator="message")
 
     for cur_date in pd.date_range(start_date, end_date):
-        date = cur_date.strftime(r"%Y-%m-%d")
+        date = cur_date.strftime(DATE_FORMAT)
         try:
             json_obj = load_json(f"{output_path}{output_pattern}-{date}.json")
         except FileNotFoundError:
