@@ -3,7 +3,7 @@ import json
 import os
 import site
 import sys
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple
 
 import pandas as pd
 import tqdm
@@ -62,7 +62,7 @@ def get_overall_total_from_dummy(
         filters: Dict[str, str],
         encoding: str = "utf-8") -> Response:
     response_obj = Response()
-    date_dt = pd.to_datetime(date, utc=True)
+    start_dt, end_dt = create_start_end_date(date, filters)
     if is_test():
         path = "tests/data/data-2022.json"
     else:
@@ -77,7 +77,9 @@ def get_overall_total_from_dummy(
     overall_total = 0
     for record in json_obj["signals"]:
         if (
-                pd.to_datetime(record["published_at"]) == date_dt
+                pd.to_datetime(record["published_at"]) >= start_dt
+                and
+                pd.to_datetime(record["published_at"]) <= end_dt
                 and check_filters(record, filters)):
             overall_total += 1
     filtered["overall_total"] = overall_total
@@ -90,18 +92,35 @@ def get_overall_total_from_dummy(
     return response_obj
 
 
+def create_start_end_date(
+        date: str,
+        params: Dict[str, str]) -> Tuple[pd.Timestamp, pd.Timestamp]:
+    if 'start_time' in params.keys():
+        start_dt = pd.to_datetime(f"{date}T{params['start_time']}", utc=True)
+    else:
+        start_dt = pd.to_datetime(date, utc=True)
+    if 'end_time' in params.keys():
+        end_dt = pd.to_datetime(f"{date}T{params['end_time']}", utc=True)
+    else:
+        end_dt = pd.to_datetime(f"{date}T23:59:59.999Z", utc=True)
+    return (start_dt, end_dt)
+
+
 def generate_csv_object(
         path: str,
-        date: pd.Timestamp,
+        date: str,
+        params: Dict[str, str],
         harvested_after: pd.Timestamp,
         filters: Dict[str, str],
         encoding: str) -> io.BytesIO:
     df = pd.read_csv(path)
     df["harvested_at"] = pd.to_datetime(df["harvested_at"])
     df["published_at"] = pd.to_datetime(df["published_at"])
+    start_dt, end_dt = create_start_end_date(date, params)
 
     valid_df: pd.DataFrame = df[
-        (df["published_at"] == date) &
+        (df["published_at"] >= start_dt) &
+        (df["published_at"] <= end_dt) &
         (df["harvested_at"] > harvested_after)
     ]
     if valid_df.empty:
@@ -119,7 +138,8 @@ def generate_csv_object(
 
 def generate_json_object(
         path: str,
-        date: pd.Timestamp,
+        date: str,
+        params: Dict[str, str],
         harvested_after: pd.Timestamp,
         filters: Dict[str, str],
         encoding: str) -> io.BytesIO:
@@ -129,10 +149,13 @@ def generate_json_object(
         for key, val in json_obj.items()
         if key != "signals"
     }
+    start_dt, end_dt = create_start_end_date(date, params)
     filtered_json["signals"] = []
     for record in json_obj["signals"]:
         if (
-                pd.to_datetime(record["published_at"]) == date
+                pd.to_datetime(record["published_at"]) >= start_dt
+                and
+                pd.to_datetime(record["published_at"]) <= end_dt
                 and
                 pd.to_datetime(record["harvested_at"]) > harvested_after
                 ) and check_filters(record, filters):
@@ -144,11 +167,11 @@ def generate_json_object(
 def generate_file_response(
         date: str,
         harvested_after: str,
+        params: Dict[str, str],
         mode: str,
         filters: Dict[str, str],
         encoding: str = "utf-8") -> Response:
     response_obj = Response()
-    date_dt = pd.to_datetime(date, utc=True)
     harvested_after_dt = pd.to_datetime(harvested_after, utc=True)
 
     if is_test():
@@ -158,10 +181,10 @@ def generate_file_response(
 
     if mode == "csv":
         obj = generate_csv_object(
-            path, date_dt, harvested_after_dt, filters, encoding)
+            path, date, params, harvested_after_dt, filters, encoding)
     else:
         obj = generate_json_object(
-            path, date_dt, harvested_after_dt, filters, encoding)
+            path, date, params, harvested_after_dt, filters, encoding)
     obj.seek(0)
     response_obj._content = obj.read()
     response_obj.encoding = encoding

@@ -124,7 +124,9 @@ INDICATORS = get_args(Indicators)
 FILTER_FIELD = get_args(FilterField)
 EXCLUDED_FILTER_FIELD = get_args(ExcludedFilterField)
 ALL_MODES: Set[ModeType] = {"csv", "df", "json"}
-DT_FORMAT = r"%Y-%m-%dT%H:%M:%S.%fZ"
+DATETIME_FORMAT = r"%Y-%m-%dT%H:%M:%S.%fZ"
+DATE_FORMAT = r"%Y-%m-%d"
+TIME_FORMAT = r"%H:%M:%S.000Z"
 
 T = TypeVar('T')
 
@@ -261,9 +263,9 @@ class CSVMode(Mode[pd.DataFrame]):
                 temp.add(harvested_at)
         dates: List[pd.Timestamp] = sorted(temp)
         if len(dates) <= 1:
-            return dates[0].strftime(DT_FORMAT)
+            return dates[0].strftime(DATETIME_FORMAT)
         # Second last date.
-        return max(dates[:-1]).strftime(DT_FORMAT)
+        return max(dates[:-1]).strftime(DATETIME_FORMAT)
 
     def do_init(self, indicator: ProgressIndicator) -> None:
         fname = self.get_path(self._is_by_day)
@@ -378,8 +380,8 @@ class JSONMode(Mode[Dict[str, Any]]):
             temp.add(harvested_at)
         dates: List[pd.Timestamp] = sorted(temp)
         if len(dates) <= 1:
-            return dates[0].strftime(DT_FORMAT)
-        return max(dates[:-1]).strftime(DT_FORMAT)
+            return dates[0].strftime(DATETIME_FORMAT)
+        return max(dates[:-1]).strftime(DATETIME_FORMAT)
 
     def do_init(self, indicator: ProgressIndicator) -> None:
         self._res = []
@@ -393,11 +395,11 @@ class JSONMode(Mode[Dict[str, Any]]):
 
         def stringify_dates(obj: Dict[str, Any]) -> Dict[str, Any]:
             if "harvested_at" in obj:
-                obj["harvested_at"] = obj["harvested_at"].strftime(DT_FORMAT)
+                obj["harvested_at"] = obj["harvested_at"].strftime(DATETIME_FORMAT)
             if "published_at" in obj:
-                obj["published_at"] = obj["published_at"].strftime(DT_FORMAT)
+                obj["published_at"] = obj["published_at"].strftime(DATETIME_FORMAT)
             if "crawled_at" in obj:
-                obj["crawled_at"] = obj["crawled_at"].strftime(DT_FORMAT)
+                obj["crawled_at"] = obj["crawled_at"].strftime(DATETIME_FORMAT)
             return obj
 
         obj = [stringify_dates(cur) for cur in self._res]
@@ -434,7 +436,6 @@ class DataClient:
         self._base_url = url
         self._token = token
         self._filters: Dict[str, str] = {}
-        self._params: Dict[str, str] = {}
         self._mode: Optional[Mode] = None
         if indicator is not None:
             self.set_indicator(indicator)
@@ -592,6 +593,7 @@ class DataClient:
                     resp = generate_file_response(
                         date,
                         harvested_after,
+                        params,
                         mode.get_format(),
                         filters=filters)
                 else:
@@ -709,7 +711,7 @@ class DataClient:
                 if prev_date is not None:
                     valid_mode.finish_day(indicator_obj)
                 valid_mode.init_day(
-                    cur_date.strftime(r"%Y-%m-%d"),
+                    cur_date.strftime(DATE_FORMAT),
                     opath,
                     output_pattern,
                     indicator_obj)
@@ -760,8 +762,8 @@ class DataClient:
 
         start_date_dt = pd.to_datetime(start_date)
         end_date_dt = pd.to_datetime(end_date)
-        start_date_only = start_date_dt.strftime(r"%Y-%m-%d")
-        end_date_only = end_date_dt.strftime(r"%Y-%m-%d")
+        start_date_only = start_date_dt.strftime(DATE_FORMAT)
+        end_date_only = end_date_dt.strftime(DATE_FORMAT)
 
         def parse_time(date: str, params: Dict[str, str]) -> Dict[str, str]:
             times: Dict[str, str] = {}
@@ -779,7 +781,7 @@ class DataClient:
             expected_records.append(
                 self._read_total(
                     cur_date,
-                    parse_time(cur_date.strftime(r"%Y-%m-%d"), valid_filters),
+                    parse_time(cur_date.strftime(DATE_FORMAT), valid_filters),
                     indicator=indicator_obj))
             indicator_obj.update(1)
         total = sum(expected_records)
@@ -790,7 +792,7 @@ class DataClient:
             indicator_obj.log(f"Expected {expected_records[idx]} signals.")
             if set_active_mode is not None:
                 set_active_mode(valid_mode, cur_date, indicator_obj)
-            date = cur_date.strftime(r"%Y-%m-%d")
+            date = cur_date.strftime(DATE_FORMAT)
             indicator_obj.set_description(f"Downloading signals for {date}")
             params = {"date": date}
             params = parse_time(date, params)
