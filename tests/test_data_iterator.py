@@ -77,7 +77,8 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
             n_full_chunks = df.shape[0] // chunk_size
 
         for idx in range(beg, len(dfs)):
-            assert dfs[idx]["published_at"].nunique() == 1
+            assert pd.to_datetime(
+                dfs[idx]["published_at"]).strftime(DATE_FORMAT).nunique() == 1
             if pd.Timestamp(
                     dfs[idx]["published_at"][0]).strftime(DATE_FORMAT) != date:
                 break
