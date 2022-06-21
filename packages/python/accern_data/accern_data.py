@@ -622,27 +622,42 @@ class DataClient:
 
     def _scroll(
             self,
-            start_date: str,
+            harvested_after: str,
             mode: Mode[T],
             params: Dict[str, str],
             filters: Dict[str, str],
             indicator: ProgressIndicator) -> Iterator[List[T]]:
-        params["harvested_after"] = start_date
+        params["harvested_after"] = harvested_after
         batch = self._read_date(mode, params, filters, indicator)
-        prev_start = start_date
+        prev_start = harvested_after
         while mode.size(batch) > 0:
             try:
-                start_date = mode.max_date(batch)
-                yield mode.split(batch, pd.to_datetime(start_date))
-                params["harvested_after"] = start_date
+                harvested_after = mode.max_date(batch)
+                yield mode.split(batch, pd.to_datetime(harvested_after))
+                params["harvested_after"] = harvested_after
                 batch = self._read_date(mode, params, filters, indicator)
-                if start_date == prev_start:
+                if harvested_after == prev_start:
                     # NOTE: redundant check?
                     # batch_size becomes 0, loop gets terminated.
                     break
-                prev_start = start_date
+                prev_start = harvested_after
             except pd.errors.EmptyDataError:
                 break
+
+    def scroll(
+            self,
+            harvested_after: str,
+            params: Dict[str, str]) -> Iterator[List[T]]:
+        return self._scroll(
+            harvested_after=harvested_after,
+            params=params,
+            mode=self.get_mode(),
+            indicator=self.get_indicator(),
+            filters={})
+
+    def read_total(self, cur_date: str, filters: Dict[str, str]) -> int:
+        return self._read_total(
+            cur_date=cur_date, filters=filters, indicator=self.get_indicator())
 
     def _get_valid_mode(
             self,
