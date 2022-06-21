@@ -786,9 +786,9 @@ class DataClient:
             times: Dict[str, str] = {}
             valid_params = params
             if date == start_date_only:
-                times["start_time"] = start_date_dt.strftime(r'%H:%M:%S.000Z')
+                times["start_time"] = start_date_dt.strftime(TIME_FORMAT)
             if date == end_date_only:
-                times["end_time"] = end_date_dt.strftime(r'%H:%M:%S.000Z')
+                times["end_time"] = end_date_dt.strftime(TIME_FORMAT)
             if times:
                 valid_params = params.copy()
                 valid_params.update(times)
