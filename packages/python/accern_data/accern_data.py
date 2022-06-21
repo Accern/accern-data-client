@@ -781,13 +781,15 @@ class DataClient:
         end_date_dt = pd.to_datetime(end_date)
         start_date_only = start_date_dt.strftime(DATE_FORMAT)
         end_date_only = end_date_dt.strftime(DATE_FORMAT)
+        start_date_only_dt = pd.to_datetime(start_date_only)
+        end_date_only_dt = pd.to_datetime(end_date_only)
 
         def parse_time(date: str, params: Dict[str, str]) -> Dict[str, str]:
             times: Dict[str, str] = {}
             valid_params = params
-            if date == start_date_only:
+            if date == start_date_only and start_date_only_dt != start_date_dt:
                 times["start_time"] = start_date_dt.strftime(TIME_FORMAT)
-            if date == end_date_only:
+            if date == end_date_only and end_date_only_dt != end_date_dt:
                 times["end_time"] = end_date_dt.strftime(TIME_FORMAT)
             if times:
                 valid_params = params.copy()
