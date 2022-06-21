@@ -4,7 +4,12 @@ import pandas as pd
 import pandas.testing as pd_test
 import pytest
 
-from packages.python.accern_data import create_data_client, DT_FORMAT, ModeType
+from packages.python.accern_data import (
+    create_data_client,
+    DATE_FORMAT,
+    DATETIME_FORMAT,
+    ModeType,
+)
 from packages.python.accern_data.util import EXAMPLE_URL, load_json
 
 
@@ -24,7 +29,7 @@ def test_csv_full_csv_date_consistency(sheet_mode: ModeType) -> None:
         indicator="message")
     csv_date_arr = []
     for cur_date in pd.date_range(start_date, end_date):
-        date = cur_date.strftime(r"%Y-%m-%d")
+        date = cur_date.strftime(DATE_FORMAT)
         try:
             df_generated = pd.read_csv(
                 f"{output_path}{output_pattern}-{date}.csv")
@@ -70,7 +75,7 @@ def test_json_csv_date_consistency(sheet_mode: ModeType) -> None:
         end_date=end_date,
         indicator="message")
     for cur_date in pd.date_range(start_date, end_date):
-        date = cur_date.strftime(r"%Y-%m-%d")
+        date = cur_date.strftime(DATE_FORMAT)
         try:
             json_obj = load_json(f"{output_path}{output_pattern}-{date}.json")
             csv_obj = pd.read_csv(f"{output_path}{output_pattern}-{date}.csv")
@@ -79,7 +84,7 @@ def test_json_csv_date_consistency(sheet_mode: ModeType) -> None:
         csv_obj["event_accern_id"] = csv_obj["event_accern_id"].astype("str")
         for col in {"harvested_at", "crawled_at", "published_at"}:
             csv_obj[col] = csv_obj[col].apply(
-                lambda x: pd.to_datetime(x).strftime(DT_FORMAT))
+                lambda x: pd.to_datetime(x).strftime(DATETIME_FORMAT))
         jsonified_cols = {
             "event_hits",
             "entity_hits",

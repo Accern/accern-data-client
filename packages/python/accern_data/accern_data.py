@@ -55,6 +55,7 @@ FilterField = Literal[
     "doc_title",
     "doc_type",
     "doc_url",
+    "end_time",
     "entity_accern_id",
     "entity_country",
     "entity_exchcode",
@@ -78,6 +79,7 @@ FilterField = Literal[
     "provider_id",
     "signal_id",
     "signal_tag",
+    "start_time",
 ]
 FiltersType = TypedDict(
     "FiltersType",
@@ -88,6 +90,7 @@ FiltersType = TypedDict(
         "doc_title": Optional[str],
         "doc_type": Optional[str],
         "doc_url": Optional[str],
+        "end_time": str,
         "entity_accern_id": Optional[str],
         "entity_country": Optional[str],
         "entity_exchcode": Optional[str],
@@ -111,6 +114,7 @@ FiltersType = TypedDict(
         "provider_id": Optional[int],
         "signal_id": Optional[str],
         "signal_tag": Optional[str],
+        "start_time": str,
     },
     total=False)
 
@@ -120,7 +124,9 @@ INDICATORS = get_args(Indicators)
 FILTER_FIELD = get_args(FilterField)
 EXCLUDED_FILTER_FIELD = get_args(ExcludedFilterField)
 ALL_MODES: Set[ModeType] = {"csv", "df", "json"}
-DT_FORMAT = r"%Y-%m-%dT%H:%M:%S.%fZ"
+DATETIME_FORMAT = r"%Y-%m-%dT%H:%M:%S.%fZ"
+DATE_FORMAT = r"%Y-%m-%d"
+TIME_FORMAT = r"%H:%M:%S.000Z"
 
 T = TypeVar('T')
 
@@ -257,9 +263,9 @@ class CSVMode(Mode[pd.DataFrame]):
                 temp.add(harvested_at)
         dates: List[pd.Timestamp] = sorted(temp)
         if len(dates) <= 1:
-            return dates[0].strftime(DT_FORMAT)
+            return dates[0].strftime(DATETIME_FORMAT)
         # Second last date.
-        return max(dates[:-1]).strftime(DT_FORMAT)
+        return max(dates[:-1]).strftime(DATETIME_FORMAT)
 
     def do_init(self, indicator: ProgressIndicator) -> None:
         fname = self.get_path(self._is_by_day)
@@ -374,8 +380,8 @@ class JSONMode(Mode[Dict[str, Any]]):
             temp.add(harvested_at)
         dates: List[pd.Timestamp] = sorted(temp)
         if len(dates) <= 1:
-            return dates[0].strftime(DT_FORMAT)
-        return max(dates[:-1]).strftime(DT_FORMAT)
+            return dates[0].strftime(DATETIME_FORMAT)
+        return max(dates[:-1]).strftime(DATETIME_FORMAT)
 
     def do_init(self, indicator: ProgressIndicator) -> None:
         self._res = []
@@ -389,11 +395,13 @@ class JSONMode(Mode[Dict[str, Any]]):
 
         def stringify_dates(obj: Dict[str, Any]) -> Dict[str, Any]:
             if "harvested_at" in obj:
-                obj["harvested_at"] = obj["harvested_at"].strftime(DT_FORMAT)
+                obj["harvested_at"] = obj["harvested_at"].strftime(
+                    DATETIME_FORMAT)
             if "published_at" in obj:
-                obj["published_at"] = obj["published_at"].strftime(DT_FORMAT)
+                obj["published_at"] = obj["published_at"].strftime(
+                    DATETIME_FORMAT)
             if "crawled_at" in obj:
-                obj["crawled_at"] = obj["crawled_at"].strftime(DT_FORMAT)
+                obj["crawled_at"] = obj["crawled_at"].strftime(DATETIME_FORMAT)
             return obj
 
         obj = [stringify_dates(cur) for cur in self._res]
@@ -430,7 +438,6 @@ class DataClient:
         self._base_url = url
         self._token = token
         self._filters: Dict[str, str] = {}
-        self._params: Dict[str, str] = {}
         self._mode: Optional[Mode] = None
         if indicator is not None:
             self.set_indicator(indicator)
@@ -577,16 +584,18 @@ class DataClient:
     def _read_date(
             self,
             mode: Mode[T],
+            params: Dict[str, str],
             filters: Dict[str, str],
             indicator: ProgressIndicator) -> List[T]:
         while True:
             try:
                 if is_example_url(self._base_url):
-                    date = self._params["date"]
-                    harvested_after = self._params["harvested_after"]
+                    date = params["date"]
+                    harvested_after = params["harvested_after"]
                     resp = generate_file_response(
                         date,
                         harvested_after,
+                        params,
                         mode.get_format(),
                         filters=filters)
                 else:
@@ -595,7 +604,7 @@ class DataClient:
                         params={
                             "token": self._token,
                             **filters,
-                            **self._params,
+                            **params,
                             **{"format": mode.get_format()}
                         })
                 if not str(resp.text).strip():
@@ -613,26 +622,42 @@ class DataClient:
 
     def _scroll(
             self,
-            start_date: str,
+            harvested_after: str,
             mode: Mode[T],
+            params: Dict[str, str],
             filters: Dict[str, str],
             indicator: ProgressIndicator) -> Iterator[List[T]]:
-        self._params["harvested_after"] = start_date
-        batch = self._read_date(mode, filters, indicator)
-        prev_start = start_date
+        params["harvested_after"] = harvested_after
+        batch = self._read_date(mode, params, filters, indicator)
+        prev_start = harvested_after
         while mode.size(batch) > 0:
             try:
-                start_date = mode.max_date(batch)
-                yield mode.split(batch, pd.to_datetime(start_date))
-                self._params["harvested_after"] = start_date
-                batch = self._read_date(mode, filters, indicator)
-                if start_date == prev_start:
+                harvested_after = mode.max_date(batch)
+                yield mode.split(batch, pd.to_datetime(harvested_after))
+                params["harvested_after"] = harvested_after
+                batch = self._read_date(mode, params, filters, indicator)
+                if harvested_after == prev_start:
                     # NOTE: redundant check?
                     # batch_size becomes 0, loop gets terminated.
                     break
-                prev_start = start_date
+                prev_start = harvested_after
             except pd.errors.EmptyDataError:
                 break
+
+    def scroll(
+            self,
+            harvested_after: str,
+            params: Dict[str, str]) -> Iterator[List[T]]:
+        return self._scroll(
+            harvested_after=harvested_after,
+            params=params,
+            mode=self.get_mode(),
+            indicator=self.get_indicator(),
+            filters={})
+
+    def read_total(self, cur_date: str, filters: Dict[str, str]) -> int:
+        return self._read_total(
+            cur_date=cur_date, filters=filters, indicator=self.get_indicator())
 
     def _get_valid_mode(
             self,
@@ -703,7 +728,7 @@ class DataClient:
                 if prev_date is not None:
                     valid_mode.finish_day(indicator_obj)
                 valid_mode.init_day(
-                    cur_date.strftime(r"%Y-%m-%d"),
+                    cur_date.strftime(DATE_FORMAT),
                     opath,
                     output_pattern,
                     indicator_obj)
@@ -751,24 +776,50 @@ class DataClient:
         indicator_obj.set_description(desc="Fetching info")
         total = 0
         expected_records: List[int] = []
-        for cur_date in pd.date_range(start_date, end_date):
+
+        start_date_dt = pd.to_datetime(start_date)
+        end_date_dt = pd.to_datetime(end_date)
+        start_date_only = start_date_dt.strftime(DATE_FORMAT)
+        end_date_only = end_date_dt.strftime(DATE_FORMAT)
+        start_date_only_dt = pd.to_datetime(start_date_only)
+        end_date_only_dt = pd.to_datetime(end_date_only)
+
+        def parse_time(date: str, params: Dict[str, str]) -> Dict[str, str]:
+            times: Dict[str, str] = {}
+            valid_params = params
+            if date == start_date_only and start_date_only_dt != start_date_dt:
+                times["start_time"] = start_date_dt.strftime(TIME_FORMAT)
+            if date == end_date_only and end_date_only_dt != end_date_dt:
+                times["end_time"] = end_date_dt.strftime(TIME_FORMAT)
+            if times:
+                valid_params = params.copy()
+                valid_params.update(times)
+            return valid_params
+
+        for cur_date in pd.date_range(start_date_only, end_date_only):
+            date = cur_date.strftime(DATE_FORMAT)
             expected_records.append(
                 self._read_total(
-                    cur_date, valid_filters, indicator=indicator_obj))
+                    date,
+                    parse_time(date, valid_filters),
+                    indicator=indicator_obj))
             indicator_obj.update(1)
         total = sum(expected_records)
         indicator_obj.set_total(total=total)
         indicator_obj.set_description(desc="Downloading signals")
-        for idx, cur_date in enumerate(pd.date_range(start_date, end_date)):
+        for idx, cur_date in enumerate(
+                pd.date_range(start_date_only, end_date_only)):
             indicator_obj.log(f"Expected {expected_records[idx]} signals.")
             if set_active_mode is not None:
                 set_active_mode(valid_mode, cur_date, indicator_obj)
-            date = cur_date.strftime(r"%Y-%m-%d")
+            date = cur_date.strftime(DATE_FORMAT)
             indicator_obj.set_description(f"Downloading signals for {date}")
-            self._params["date"] = date
+            params = {"date": date}
+            params = parse_time(date, params)
             for data in self._scroll(
                     "1900-01-01",
                     valid_mode,
+                    params,
                     valid_filters,
                     indicator=indicator_obj):
                 yield from valid_mode.iterate_data(

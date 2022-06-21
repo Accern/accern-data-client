@@ -5,7 +5,11 @@ import pandas as pd
 import pandas.testing as pd_test
 import pytest
 
-from packages.python.accern_data import create_data_client, DT_FORMAT
+from packages.python.accern_data import (
+    create_data_client,
+    DATE_FORMAT,
+    DATETIME_FORMAT,
+)
 from packages.python.accern_data.util import (
     DEFAULT_CHUNK_SIZE,
     EXAMPLE_URL,
@@ -63,7 +67,7 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
     beg = 0
     end = 0
     for cur_date in pd.date_range(start_date, end_date):
-        date = cur_date.strftime(r"%Y-%m-%d")
+        date = cur_date.strftime(DATE_FORMAT)
         try:
             df = pd.read_csv(f"tests/data/csv_date/{date}.csv")
         except FileNotFoundError:
@@ -72,10 +76,12 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
         if chunk_size is not None:
             n_full_chunks = df.shape[0] // chunk_size
 
+        def func(row: str) -> pd.Timestamp:
+            return pd.to_datetime(row, utc=True).strftime(DATE_FORMAT)
+
         for idx in range(beg, len(dfs)):
-            assert dfs[idx]["published_at"].nunique() == 1
-            if pd.Timestamp(
-                    dfs[idx]["published_at"][0]).strftime(r"%Y-%m-%d") != date:
+            assert dfs[idx]["published_at"].apply(func).nunique() == 1
+            if dfs[idx]["published_at"].apply(func)[0] != date:
                 break
             end = idx
         if chunk_size is not None and n_full_chunks is not None:
@@ -105,12 +111,12 @@ def test_json_iterator() -> None:
     js_total = load_json("tests/data/data-2022.json")
     for obj in jsons:
         for dt in {"crawled_at", "harvested_at", "published_at"}:
-            obj[dt] = obj[dt].strftime(DT_FORMAT)
+            obj[dt] = obj[dt].strftime(DATETIME_FORMAT)
     assert jsons == js_total["signals"]
     beg = 0
     end = 0
     for cur_date in pd.date_range(start_date, end_date):
-        date = cur_date.strftime(r"%Y-%m-%d")
+        date = cur_date.strftime(DATE_FORMAT)
         json_date = []
         try:
             js = load_json(f"tests/data/json_date/{date}.json")
@@ -118,7 +124,7 @@ def test_json_iterator() -> None:
             continue
         for idx in range(beg, len(jsons)):
             if pd.Timestamp(
-                    jsons[idx]["published_at"]).strftime(r"%Y-%m-%d") != date:
+                    jsons[idx]["published_at"]).strftime(DATE_FORMAT) != date:
                 break
             end = idx
         for idx in range(beg, end+1):
