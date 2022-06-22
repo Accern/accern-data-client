@@ -311,10 +311,7 @@ class CSVMode(Mode[pd.DataFrame]):
                 res_df = pd.concat(self._buffer)
                 result: pd.DataFrame = res_df.iloc[:self._chunk_size]
                 remainder: pd.DataFrame = res_df.iloc[self._chunk_size:]
-                if remainder.empty:
-                    self._buffer = []
-                else:
-                    self._buffer = [remainder]
+                self._buffer = [] if remainder.empty else [remainder]
                 self._buffer_size = remainder.shape[0]
                 indicator.update(result.shape[0])
                 yield result.reset_index(drop=True)
