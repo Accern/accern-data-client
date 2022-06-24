@@ -648,6 +648,11 @@ class DataClient:
             self,
             harvested_after: str,
             params: Dict[str, str]) -> Iterator[List[T]]:
+        warnings.warn(
+            "scroll method is deprecated and would be removed in later "
+            "versions.",
+            DeprecationWarning,
+            stacklevel=2)
         return self._scroll(
             harvested_after=harvested_after,
             params=params,
@@ -656,6 +661,11 @@ class DataClient:
             filters={})
 
     def read_total(self, cur_date: str, filters: Dict[str, str]) -> int:
+        warnings.warn(
+            "read_total method is deprecated and would be removed in later "
+            "versions.",
+            DeprecationWarning,
+            stacklevel=2)
         return self._read_total(
             cur_date=cur_date, filters=filters, indicator=self.get_indicator())
 
