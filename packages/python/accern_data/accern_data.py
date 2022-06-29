@@ -443,7 +443,8 @@ class DataClient:
             self.set_indicator(indicator)
         else:
             self._indicator_obj = self._parse_indicator("pbar")
-        self._error_list: Deque[str] = deque(maxlen=n_errors)
+        self._error_list: Deque[
+            Tuple[Optional[Dict[str, str]], str]] = deque(maxlen=n_errors)
 
     def reset_error_list(self) -> None:
         self._error_list.clear()
@@ -546,7 +547,8 @@ class DataClient:
         assert self._mode is not None, "Set mode first."
         return self._mode.get_instance()
 
-    def get_last_silenced_errors(self) -> List[str]:
+    def get_last_silenced_errors(
+            self) -> List[Tuple[Optional[Dict[str, str]], str]]:
         return list(self._error_list)
 
     def _read_total(
@@ -556,18 +558,18 @@ class DataClient:
             indicator: ProgressIndicator) -> int:
         while True:
             try:
+                req_params = None
                 if is_example_url(self._base_url):
                     resp = get_overall_total_from_dummy(
                         cur_date, filters)
                 else:
-                    resp = requests.get(
-                        self._base_url,
-                        params={
-                            "token": self._token,
-                            **filters,
-                            "date": cur_date,
-                            "format": "json",
-                        })
+                    req_params = {
+                        "token": self._token,
+                        **filters,
+                        "date": cur_date,
+                        "format": "json",
+                    }
+                    resp = requests.get(self._base_url, params=req_params)
                 if not str(resp.text).strip():  # if nothing is fetched
                     return 0
                 return int(resp.json()["overall_total"])
@@ -577,7 +579,7 @@ class DataClient:
                     AssertionError,
                     KeyError,
                     requests.exceptions.RequestException):  # NOTE: add more?
-                self._error_list.append(traceback.format_exc())
+                self._error_list.append((req_params, traceback.format_exc()))
                 indicator.log("unknown error...retrying...")
                 time.sleep(0.5)
 
@@ -588,6 +590,7 @@ class DataClient:
             filters: Dict[str, str],
             indicator: ProgressIndicator) -> List[T]:
         while True:
+            req_params = None
             try:
                 if is_example_url(self._base_url):
                     date = params["date"]
@@ -599,14 +602,13 @@ class DataClient:
                         mode.get_format(),
                         filters=filters)
                 else:
-                    resp = requests.get(
-                        self._base_url,
-                        params={
-                            "token": self._token,
-                            **filters,
-                            **params,
-                            **{"format": mode.get_format()}
-                        })
+                    req_params = {
+                        "token": self._token,
+                        **filters,
+                        **params,
+                        **{"format": mode.get_format()}
+                    }
+                    resp = requests.get(self._base_url, params=req_params)
                 if not str(resp.text).strip():
                     return []
                 return mode.parse_result(resp)
@@ -616,7 +618,7 @@ class DataClient:
                     AssertionError,
                     KeyError,
                     requests.exceptions.RequestException):  # NOTE: add more?
-                self._error_list.append(traceback.format_exc())
+                self._error_list.append((req_params, traceback.format_exc()))
                 indicator.log("unknown error...retrying...")
                 time.sleep(0.5)
 
