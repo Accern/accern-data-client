@@ -588,7 +588,8 @@ class DataClient:
             mode: Mode[T],
             params: Dict[str, str],
             filters: Dict[str, str],
-            indicator: ProgressIndicator) -> List[T]:
+            indicator: ProgressIndicator,
+            url_params: Dict[str, str]) -> List[T]:
         while True:
             req_params = None
             try:
@@ -604,8 +605,7 @@ class DataClient:
                 else:
                     req_params = {
                         "token": self._token,
-                        **filters,
-                        **params,
+                        **{**url_params, **filters, **params},
                         **{"format": mode.get_format()}
                     }
                     resp = requests.get(self._base_url, params=req_params)
@@ -628,16 +628,18 @@ class DataClient:
             mode: Mode[T],
             params: Dict[str, str],
             filters: Dict[str, str],
-            indicator: ProgressIndicator) -> Iterator[List[T]]:
+            indicator: ProgressIndicator,
+            url_params: Dict[str, str]) -> Iterator[List[T]]:
         params["harvested_after"] = harvested_after
-        batch = self._read_date(mode, params, filters, indicator)
+        batch = self._read_date(mode, params, filters, indicator, url_params)
         prev_start = harvested_after
         while mode.size(batch) > 0:
             try:
                 harvested_after = mode.max_date(batch)
                 yield mode.split(batch, pd.to_datetime(harvested_after))
                 params["harvested_after"] = harvested_after
-                batch = self._read_date(mode, params, filters, indicator)
+                batch = self._read_date(
+                    mode, params, filters, indicator, url_params)
                 if harvested_after == prev_start:
                     # NOTE: redundant check?
                     # batch_size becomes 0, loop gets terminated.
@@ -649,7 +651,8 @@ class DataClient:
     def scroll(
             self,
             harvested_after: str,
-            params: Dict[str, str]) -> Iterator[List[T]]:
+            params: Dict[str, str],
+            url_params: Dict[str, str]) -> Iterator[List[T]]:
         warnings.warn(
             "scroll method is deprecated and would be removed in later "
             "versions.",
@@ -660,7 +663,8 @@ class DataClient:
             params=params,
             mode=self.get_mode(),
             indicator=self.get_indicator(),
-            filters={})
+            filters={},
+            url_params=url_params)
 
     def read_total(self, cur_date: str, filters: Dict[str, str]) -> int:
         warnings.warn(
@@ -718,7 +722,7 @@ class DataClient:
                 ] = None,
             filters: Optional[FiltersType] = None,
             indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
-            ) -> None:
+            url_params: Optional[Dict[str, str]] = None) -> None:
         opath = "." if output_path is None else output_path
         os.makedirs(opath, exist_ok=True)
 
@@ -751,7 +755,8 @@ class DataClient:
                 mode=mode,
                 filters=filters,
                 indicator=indicator,
-                set_active_mode=set_active_mode):
+                set_active_mode=set_active_mode,
+                url_params=url_params):
             assert valid_mode is not None
             valid_mode.add_result(res)
             prev_date = cur_date
@@ -776,7 +781,7 @@ class DataClient:
             set_active_mode: Optional[
                 Callable[
                     [Mode[T], pd.Timestamp, ProgressIndicator], None]] = None,
-            ) -> Iterator[T]:
+            url_params: Optional[Dict[str, str]] = None) -> Iterator[T]:
         valid_mode = self._get_valid_mode(mode)
         valid_filters = self._get_valid_filters(filters)
         valid_mode.clean_buffer()
@@ -828,12 +833,14 @@ class DataClient:
             indicator_obj.set_description(f"Downloading signals for {date}")
             params = {"date": date}
             params = parse_time(date, params)
+            url_params = url_params if url_params is not None else {}
             for data in self._scroll(
                     "1900-01-01",
                     valid_mode,
                     params,
                     valid_filters,
-                    indicator=indicator_obj):
+                    indicator=indicator_obj,
+                    url_params=url_params):
                 yield from valid_mode.iterate_data(
                     data, indicator=indicator_obj)
             yield from valid_mode.iterate_data(None, indicator=indicator_obj)
