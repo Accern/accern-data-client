@@ -569,6 +569,7 @@ class DataClient:
                         "date": cur_date,
                         "format": "json",
                         "size": "1",
+                        "exclude": "*",
                     }
                     resp = requests.get(self._base_url, params=req_params)
                 if not str(resp.text).strip():  # if nothing is fetched
@@ -590,9 +591,10 @@ class DataClient:
             params: Dict[str, str],
             filters: Dict[str, str],
             indicator: ProgressIndicator,
-            url_params: Dict[str, str]) -> List[T]:
+            url_params: Optional[Dict[str, str]]) -> List[T]:
         while True:
             req_params = None
+            url_params = url_params if url_params is not None else {}
             try:
                 if is_example_url(self._base_url):
                     date = params["date"]
@@ -630,7 +632,7 @@ class DataClient:
             params: Dict[str, str],
             filters: Dict[str, str],
             indicator: ProgressIndicator,
-            url_params: Dict[str, str]) -> Iterator[List[T]]:
+            url_params: Optional[Dict[str, str]] = None) -> Iterator[List[T]]:
         params["harvested_after"] = harvested_after
         batch = self._read_date(mode, params, filters, indicator, url_params)
         prev_start = harvested_after
@@ -653,9 +655,9 @@ class DataClient:
             self,
             harvested_after: str,
             params: Dict[str, str],
-            url_params: Dict[str, str]) -> Iterator[List[T]]:
+            url_params: Optional[Dict[str, str]] = None) -> Iterator[List[T]]:
         warnings.warn(
-            "scroll method is deprecated and would be removed in later "
+            "scroll method is deprecated and will be removed in later "
             "versions.",
             DeprecationWarning,
             stacklevel=2)
@@ -669,7 +671,7 @@ class DataClient:
 
     def read_total(self, cur_date: str, filters: Dict[str, str]) -> int:
         warnings.warn(
-            "read_total method is deprecated and would be removed in later "
+            "read_total method is deprecated and will be removed in later "
             "versions.",
             DeprecationWarning,
             stacklevel=2)
@@ -834,7 +836,6 @@ class DataClient:
             indicator_obj.set_description(f"Downloading signals for {date}")
             params = {"date": date}
             params = parse_time(date, params)
-            url_params = url_params if url_params is not None else {}
             for data in self._scroll(
                     "1900-01-01",
                     valid_mode,
