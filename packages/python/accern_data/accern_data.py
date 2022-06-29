@@ -568,7 +568,7 @@ class DataClient:
                         **filters,
                         "date": cur_date,
                         "format": "json",
-                        "size": 1,
+                        "size": "1",
                     }
                     resp = requests.get(self._base_url, params=req_params)
                 if not str(resp.text).strip():  # if nothing is fetched
