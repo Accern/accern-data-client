@@ -443,7 +443,8 @@ class DataClient:
             self.set_indicator(indicator)
         else:
             self._indicator_obj = self._parse_indicator("pbar")
-        self._error_list: Deque[str] = deque(maxlen=n_errors)
+        self._error_list: Deque[
+            Tuple[Optional[Dict[str, str]], str]] = deque(maxlen=n_errors)
 
     def reset_error_list(self) -> None:
         self._error_list.clear()
@@ -546,7 +547,8 @@ class DataClient:
         assert self._mode is not None, "Set mode first."
         return self._mode.get_instance()
 
-    def get_last_silenced_errors(self) -> List[str]:
+    def get_last_silenced_errors(
+            self) -> List[Tuple[Optional[Dict[str, str]], str]]:
         return list(self._error_list)
 
     def _read_total(
@@ -556,18 +558,20 @@ class DataClient:
             indicator: ProgressIndicator) -> int:
         while True:
             try:
+                req_params = None
                 if is_example_url(self._base_url):
                     resp = get_overall_total_from_dummy(
                         cur_date, filters)
                 else:
-                    resp = requests.get(
-                        self._base_url,
-                        params={
-                            "token": self._token,
-                            **filters,
-                            "date": cur_date,
-                            "format": "json",
-                        })
+                    req_params = {
+                        "token": self._token,
+                        **filters,
+                        "date": cur_date,
+                        "format": "json",
+                        "size": "1",
+                        "exclude": "*",
+                    }
+                    resp = requests.get(self._base_url, params=req_params)
                 if not str(resp.text).strip():  # if nothing is fetched
                     return 0
                 return int(resp.json()["overall_total"])
@@ -577,7 +581,7 @@ class DataClient:
                     AssertionError,
                     KeyError,
                     requests.exceptions.RequestException):  # NOTE: add more?
-                self._error_list.append(traceback.format_exc())
+                self._error_list.append((req_params, traceback.format_exc()))
                 indicator.log("unknown error...retrying...")
                 time.sleep(0.5)
 
@@ -586,8 +590,11 @@ class DataClient:
             mode: Mode[T],
             params: Dict[str, str],
             filters: Dict[str, str],
-            indicator: ProgressIndicator) -> List[T]:
+            indicator: ProgressIndicator,
+            url_params: Optional[Dict[str, str]]) -> List[T]:
         while True:
+            req_params = None
+            url_params = url_params if url_params is not None else {}
             try:
                 if is_example_url(self._base_url):
                     date = params["date"]
@@ -599,14 +606,12 @@ class DataClient:
                         mode.get_format(),
                         filters=filters)
                 else:
-                    resp = requests.get(
-                        self._base_url,
-                        params={
-                            "token": self._token,
-                            **filters,
-                            **params,
-                            **{"format": mode.get_format()}
-                        })
+                    req_params = {
+                        "token": self._token,
+                        **{**url_params, **filters, **params},
+                        **{"format": mode.get_format()}
+                    }
+                    resp = requests.get(self._base_url, params=req_params)
                 if not str(resp.text).strip():
                     return []
                 return mode.parse_result(resp)
@@ -616,7 +621,7 @@ class DataClient:
                     AssertionError,
                     KeyError,
                     requests.exceptions.RequestException):  # NOTE: add more?
-                self._error_list.append(traceback.format_exc())
+                self._error_list.append((req_params, traceback.format_exc()))
                 indicator.log("unknown error...retrying...")
                 time.sleep(0.5)
 
@@ -626,16 +631,18 @@ class DataClient:
             mode: Mode[T],
             params: Dict[str, str],
             filters: Dict[str, str],
-            indicator: ProgressIndicator) -> Iterator[List[T]]:
+            indicator: ProgressIndicator,
+            url_params: Optional[Dict[str, str]] = None) -> Iterator[List[T]]:
         params["harvested_after"] = harvested_after
-        batch = self._read_date(mode, params, filters, indicator)
+        batch = self._read_date(mode, params, filters, indicator, url_params)
         prev_start = harvested_after
         while mode.size(batch) > 0:
             try:
                 harvested_after = mode.max_date(batch)
                 yield mode.split(batch, pd.to_datetime(harvested_after))
                 params["harvested_after"] = harvested_after
-                batch = self._read_date(mode, params, filters, indicator)
+                batch = self._read_date(
+                    mode, params, filters, indicator, url_params)
                 if harvested_after == prev_start:
                     # NOTE: redundant check?
                     # batch_size becomes 0, loop gets terminated.
@@ -647,15 +654,27 @@ class DataClient:
     def scroll(
             self,
             harvested_after: str,
-            params: Dict[str, str]) -> Iterator[List[T]]:
+            params: Dict[str, str],
+            url_params: Optional[Dict[str, str]] = None) -> Iterator[List[T]]:
+        warnings.warn(
+            "scroll method is deprecated and will be removed in later "
+            "versions.",
+            DeprecationWarning,
+            stacklevel=2)
         return self._scroll(
             harvested_after=harvested_after,
             params=params,
             mode=self.get_mode(),
             indicator=self.get_indicator(),
-            filters={})
+            filters={},
+            url_params=url_params)
 
     def read_total(self, cur_date: str, filters: Dict[str, str]) -> int:
+        warnings.warn(
+            "read_total method is deprecated and will be removed in later "
+            "versions.",
+            DeprecationWarning,
+            stacklevel=2)
         return self._read_total(
             cur_date=cur_date, filters=filters, indicator=self.get_indicator())
 
@@ -706,7 +725,7 @@ class DataClient:
                 ] = None,
             filters: Optional[FiltersType] = None,
             indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
-            ) -> None:
+            url_params: Optional[Dict[str, str]] = None) -> None:
         opath = "." if output_path is None else output_path
         os.makedirs(opath, exist_ok=True)
 
@@ -739,7 +758,8 @@ class DataClient:
                 mode=mode,
                 filters=filters,
                 indicator=indicator,
-                set_active_mode=set_active_mode):
+                set_active_mode=set_active_mode,
+                url_params=url_params):
             assert valid_mode is not None
             valid_mode.add_result(res)
             prev_date = cur_date
@@ -764,7 +784,7 @@ class DataClient:
             set_active_mode: Optional[
                 Callable[
                     [Mode[T], pd.Timestamp, ProgressIndicator], None]] = None,
-            ) -> Iterator[T]:
+            url_params: Optional[Dict[str, str]] = None) -> Iterator[T]:
         valid_mode = self._get_valid_mode(mode)
         valid_filters = self._get_valid_filters(filters)
         valid_mode.clean_buffer()
@@ -821,7 +841,8 @@ class DataClient:
                     valid_mode,
                     params,
                     valid_filters,
-                    indicator=indicator_obj):
+                    indicator=indicator_obj,
+                    url_params=url_params):
                 yield from valid_mode.iterate_data(
                     data, indicator=indicator_obj)
             yield from valid_mode.iterate_data(None, indicator=indicator_obj)
