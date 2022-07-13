@@ -836,7 +836,6 @@ class DataClient:
             indicator_obj.set_description(f"Downloading signals for {date}")
             params = {"date": date}
             params = parse_time(date, params)
-            url_params = url_params if url_params is not None else {}
             for data in self._scroll(
                     "1900-01-01",
                     valid_mode,
