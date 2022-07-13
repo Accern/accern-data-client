@@ -120,6 +120,8 @@ FiltersType = TypedDict(
 
 ModeType = Literal["csv", "df", "json"]
 Indicators = Literal["pbar", "silent", "message"]
+ByDate = Literal["harvested_at", "published_at"]
+BYDATE = get_args(ByDate)
 INDICATORS = get_args(Indicators)
 FILTER_FIELD = get_args(FilterField)
 EXCLUDED_FILTER_FIELD = get_args(ExcludedFilterField)
@@ -553,7 +555,7 @@ class DataClient:
 
     def _read_total(
             self,
-            cur_date: str,
+            date: Dict[str, str],
             filters: Dict[str, str],
             indicator: ProgressIndicator) -> int:
         while True:
@@ -561,12 +563,12 @@ class DataClient:
                 req_params = None
                 if is_example_url(self._base_url):
                     resp = get_overall_total_from_dummy(
-                        cur_date, filters)
+                        date, filters)
                 else:
                     req_params = {
                         "token": self._token,
                         **filters,
-                        "date": cur_date,
+                        **date,
                         "format": "json",
                         "size": "1",
                         "exclude": "*",
@@ -676,7 +678,9 @@ class DataClient:
             DeprecationWarning,
             stacklevel=2)
         return self._read_total(
-            cur_date=cur_date, filters=filters, indicator=self.get_indicator())
+            date={"date": cur_date},
+            filters=filters,
+            indicator=self.get_indicator())
 
     def _get_valid_mode(
             self,
@@ -725,7 +729,8 @@ class DataClient:
                 ] = None,
             filters: Optional[FiltersType] = None,
             indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
-            url_params: Optional[Dict[str, str]] = None) -> None:
+            url_params: Optional[Dict[str, str]] = None,
+            by_date: ByDate = "published_at") -> None:
         opath = "." if output_path is None else output_path
         os.makedirs(opath, exist_ok=True)
 
@@ -759,7 +764,8 @@ class DataClient:
                 filters=filters,
                 indicator=indicator,
                 set_active_mode=set_active_mode,
-                url_params=url_params):
+                url_params=url_params,
+                by_date=by_date):
             assert valid_mode is not None
             valid_mode.add_result(res)
             prev_date = cur_date
@@ -784,7 +790,8 @@ class DataClient:
             set_active_mode: Optional[
                 Callable[
                     [Mode[T], pd.Timestamp, ProgressIndicator], None]] = None,
-            url_params: Optional[Dict[str, str]] = None) -> Iterator[T]:
+            url_params: Optional[Dict[str, str]] = None,
+            by_date: ByDate = "published_at") -> Iterator[T]:
         valid_mode = self._get_valid_mode(mode)
         valid_filters = self._get_valid_filters(filters)
         valid_mode.clean_buffer()
@@ -804,6 +811,14 @@ class DataClient:
         start_date_only_dt = pd.to_datetime(start_date_only)
         end_date_only_dt = pd.to_datetime(end_date_only)
 
+        def get_by_date_param(date: str) -> Dict[str, str]:
+            if by_date == "published_at":
+                return {"date": date}
+            if by_date == "harvested_at":
+                return {"harvested_at": date}
+            raise ValueError(
+                    f"Incorrect value for by_date. Must be one of {BYDATE}")
+
         def parse_time(date: str, params: Dict[str, str]) -> Dict[str, str]:
             times: Dict[str, str] = {}
             valid_params = params
@@ -820,7 +835,7 @@ class DataClient:
             date = cur_date.strftime(DATE_FORMAT)
             expected_records.append(
                 self._read_total(
-                    date,
+                    get_by_date_param(date),
                     parse_time(date, valid_filters),
                     indicator=indicator_obj))
             indicator_obj.update(1)
@@ -834,7 +849,7 @@ class DataClient:
                 set_active_mode(valid_mode, cur_date, indicator_obj)
             date = cur_date.strftime(DATE_FORMAT)
             indicator_obj.set_description(f"Downloading signals for {date}")
-            params = {"date": date}
+            params = get_by_date_param(date)
             params = parse_time(date, params)
             for data in self._scroll(
                     "1900-01-01",
