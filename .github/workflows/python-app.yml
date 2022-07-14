@@ -33,11 +33,6 @@ jobs:
       run: |
         pip install -e .
 
-    - name: Git Check (tests may not alter any git visible files)
-      run: |
-        git status -sb --porcelain
-        [ -z "$(git status --porcelain)" ]
-
     - name: Lint Code (use uppercase TODO, XXX, FIXME, NOTE and explain nopep8)
       if: ${{ matrix.python == '3.9'}}
       run: |
@@ -94,6 +89,11 @@ jobs:
     - name: Run Tests Coverage
       run: |
         make coverage-report
+
+    - name: Git Check (tests may not alter any git visible files)
+      run: |
+        git status -sb --porcelain
+        [ -z "$(git status --porcelain)" ]
 
     - name: SonarQube
       uses: sonarsource/sonarqube-scan-action@master
