@@ -5,7 +5,7 @@ import traceback
 import warnings
 from collections import deque
 from copy import deepcopy
-from typing import (  # get_args,; Literal,; TypedDict,
+from typing import (  # get_args, Literal, TypedDict,
     Any,
     Callable,
     Deque,
@@ -681,14 +681,21 @@ class DataClient:
             filters={},
             url_params=url_params)
 
-    def read_total(self, cur_date: str, filters: Dict[str, str]) -> int:
+    def read_total(
+            self,
+            cur_date: str,
+            filters: Dict[str, str],
+            request_kwargs: Optional[Dict[Any, Any]] = None) -> int:
         warnings.warn(
             "read_total method is deprecated and will be removed in later "
             "versions.",
             DeprecationWarning,
             stacklevel=2)
         return self._read_total(
-            cur_date=cur_date, filters=filters, indicator=self.get_indicator())
+            cur_date=cur_date,
+            filters=filters,
+            indicator=self.get_indicator(),
+            request_kwargs=request_kwargs)
 
     def _get_valid_mode(
             self,
