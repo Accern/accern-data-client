@@ -637,7 +637,8 @@ class DataClient:
             url_params: Optional[Dict[str, str]] = None,
             **kwargs: Dict[Any, Any]) -> Iterator[List[T]]:
         params["harvested_after"] = harvested_after
-        batch = self._read_date(mode, params, filters, indicator, url_params)
+        batch = self._read_date(
+            mode, params, filters, indicator, url_params, **kwargs)
         prev_start = harvested_after
         while mode.size(batch) > 0:
             try:
@@ -645,7 +646,7 @@ class DataClient:
                 yield mode.split(batch, pd.to_datetime(harvested_after))
                 params["harvested_after"] = harvested_after
                 batch = self._read_date(
-                    mode, params, filters, indicator, url_params)
+                    mode, params, filters, indicator, url_params, **kwargs)
                 if harvested_after == prev_start:
                     # NOTE: redundant check?
                     # batch_size becomes 0, loop gets terminated.
@@ -828,8 +829,8 @@ class DataClient:
                 self._read_total(
                     date,
                     parse_time(date, valid_filters),
-                    indicator=indicator_obj),
-                    **kwargs)
+                    indicator=indicator_obj,
+                    **kwargs))
             indicator_obj.update(1)
         total = sum(expected_records)
         indicator_obj.set_total(total=total)
