@@ -554,7 +554,7 @@ class DataClient:
             cur_date: str,
             filters: Dict[str, str],
             indicator: ProgressIndicator,
-            **request_kwargs: Dict[Any, Any]) -> int:
+            request_kwargs: Dict[Any, Any]) -> int:
         while True:
             try:
                 req_params = None
@@ -592,7 +592,7 @@ class DataClient:
             filters: Dict[str, str],
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]],
-            **request_kwargs: Dict[Any, Any]) -> List[T]:
+            request_kwargs: Dict[Any, Any]) -> List[T]:
         while True:
             req_params = None
             url_params = url_params if url_params is not None else {}
@@ -635,10 +635,10 @@ class DataClient:
             filters: Dict[str, str],
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]] = None,
-            **request_kwargs: Dict[Any, Any]) -> Iterator[List[T]]:
+            request_kwargs: Dict[Any, Any]) -> Iterator[List[T]]:
         params["harvested_after"] = harvested_after
         batch = self._read_date(
-            mode, params, filters, indicator, url_params, **request_kwargs)
+            mode, params, filters, indicator, url_params, request_kwargs)
         prev_start = harvested_after
         while mode.size(batch) > 0:
             try:
@@ -651,7 +651,7 @@ class DataClient:
                     filters,
                     indicator,
                     url_params,
-                    **request_kwargs)
+                    request_kwargs)
                 if harvested_after == prev_start:
                     # NOTE: redundant check?
                     # batch_size becomes 0, loop gets terminated.
@@ -735,7 +735,7 @@ class DataClient:
             filters: Optional[FiltersType] = None,
             indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
             url_params: Optional[Dict[str, str]] = None,
-            **request_kwargs: Dict[Any, Any]) -> None:
+            request_kwargs: Dict[Any, Any]) -> None:
         opath = "." if output_path is None else output_path
         os.makedirs(opath, exist_ok=True)
 
@@ -770,7 +770,7 @@ class DataClient:
                 indicator=indicator,
                 set_active_mode=set_active_mode,
                 url_params=url_params,
-                **request_kwargs):
+                request_kwargs=request_kwargs):
             assert valid_mode is not None
             valid_mode.add_result(res)
             prev_date = cur_date
@@ -796,7 +796,7 @@ class DataClient:
                 Callable[
                     [Mode[T], pd.Timestamp, ProgressIndicator], None]] = None,
             url_params: Optional[Dict[str, str]] = None,
-            **request_kwargs: Dict[Any, Any]) -> Iterator[T]:
+            request_kwargs: Dict[Any, Any]) -> Iterator[T]:
         valid_mode = self._get_valid_mode(mode)
         valid_filters = self._get_valid_filters(filters)
         valid_mode.clean_buffer()
@@ -835,7 +835,7 @@ class DataClient:
                     date,
                     parse_time(date, valid_filters),
                     indicator=indicator_obj,
-                    **request_kwargs))
+                    request_kwargs=request_kwargs))
             indicator_obj.update(1)
         total = sum(expected_records)
         indicator_obj.set_total(total=total)
@@ -856,7 +856,7 @@ class DataClient:
                     valid_filters,
                     indicator=indicator_obj,
                     url_params=url_params,
-                    **request_kwargs):
+                    request_kwargs=request_kwargs):
                 yield from valid_mode.iterate_data(
                     data, indicator=indicator_obj)
             yield from valid_mode.iterate_data(None, indicator=indicator_obj)
