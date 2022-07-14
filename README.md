@@ -1,5 +1,6 @@
 # Accern Data Library
 [![Python Checks](https://github.com/Accern/accern-data-client/actions/workflows/python-app.yml/badge.svg)](https://github.com/Accern/accern-data-client/actions/workflows/python-app.yml)
+[![Latest release](https://img.shields.io/pypi/v/accern-data.svg)](https://pypi.org/project/accern-data/)
 [![Python versions](https://img.shields.io/pypi/pyversions/accern-data.svg?logo=python&logoColor=white)](https://pypi.org/project/accern-data/#history)
 [![Downloads](https://static.pepy.tech/personalized-badge/accern-data?period=month&units=international_system&left_color=grey&right_color=red&left_text=Downloads)](https://pepy.tech/project/accern-data)
 
