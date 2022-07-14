@@ -9,4 +9,4 @@ pycodestyle==2.7.0
 pylint==2.14.4
 pytest-cov==3.0.0
 pytest==6.2.1
-types-requests~=1.26.0
+types-requests==2.27.11
