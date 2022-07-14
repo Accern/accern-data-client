@@ -19,9 +19,8 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
 
-    - name: Cache python modules 3.8
+    - name: Cache python modules ${{ matrix.python }}
       uses: actions/cache@v2
-      if: ${{ matrix.python == '3.8'}}
       with:
         path: ${{ env.pythonLocation }}
         key: ${{ env.pythonLocation }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements.lint.txt') }}
