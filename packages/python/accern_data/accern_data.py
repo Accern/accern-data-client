@@ -866,6 +866,7 @@ class DataClient:
         if buffer is not None:
             indicator_obj.update(buffer.shape[0])
             yield buffer
+        indicator_obj.set_description("Download complete")
         indicator_obj.close()
 
 
