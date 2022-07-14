@@ -553,7 +553,8 @@ class DataClient:
             self,
             cur_date: str,
             filters: Dict[str, str],
-            indicator: ProgressIndicator) -> int:
+            indicator: ProgressIndicator,
+            **kwargs: Dict[Any, Any]) -> int:
         while True:
             try:
                 req_params = None
@@ -569,7 +570,8 @@ class DataClient:
                         "size": "1",
                         "exclude": "*",
                     }
-                    resp = requests.get(self._base_url, params=req_params)
+                    resp = requests.get(
+                        self._base_url, params=req_params, **kwargs)
                 if not str(resp.text).strip():  # if nothing is fetched
                     return 0
                 return int(resp.json()["overall_total"])
@@ -589,7 +591,8 @@ class DataClient:
             params: Dict[str, str],
             filters: Dict[str, str],
             indicator: ProgressIndicator,
-            url_params: Optional[Dict[str, str]]) -> List[T]:
+            url_params: Optional[Dict[str, str]],
+            **kwargs: Dict[Any, Any]) -> List[T]:
         while True:
             req_params = None
             url_params = url_params if url_params is not None else {}
@@ -609,7 +612,8 @@ class DataClient:
                         **{**url_params, **filters, **params},
                         **{"format": mode.get_format()}
                     }
-                    resp = requests.get(self._base_url, params=req_params)
+                    resp = requests.get(
+                        self._base_url, params=req_params, **kwargs)
                 if not str(resp.text).strip():
                     return []
                 return mode.parse_result(resp)
@@ -630,7 +634,8 @@ class DataClient:
             params: Dict[str, str],
             filters: Dict[str, str],
             indicator: ProgressIndicator,
-            url_params: Optional[Dict[str, str]] = None) -> Iterator[List[T]]:
+            url_params: Optional[Dict[str, str]] = None,
+            **kwargs: Dict[Any, Any]) -> Iterator[List[T]]:
         params["harvested_after"] = harvested_after
         batch = self._read_date(mode, params, filters, indicator, url_params)
         prev_start = harvested_after
@@ -723,7 +728,8 @@ class DataClient:
                 ] = None,
             filters: Optional[FiltersType] = None,
             indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
-            url_params: Optional[Dict[str, str]] = None) -> None:
+            url_params: Optional[Dict[str, str]] = None,
+            **kwargs: Dict[Any, Any]) -> None:
         opath = "." if output_path is None else output_path
         os.makedirs(opath, exist_ok=True)
 
@@ -757,7 +763,8 @@ class DataClient:
                 filters=filters,
                 indicator=indicator,
                 set_active_mode=set_active_mode,
-                url_params=url_params):
+                url_params=url_params,
+                **kwargs):
             assert valid_mode is not None
             valid_mode.add_result(res)
             prev_date = cur_date
@@ -782,7 +789,8 @@ class DataClient:
             set_active_mode: Optional[
                 Callable[
                     [Mode[T], pd.Timestamp, ProgressIndicator], None]] = None,
-            url_params: Optional[Dict[str, str]] = None) -> Iterator[T]:
+            url_params: Optional[Dict[str, str]] = None,
+            **kwargs: Dict[Any, Any]) -> Iterator[T]:
         valid_mode = self._get_valid_mode(mode)
         valid_filters = self._get_valid_filters(filters)
         valid_mode.clean_buffer()
@@ -820,7 +828,8 @@ class DataClient:
                 self._read_total(
                     date,
                     parse_time(date, valid_filters),
-                    indicator=indicator_obj))
+                    indicator=indicator_obj),
+                    **kwargs)
             indicator_obj.update(1)
         total = sum(expected_records)
         indicator_obj.set_total(total=total)
@@ -840,7 +849,8 @@ class DataClient:
                     params,
                     valid_filters,
                     indicator=indicator_obj,
-                    url_params=url_params):
+                    url_params=url_params,
+                    **kwargs):
                 yield from valid_mode.iterate_data(
                     data, indicator=indicator_obj)
             yield from valid_mode.iterate_data(None, indicator=indicator_obj)
