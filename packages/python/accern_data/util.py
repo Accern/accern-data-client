@@ -3,13 +3,13 @@ import json
 import os
 import site
 import sys
-from typing import Any, Dict, Optional, Tuple
 
 import pandas as pd
 import tqdm
 from requests import Response
 
 from . import __version__
+from .type import Any, Dict, Optional, Tuple
 
 EXAMPLE_URL = "https://api.example.com/"
 IS_JUPYTER: Optional[bool] = None
