@@ -5,11 +5,25 @@ import traceback
 import warnings
 from collections import deque
 from copy import deepcopy
+from typing import (  # get_args,; Literal,; TypedDict,
+    Any,
+    Callable,
+    Deque,
+    Dict,
+    Generic,
+    Iterator,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    TypeVar,
+    Union,
+)
 
 import pandas as pd
 import requests
+from typing_extensions import get_args, Literal, TypedDict
 
-from .type import *
 from .util import (
     BarIndicator,
     field_transformation,

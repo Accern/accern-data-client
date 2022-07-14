@@ -85,7 +85,7 @@ lint-pylint:
 	| sort | xargs pylint -j 6
 
 lint-type-check:
-	mypy packages/python --config-file mypy.ini
+	mypy packages/python --config-file mypy.ini --show-error-codes
 
 lint-flake8:
 	flake8 --verbose --select C815,I001,I002,I003,I004,I005 --exclude \
