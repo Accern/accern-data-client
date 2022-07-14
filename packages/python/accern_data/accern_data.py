@@ -637,7 +637,8 @@ class DataClient:
             filters: Dict[str, str],
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]] = None,
-            request_kwargs: Optional[Dict[Any, Any]] = None) -> Iterator[List[T]]:
+            request_kwargs: Optional[Dict[Any, Any]] = None,
+                ) -> Iterator[List[T]]:
         params["harvested_after"] = harvested_after
         batch = self._read_date(
             mode, params, filters, indicator, url_params, request_kwargs)
