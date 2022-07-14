@@ -1,5 +1,8 @@
 # Accern Data Library
 [![Python Checks](https://github.com/Accern/accern-data-client/actions/workflows/python-app.yml/badge.svg)](https://github.com/Accern/accern-data-client/actions/workflows/python-app.yml)
+[![Python versions](https://img.shields.io/pypi/pyversions/accern-data.svg?logo=python&logoColor=white)](https://pypi.org/project/accern-data/#history)
+[![Downloads](https://pepy.tech/badge/accern-data)](https://pepy.tech/project/accern-data)
+
 
 Client library for consuming Accern data feed API.
 
