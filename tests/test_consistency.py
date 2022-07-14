@@ -3,14 +3,13 @@ import json
 import pandas as pd
 import pandas.testing as pd_test
 import pytest
-
-from packages.python.accern_data import (
+from accern_data import (
     create_data_client,
     DATE_FORMAT,
     DATETIME_FORMAT,
     ModeType,
 )
-from packages.python.accern_data.util import EXAMPLE_URL, load_json
+from accern_data.util import EXAMPLE_URL, load_json
 
 
 @pytest.mark.parametrize("sheet_mode", ["csv", "df"])

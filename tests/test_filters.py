@@ -1,17 +1,7 @@
 import pandas as pd
 import pytest
-
-from packages.python.accern_data import (
-    create_data_client,
-    DATE_FORMAT,
-    FiltersType,
-    ModeType,
-)
-from packages.python.accern_data.util import (
-    EXAMPLE_URL,
-    field_transformation,
-    load_json,
-)
+from accern_data import create_data_client, DATE_FORMAT, FiltersType, ModeType
+from accern_data.util import EXAMPLE_URL, field_transformation, load_json
 
 FILTERS: FiltersType = {
     "provider_id": 5,

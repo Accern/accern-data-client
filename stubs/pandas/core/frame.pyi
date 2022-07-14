@@ -11,13 +11,14 @@ from typing import (
     Dict,
     Iterator,
     List,
-    Literal,
+    # Literal,
     Optional,
     overload,
     Tuple,
     TYPE_CHECKING,
     Union,
 )
+from typing_extensions import Literal
 import numpy as np
 from pandas.core.generic import NDFrame
 if TYPE_CHECKING:
