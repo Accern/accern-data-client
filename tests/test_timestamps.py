@@ -3,8 +3,7 @@ from typing import Optional, Tuple, Union
 import pandas as pd
 import pandas.testing as pd_test
 import pytest
-
-from packages.python.accern_data import (
+from accern_data import (
     create_data_client,
     CSVMode,
     DATE_FORMAT,
@@ -12,7 +11,7 @@ from packages.python.accern_data import (
     Mode,
     ModeType,
 )
-from packages.python.accern_data.util import EXAMPLE_URL, load_json
+from accern_data.util import EXAMPLE_URL, load_json
 
 
 def test_timestamp_csv_date() -> None:
