@@ -554,7 +554,8 @@ class DataClient:
             cur_date: str,
             filters: Dict[str, str],
             indicator: ProgressIndicator,
-            request_kwargs: Dict[Any, Any]) -> int:
+            request_kwargs: Optional[Dict[Any, Any]]) -> int:
+        rkwargs = {} if request_kwargs is None else request_kwargs
         while True:
             try:
                 req_params = None
@@ -571,7 +572,7 @@ class DataClient:
                         "exclude": "*",
                     }
                     resp = requests.get(
-                        self._base_url, params=req_params, **request_kwargs)
+                        self._base_url, params=req_params, **rkwargs)
                 if not str(resp.text).strip():  # if nothing is fetched
                     return 0
                 return int(resp.json()["overall_total"])
@@ -592,10 +593,11 @@ class DataClient:
             filters: Dict[str, str],
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]],
-            request_kwargs: Dict[Any, Any]) -> List[T]:
+            request_kwargs: Optional[Dict[Any, Any]]) -> List[T]:
         while True:
             req_params = None
             url_params = url_params if url_params is not None else {}
+            rkwargs = {} if request_kwargs is None else request_kwargs
             try:
                 if is_example_url(self._base_url):
                     date = params["date"]
@@ -613,7 +615,7 @@ class DataClient:
                         **{"format": mode.get_format()}
                     }
                     resp = requests.get(
-                        self._base_url, params=req_params, **request_kwargs)
+                        self._base_url, params=req_params, **rkwargs)
                 if not str(resp.text).strip():
                     return []
                 return mode.parse_result(resp)
@@ -635,7 +637,7 @@ class DataClient:
             filters: Dict[str, str],
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]] = None,
-            request_kwargs: Dict[Any, Any]) -> Iterator[List[T]]:
+            request_kwargs: Optional[Dict[Any, Any]] = None) -> Iterator[List[T]]:
         params["harvested_after"] = harvested_after
         batch = self._read_date(
             mode, params, filters, indicator, url_params, request_kwargs)
@@ -735,7 +737,7 @@ class DataClient:
             filters: Optional[FiltersType] = None,
             indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
             url_params: Optional[Dict[str, str]] = None,
-            request_kwargs: Dict[Any, Any]) -> None:
+            request_kwargs: Optional[Dict[Any, Any]] = None) -> None:
         opath = "." if output_path is None else output_path
         os.makedirs(opath, exist_ok=True)
 
@@ -796,7 +798,7 @@ class DataClient:
                 Callable[
                     [Mode[T], pd.Timestamp, ProgressIndicator], None]] = None,
             url_params: Optional[Dict[str, str]] = None,
-            request_kwargs: Dict[Any, Any]) -> Iterator[T]:
+            request_kwargs: Optional[Dict[Any, Any]] = None) -> Iterator[T]:
         valid_mode = self._get_valid_mode(mode)
         valid_filters = self._get_valid_filters(filters)
         valid_mode.clean_buffer()
