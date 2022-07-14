@@ -74,6 +74,7 @@
         "missing-docstring",
         "not-an-iterable",
         "not-callable",
+        "protected-access",
         "too-many-arguments",
         "too-many-branches",
         "too-many-instance-attributes",
@@ -83,7 +84,8 @@
         "too-many-return-statements",
         "too-many-statements",
         "unspecified-encoding",
-        "unsubscriptable-object"
+        "unsubscriptable-object",
+        "unused-wildcard-import"
     ]
 
 [tool.pylint.VARIABLES]
