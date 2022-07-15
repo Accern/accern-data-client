@@ -5,26 +5,24 @@ import traceback
 import warnings
 from collections import deque
 from copy import deepcopy
-from typing import (
+from typing import (  # get_args, Literal, TypedDict,
     Any,
     Callable,
     Deque,
     Dict,
     Generic,
-    get_args,
     Iterator,
     List,
-    Literal,
     Optional,
     Set,
     Tuple,
-    TypedDict,
     TypeVar,
     Union,
 )
 
 import pandas as pd
 import requests
+from typing_extensions import get_args, Literal, TypedDict
 
 from .util import (
     BarIndicator,
@@ -557,7 +555,9 @@ class DataClient:
             self,
             date: Dict[str, str],
             filters: Dict[str, str],
-            indicator: ProgressIndicator) -> int:
+            indicator: ProgressIndicator,
+            request_kwargs: Optional[Dict[Any, Any]]) -> int:
+        rkwargs = {} if request_kwargs is None else request_kwargs
         while True:
             try:
                 req_params = None
@@ -573,7 +573,8 @@ class DataClient:
                         "size": "1",
                         "exclude": "*",
                     }
-                    resp = requests.get(self._base_url, params=req_params)
+                    resp = requests.get(
+                        self._base_url, params=req_params, **rkwargs)
                 if not str(resp.text).strip():  # if nothing is fetched
                     return 0
                 return int(resp.json()["overall_total"])
@@ -593,10 +594,12 @@ class DataClient:
             params: Dict[str, str],
             filters: Dict[str, str],
             indicator: ProgressIndicator,
-            url_params: Optional[Dict[str, str]]) -> List[T]:
+            url_params: Optional[Dict[str, str]],
+            request_kwargs: Optional[Dict[Any, Any]]) -> List[T]:
         while True:
             req_params = None
             url_params = url_params if url_params is not None else {}
+            rkwargs = {} if request_kwargs is None else request_kwargs
             try:
                 if is_example_url(self._base_url):
                     date = params["date"]
@@ -613,7 +616,8 @@ class DataClient:
                         **{**url_params, **filters, **params},
                         **{"format": mode.get_format()}
                     }
-                    resp = requests.get(self._base_url, params=req_params)
+                    resp = requests.get(
+                        self._base_url, params=req_params, **rkwargs)
                 if not str(resp.text).strip():
                     return []
                 return mode.parse_result(resp)
@@ -634,9 +638,12 @@ class DataClient:
             params: Dict[str, str],
             filters: Dict[str, str],
             indicator: ProgressIndicator,
-            url_params: Optional[Dict[str, str]] = None) -> Iterator[List[T]]:
+            url_params: Optional[Dict[str, str]] = None,
+            request_kwargs: Optional[Dict[Any, Any]] = None,
+                ) -> Iterator[List[T]]:
         params["harvested_after"] = harvested_after
-        batch = self._read_date(mode, params, filters, indicator, url_params)
+        batch = self._read_date(
+            mode, params, filters, indicator, url_params, request_kwargs)
         prev_start = harvested_after
         while mode.size(batch) > 0:
             try:
@@ -644,7 +651,12 @@ class DataClient:
                 yield mode.split(batch, pd.to_datetime(harvested_after))
                 params["harvested_after"] = harvested_after
                 batch = self._read_date(
-                    mode, params, filters, indicator, url_params)
+                    mode,
+                    params,
+                    filters,
+                    indicator,
+                    url_params,
+                    request_kwargs)
                 if harvested_after == prev_start:
                     # NOTE: redundant check?
                     # batch_size becomes 0, loop gets terminated.
@@ -671,7 +683,11 @@ class DataClient:
             filters={},
             url_params=url_params)
 
-    def read_total(self, cur_date: str, filters: Dict[str, str]) -> int:
+    def read_total(
+            self,
+            cur_date: str,
+            filters: Dict[str, str],
+            request_kwargs: Optional[Dict[Any, Any]] = None) -> int:
         warnings.warn(
             "read_total method is deprecated and will be removed in later "
             "versions.",
@@ -680,7 +696,8 @@ class DataClient:
         return self._read_total(
             date={"date": cur_date},
             filters=filters,
-            indicator=self.get_indicator())
+            indicator=self.get_indicator(),
+            request_kwargs=request_kwargs)
 
     def _get_valid_mode(
             self,
@@ -729,8 +746,9 @@ class DataClient:
                 ] = None,
             filters: Optional[FiltersType] = None,
             indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
+            by_date: ByDate = "published_at",
             url_params: Optional[Dict[str, str]] = None,
-            by_date: ByDate = "published_at") -> None:
+            request_kwargs: Optional[Dict[Any, Any]] = None) -> None:
         opath = "." if output_path is None else output_path
         os.makedirs(opath, exist_ok=True)
 
@@ -764,8 +782,9 @@ class DataClient:
                 filters=filters,
                 indicator=indicator,
                 set_active_mode=set_active_mode,
+                by_date=by_date,
                 url_params=url_params,
-                by_date=by_date):
+                request_kwargs=request_kwargs):
             assert valid_mode is not None
             valid_mode.add_result(res)
             prev_date = cur_date
@@ -790,8 +809,9 @@ class DataClient:
             set_active_mode: Optional[
                 Callable[
                     [Mode[T], pd.Timestamp, ProgressIndicator], None]] = None,
+            by_date: ByDate = "published_at",
             url_params: Optional[Dict[str, str]] = None,
-            by_date: ByDate = "published_at") -> Iterator[T]:
+            request_kwargs: Optional[Dict[Any, Any]] = None) -> Iterator[T]:
         valid_mode = self._get_valid_mode(mode)
         valid_filters = self._get_valid_filters(filters)
         valid_mode.clean_buffer()
@@ -837,7 +857,8 @@ class DataClient:
                 self._read_total(
                     get_by_date_param(date),
                     parse_time(date, valid_filters),
-                    indicator=indicator_obj))
+                    indicator=indicator_obj,
+                    request_kwargs=request_kwargs))
             indicator_obj.update(1)
         total = sum(expected_records)
         indicator_obj.set_total(total=total)
@@ -857,7 +878,8 @@ class DataClient:
                     params,
                     valid_filters,
                     indicator=indicator_obj,
-                    url_params=url_params):
+                    url_params=url_params,
+                    request_kwargs=request_kwargs):
                 yield from valid_mode.iterate_data(
                     data, indicator=indicator_obj)
             yield from valid_mode.iterate_data(None, indicator=indicator_obj)
@@ -867,6 +889,7 @@ class DataClient:
         if buffer is not None:
             indicator_obj.update(buffer.shape[0])
             yield buffer
+        indicator_obj.set_description("Download complete")
         indicator_obj.close()
 
 

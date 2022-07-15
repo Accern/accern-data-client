@@ -1,20 +1,10 @@
-from re import L
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
 import pandas.testing as pd_test
 import pytest
-
-from packages.python.accern_data import (
-    create_data_client,
-    DATE_FORMAT,
-    DATETIME_FORMAT,
-)
-from packages.python.accern_data.util import (
-    DEFAULT_CHUNK_SIZE,
-    EXAMPLE_URL,
-    load_json,
-)
+from accern_data import create_data_client, DATE_FORMAT, DATETIME_FORMAT
+from accern_data.util import EXAMPLE_URL, load_json
 
 DEFAULT_CHUNK_SIZE_LIST = [
     1, 5, 8, 3, 57, 13, 88, 86, 18, 9, 91, 68, 1, 99, 1, 22, 1, 12, 3, 8, 16,

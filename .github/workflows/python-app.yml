@@ -2,14 +2,14 @@ name: Python Checks
 
 on:
   push:
-    branches: '*'
+    branches: ['*']
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ['3.8']
+        python: ['3.7', '3.8', '3.9']
 
     steps:
     - uses: actions/checkout@v2
@@ -19,9 +19,8 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
 
-    - name: Cache python modules 3.8
+    - name: Cache python modules ${{ matrix.python }}
       uses: actions/cache@v2
-      if: ${{ matrix.python == '3.8'}}
       with:
         path: ${{ env.pythonLocation }}
         key: ${{ env.pythonLocation }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements.lint.txt') }}
@@ -34,44 +33,48 @@ jobs:
       run: |
         pip install -e .
 
-    - name: Git Check (tests may not alter any git visible files)
-      run: |
-        git status -sb --porcelain
-        [ -z "$(git status --porcelain)" ]
-
     - name: Lint Code (use uppercase TODO, XXX, FIXME, NOTE and explain nopep8)
+      if: ${{ matrix.python == '3.9'}}
       run: |
         make lint-comment
 
     - name: Lint Code (use empty main inits)
+      if: ${{ matrix.python == '3.9'}}
       run: |
         make lint-emptyinit
 
     - name: Lint Code (sort requirements)
+      if: ${{ matrix.python == '3.9'}}
       run: |
         make lint-requirements
 
     - name: Lint Code (use f"" style formating)
+      if: ${{ matrix.python == '3.9'}}
       run: |
         make lint-stringformat
 
     - name: Lint Code (indent in fours)
+      if: ${{ matrix.python == '3.9'}}
       run: |
         make lint-indent
 
     - name: Lint Code (no f"a", "{a}", or f'{a}')
+      if: ${{ matrix.python == '3.9'}}
       run: |
         make lint-forgottenformat
 
     - name: Only pyi in stubs
+      if: ${{ matrix.python == '3.9'}}
       run: |
         make lint-pyi
 
     - name: Lint Code (missing trailing comma)
+      if: ${{ matrix.python == '3.9'}}
       run: |
         make lint-flake8
 
     - name: Lint Code (pycodestyle)
+      if: ${{ matrix.python == '3.9'}}
       run: |
         make lint-pycodestyle
 
@@ -86,6 +89,11 @@ jobs:
     - name: Run Tests Coverage
       run: |
         make coverage-report
+
+    - name: Git Check (tests may not alter any git visible files)
+      run: |
+        git status -sb --porcelain
+        [ -z "$(git status --porcelain)" ]
 
     - name: SonarQube
       uses: sonarsource/sonarqube-scan-action@master
