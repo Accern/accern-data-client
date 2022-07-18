@@ -59,6 +59,7 @@ def field_transformation(value: Any) -> str:
 
 
 def get_overall_total_from_dummy(
+        date_type: str,
         date: str,
         filters: Dict[str, str],
         encoding: str = "utf-8") -> Response:
@@ -78,9 +79,9 @@ def get_overall_total_from_dummy(
     overall_total = 0
     for record in json_obj["signals"]:
         if (
-                pd.to_datetime(record["published_at"]) >= start_dt
+                pd.to_datetime(record[date_type]) >= start_dt
                 and
-                pd.to_datetime(record["published_at"]) <= end_dt
+                pd.to_datetime(record[date_type]) <= end_dt
                 and check_filters(record, filters)):
             overall_total += 1
     filtered["overall_total"] = overall_total
@@ -109,6 +110,7 @@ def create_start_end_date(
 
 def generate_csv_object(
         path: str,
+        date_type: str,
         date: str,
         params: Dict[str, str],
         harvested_after: pd.Timestamp,
@@ -120,8 +122,8 @@ def generate_csv_object(
     start_dt, end_dt = create_start_end_date(date, params)
 
     valid_df: pd.DataFrame = df[
-        (df["published_at"] >= start_dt) &
-        (df["published_at"] <= end_dt) &
+        (df[date_type] >= start_dt) &
+        (df[date_type] <= end_dt) &
         (df["harvested_at"] > harvested_after)
     ]
     if valid_df.empty:
@@ -139,6 +141,7 @@ def generate_csv_object(
 
 def generate_json_object(
         path: str,
+        date_type: str,
         date: str,
         params: Dict[str, str],
         harvested_after: pd.Timestamp,
@@ -154,9 +157,9 @@ def generate_json_object(
     filtered_json["signals"] = []
     for record in json_obj["signals"]:
         if (
-                pd.to_datetime(record["published_at"]) >= start_dt
+                pd.to_datetime(record[date_type]) >= start_dt
                 and
-                pd.to_datetime(record["published_at"]) <= end_dt
+                pd.to_datetime(record[date_type]) <= end_dt
                 and
                 pd.to_datetime(record["harvested_at"]) > harvested_after
                 ) and check_filters(record, filters):
@@ -166,6 +169,7 @@ def generate_json_object(
 
 
 def generate_file_response(
+        date_type: str,
         date: str,
         harvested_after: str,
         params: Dict[str, str],
@@ -182,10 +186,22 @@ def generate_file_response(
 
     if mode == "csv":
         obj = generate_csv_object(
-            path, date, params, harvested_after_dt, filters, encoding)
+            path,
+            date_type,
+            date,
+            params,
+            harvested_after_dt,
+            filters,
+            encoding)
     else:
         obj = generate_json_object(
-            path, date, params, harvested_after_dt, filters, encoding)
+            path,
+            date_type,
+            date,
+            params,
+            harvested_after_dt,
+            filters,
+            encoding)
     obj.seek(0)
     response_obj._content = obj.read()
     response_obj.encoding = encoding

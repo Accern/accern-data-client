@@ -562,8 +562,16 @@ class DataClient:
             try:
                 req_params = None
                 if is_example_url(self._base_url):
+                    for date_type in {"date", "harvested_at"}:
+                        try:
+                            date_val = date[date_type]
+                            break
+                        except KeyError:
+                            pass
+                    if date_type == "date":
+                        date_type = "published_at"
                     resp = get_overall_total_from_dummy(
-                        date, filters)
+                        date_type, date_val, filters)
                 else:
                     req_params = {
                         "token": self._token,
@@ -602,10 +610,18 @@ class DataClient:
             rkwargs = {} if request_kwargs is None else request_kwargs
             try:
                 if is_example_url(self._base_url):
-                    date = params["date"]
+                    for date_type in {"date", "harvested_at"}:
+                        try:
+                            date_val = params[date_type]
+                            break
+                        except KeyError:
+                            pass
+                    if date_type == "date":
+                        date_type = "published_at"
                     harvested_after = params["harvested_after"]
                     resp = generate_file_response(
-                        date,
+                        date_type,
+                        date_val,
                         harvested_after,
                         params,
                         mode.get_format(),
