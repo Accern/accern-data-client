@@ -552,7 +552,7 @@ class DataClient:
         return list(self._error_list)
 
     @staticmethod
-    def _get_date_type(obj: Dict[str, str]):
+    def _get_date_type(obj: Dict[str, str]) -> Tuple[str, str]:
         for date_type in ["date", "harvested_at"]:
             try:
                 date_val = obj[date_type]
