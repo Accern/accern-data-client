@@ -551,6 +551,18 @@ class DataClient:
             self) -> List[Tuple[Optional[Dict[str, str]], str]]:
         return list(self._error_list)
 
+    @staticmethod
+    def _get_date_type(obj: Dict[str, str]):
+        for date_type in ["date", "harvested_at"]:
+            try:
+                date_val = obj[date_type]
+                break
+            except KeyError:
+                pass
+        if date_type == "date":
+            date_type = "published_at"
+        return date_type, date_val
+
     def _read_total(
             self,
             date: Dict[str, str],
@@ -562,14 +574,7 @@ class DataClient:
             try:
                 req_params = None
                 if is_example_url(self._base_url):
-                    for date_type in {"date", "harvested_at"}:
-                        try:
-                            date_val = date[date_type]
-                            break
-                        except KeyError:
-                            pass
-                    if date_type == "date":
-                        date_type = "published_at"
+                    date_type, date_val = self._get_date_type(date)
                     resp = get_overall_total_from_dummy(
                         date_type, date_val, filters)
                 else:
@@ -610,14 +615,7 @@ class DataClient:
             rkwargs = {} if request_kwargs is None else request_kwargs
             try:
                 if is_example_url(self._base_url):
-                    for date_type in {"date", "harvested_at"}:
-                        try:
-                            date_val = params[date_type]
-                            break
-                        except KeyError:
-                            pass
-                    if date_type == "date":
-                        date_type = "published_at"
+                    date_type, date_val = self._get_date_type(params)
                     harvested_after = params["harvested_after"]
                     resp = generate_file_response(
                         date_type,
