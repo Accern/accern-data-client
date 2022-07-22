@@ -832,8 +832,18 @@ class DataClient:
         if end_date is None:
             end_date = start_date
         indicator_obj = self._get_valid_indicator(indicator)
-        indicator_obj.generate_bar(
-            total=len(pd.date_range(start_date, end_date)))
+        try:
+            indicator_obj.generate_bar(
+                total=len(pd.date_range(start_date, end_date)))
+        except ImportError as e:
+            warnings.warn(
+                "Falling back to `message` indicator.\n"
+                "Reason: It looks like you have not installed full version of "
+                "this library, i.e., accern-data[jupyter]. Use `pip install "
+                "accern-data[jupyter]` to install.",
+                Warning,
+                stacklevel=2)
+            indicator_obj = self._get_valid_indicator("message")
         indicator_obj.set_description(desc="Fetching info")
         total = 0
         expected_records: List[int] = []
