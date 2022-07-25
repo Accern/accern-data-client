@@ -91,8 +91,6 @@ def test_by_date_json(by_date: ByDate) -> None:
         indicator="message",
         by_date=by_date)
     json_full = load_json("tests/data/data-2022.json")
-    start_date_dt = pd.to_datetime(start_date, utc=True)
-    end_date_dt = pd.to_datetime(end_date, utc=True)
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime(DATE_FORMAT)
         cur_date = pd.to_datetime(cur_date, utc=True)
@@ -106,9 +104,6 @@ def test_by_date_json(by_date: ByDate) -> None:
         for obj in json_generated:
             all_dates.add(pd.to_datetime(obj[by_date]).strftime(DATE_FORMAT))
 
-            # assert start_date_dt <= pd.to_datetime(pd.to_datetime(
-            #     obj[by_date]).strftime(DATE_FORMAT)) <= end_date_dt
-        print("all_dates", all_dates)
         assert pd.Series(list(all_dates)).between(start_date, end_date).all()
 
         filtered_json = [

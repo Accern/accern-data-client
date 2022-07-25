@@ -30,6 +30,7 @@ from .util import (
     generate_file_response,
     get_overall_total_from_dummy,
     is_example_url,
+    is_indicator_bar_available,
     MessageIndicator,
     ProgressIndicator,
     SilentIndicator,
@@ -119,7 +120,7 @@ FiltersType = TypedDict(
 ModeType = Literal["csv", "df", "json"]
 Indicators = Literal["pbar", "silent", "message"]
 ByDate = Literal["harvested_at", "published_at"]
-BYDATE = get_args(ByDate)
+BY_DATE = get_args(ByDate)
 INDICATORS = get_args(Indicators)
 FILTER_FIELD = get_args(FilterField)
 EXCLUDED_FILTER_FIELD = get_args(ExcludedFilterField)
@@ -739,13 +740,26 @@ class DataClient:
             {**self.get_filters(), **self._validate_filters(filters)})
 
     def _get_valid_indicator(
-            self, indicator: Optional[Union[Indicators, ProgressIndicator]],
-            ) -> ProgressIndicator:
+            self,
+            indicator: Optional[Union[Indicators, ProgressIndicator]],
+            total: int) -> ProgressIndicator:
         if indicator is None:
-            return self.get_indicator()
-        if isinstance(indicator, ProgressIndicator):
-            return indicator
-        return self._parse_indicator(indicator)
+            indicator_obj = self.get_indicator()
+        elif isinstance(indicator, ProgressIndicator):
+            indicator_obj = indicator
+        else:
+            indicator_obj = self._parse_indicator(indicator)
+
+        if not is_indicator_bar_available(indicator_obj, total):
+            warnings.warn(
+                "Falling back to `message` indicator.\n"
+                "Reason: The jupyter extended functionality is not available. "
+                "In order to activate it install using accern-data[jupyter] "
+                "(e.g., `pip install accern-data[jupyter]`).",
+                Warning,
+                stacklevel=2)
+            indicator_obj = self._parse_indicator("message")
+        return indicator_obj
 
     def download_range(
             self,
@@ -832,19 +846,8 @@ class DataClient:
         valid_mode.clean_buffer()
         if end_date is None:
             end_date = start_date
-        indicator_obj = self._get_valid_indicator(indicator)
-        try:
-            indicator_obj.generate_bar(
-                total=len(pd.date_range(start_date, end_date)))
-        except ImportError:
-            warnings.warn(
-                "Falling back to `message` indicator.\n"
-                "Reason: It looks like you have not installed full version of "
-                "this library, i.e., accern-data[jupyter]. Use `pip install "
-                "accern-data[jupyter]` to install.",
-                Warning,
-                stacklevel=2)
-            indicator_obj = self._get_valid_indicator("message")
+        indicator_obj = self._get_valid_indicator(
+            indicator, total=len(pd.date_range(start_date, end_date)))
         indicator_obj.set_description(desc="Fetching info")
         total = 0
         expected_records: List[int] = []
@@ -856,13 +859,14 @@ class DataClient:
         start_date_only_dt = pd.to_datetime(start_date_only)
         end_date_only_dt = pd.to_datetime(end_date_only)
 
-        def get_by_date_param(date: str) -> Dict[str, str]:
+        def get_by_date_param(by_date: str, date: str) -> Dict[str, str]:
+            if by_date not in BY_DATE:
+                raise ValueError(
+                    f"Incorrect value {by_date} for by_date. "
+                    f"Must be one of {BY_DATE}")
             if by_date == "published_at":
                 return {"date": date}
-            if by_date == "harvested_at":
-                return {"harvested_at": date}
-            raise ValueError(
-                    f"Incorrect value for by_date. Must be one of {BYDATE}")
+            return {by_date: date}
 
         def parse_time(date: str, params: Dict[str, str]) -> Dict[str, str]:
             times: Dict[str, str] = {}
@@ -880,7 +884,7 @@ class DataClient:
             date = cur_date.strftime(DATE_FORMAT)
             expected_records.append(
                 self._read_total(
-                    get_by_date_param(date),
+                    get_by_date_param(by_date, date),
                     parse_time(date, valid_filters),
                     indicator=indicator_obj,
                     request_kwargs=request_kwargs))
@@ -895,7 +899,7 @@ class DataClient:
                 set_active_mode(valid_mode, cur_date, indicator_obj)
             date = cur_date.strftime(DATE_FORMAT)
             indicator_obj.set_description(f"Downloading signals for {date}")
-            params = get_by_date_param(date)
+            params = get_by_date_param(by_date, date)
             params = parse_time(date, params)
             for data in self._scroll(
                     "1900-01-01",
