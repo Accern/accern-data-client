@@ -5,7 +5,76 @@ on:
     branches: ['*']
 
 jobs:
-  build:
+
+  lints:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: '3.9'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python }}
+
+    - name: Cache python modules
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.pythonLocation }}
+        key: ${{ env.pythonLocation }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements.lint.txt') }}
+
+    - name: Install dependencies
+      run: |
+        make install
+
+    - name: Lint Code (use uppercase TODO, XXX, FIXME, NOTE and explain nopep8)
+      run: |
+        make lint-comment
+
+    - name: Lint Code (use empty main inits)
+      run: |
+        make lint-emptyinit
+
+    - name: Lint Code (sort requirements)
+      run: |
+        make lint-requirements
+
+    - name: Lint Code (use f"" style formating)
+      run: |
+        make lint-stringformat
+
+    - name: Lint Code (indent in fours)
+      run: |
+        make lint-indent
+
+    - name: Lint Code (no f"a", "{a}", or f'{a}')
+      run: |
+        make lint-forgottenformat
+
+    - name: Only pyi in stubs
+      run: |
+        make lint-pyi
+
+    - name: Lint Code (missing trailing comma)
+      run: |
+        make lint-flake8
+
+    - name: Lint Code (pycodestyle)
+      run: |
+        make lint-pycodestyle
+
+    - name: Lint Code (type-check)
+      run: |
+        make lint-type-check
+
+    - name: Lint Code (pylint)
+      run: |
+        make lint-pylint
+
+  tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -33,58 +102,9 @@ jobs:
       run: |
         pip install -e .
 
-    - name: Lint Code (use uppercase TODO, XXX, FIXME, NOTE and explain nopep8)
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-comment
-
-    - name: Lint Code (use empty main inits)
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-emptyinit
-
-    - name: Lint Code (sort requirements)
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-requirements
-
-    - name: Lint Code (use f"" style formating)
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-stringformat
-
-    - name: Lint Code (indent in fours)
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-indent
-
-    - name: Lint Code (no f"a", "{a}", or f'{a}')
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-forgottenformat
-
-    - name: Only pyi in stubs
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-pyi
-
-    - name: Lint Code (missing trailing comma)
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-flake8
-
-    - name: Lint Code (pycodestyle)
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-pycodestyle
-
     - name: Lint Code (type-check)
       run: |
         make lint-type-check
-
-    - name: Lint Code (pylint)
-      run: |
-        make lint-pylint
 
     - name: Run Tests Coverage
       run: |
