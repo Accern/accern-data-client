@@ -336,7 +336,7 @@ def is_indicator_bar_available(
         indicator_obj: ProgressIndicator, total: int) -> bool:
     try:
         indicator_obj.generate_bar(total=total)
-        IS_INDICATOR_BAR_AVAILABLE = True
+        is_bar_available = True
     except ImportError:
-        IS_INDICATOR_BAR_AVAILABLE = False
-    return IS_INDICATOR_BAR_AVAILABLE
+        is_bar_available = False
+    return is_bar_available
