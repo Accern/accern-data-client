@@ -405,7 +405,8 @@ class JSONMode(Mode[Dict[str, Any]]):
             return obj
 
         obj = [stringify_dates(cur) for cur in self._res]
-        write_json(obj, fname, sort_keys=True)
+        if len(obj) > 0:
+            write_json(obj, fname, sort_keys=True)
 
     def split(
             self,
@@ -835,7 +836,7 @@ class DataClient:
         try:
             indicator_obj.generate_bar(
                 total=len(pd.date_range(start_date, end_date)))
-        except ImportError as e:
+        except ImportError:
             warnings.warn(
                 "Falling back to `message` indicator.\n"
                 "Reason: It looks like you have not installed full version of "
