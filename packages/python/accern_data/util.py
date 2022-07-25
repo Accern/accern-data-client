@@ -14,7 +14,6 @@ from . import __version__
 EXAMPLE_URL = "https://api.example.com/"
 IS_JUPYTER: Optional[bool] = None
 IS_TEST: Optional[bool] = None
-IS_INDICATOR_BAR_AVAILABLE: Optional[bool] = None
 L_BAR = """{desc}: |"""
 R_BAR = """| {percentage:3.0f}% [{n}/{total}]"""
 BAR_FMT = f"{L_BAR}{{bar}}{R_BAR}"
@@ -335,9 +334,6 @@ class SilentIndicator(ProgressIndicator):
 
 def is_indicator_bar_available(
         indicator_obj: ProgressIndicator, total: int) -> bool:
-    global IS_INDICATOR_BAR_AVAILABLE
-    if IS_INDICATOR_BAR_AVAILABLE is not None:
-        return IS_INDICATOR_BAR_AVAILABLE
     try:
         indicator_obj.generate_bar(total=total)
         IS_INDICATOR_BAR_AVAILABLE = True
