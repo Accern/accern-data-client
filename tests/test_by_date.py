@@ -107,12 +107,9 @@ def test_by_date_json(by_date: ByDate) -> None:
         assert pd.Series(list(all_dates)).between(start_date, end_date).all()
 
         filtered_json = [
-            obj
-            for obj in json_full["signals"]
-            if
-            (cur_date <= pd.to_datetime(obj[by_date], utc=True))
-            and
-            (pd.to_datetime(obj[by_date], utc=True) < (
+            obj for obj in json_full["signals"]
+            if (cur_date <= pd.to_datetime(obj[by_date], utc=True))
+            and (pd.to_datetime(obj[by_date], utc=True) < (
                 cur_date + pd.Timedelta(days=1)))
         ]
 

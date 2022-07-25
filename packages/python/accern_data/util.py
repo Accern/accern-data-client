@@ -3,7 +3,6 @@ import json
 import os
 import site
 import sys
-import warnings
 from typing import Any, Dict, Optional, Tuple
 
 import pandas as pd
@@ -82,8 +81,7 @@ def get_overall_total_from_dummy(
     for record in json_obj["signals"]:
         if (
                 pd.to_datetime(record[date_type]) >= start_dt
-                and
-                pd.to_datetime(record[date_type]) <= end_dt
+                and pd.to_datetime(record[date_type]) <= end_dt
                 and check_filters(record, filters)):
             overall_total += 1
     filtered["overall_total"] = overall_total
@@ -160,10 +158,8 @@ def generate_json_object(
     for record in json_obj["signals"]:
         if (
                 pd.to_datetime(record[date_type]) >= start_dt
-                and
-                pd.to_datetime(record[date_type]) <= end_dt
-                and
-                pd.to_datetime(record["harvested_at"]) > harvested_after
+                and pd.to_datetime(record[date_type]) <= end_dt
+                and pd.to_datetime(record["harvested_at"]) > harvested_after
                 ) and check_filters(record, filters):
             filtered_json["signals"].append(record)
     obj = io.BytesIO(json.dumps(filtered_json).encode(encoding))

@@ -97,11 +97,8 @@ def test_timestamp_json() -> None:
         except FileNotFoundError:
             continue
         filtered_json = [
-            obj
-            for obj in json_actual
-            if
-            (start_date_dt <= pd.to_datetime(obj["published_at"], utc=True))
-            and
-            (pd.to_datetime(obj["published_at"], utc=True) <= end_date_dt)
+            obj for obj in json_actual
+            if (start_date_dt <= pd.to_datetime(obj["published_at"], utc=True))
+            and (pd.to_datetime(obj["published_at"], utc=True) <= end_date_dt)
         ]
         assert json_generated == filtered_json
