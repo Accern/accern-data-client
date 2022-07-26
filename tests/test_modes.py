@@ -13,6 +13,8 @@ from accern_data import (
 )
 from accern_data.util import DATA_DIR, EXAMPLE_URL, load_json
 
+OUTPUT_PATH = "tests/outputs/"
+
 
 @pytest.mark.parametrize("sheet_mode", ["csv", "df"])
 @pytest.mark.parametrize(
@@ -20,7 +22,7 @@ from accern_data.util import DATA_DIR, EXAMPLE_URL, load_json
 def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "tests/outputs/"
+    output_path = OUTPUT_PATH
     output_pattern = f"test_csv_date_{sheet_mode}_{method_used}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     if method_used == "method":
@@ -58,7 +60,7 @@ def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
 def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "tests/outputs/"
+    output_path = OUTPUT_PATH
     output_pattern = f"test_csv_full_{sheet_mode}_{method_used}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
 
@@ -94,7 +96,7 @@ def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
 def test_json(method_used: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "tests/outputs/"
+    output_path = OUTPUT_PATH
     output_pattern = f"test_json_{method_used}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     if method_used == "method":

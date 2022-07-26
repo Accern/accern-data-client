@@ -11,6 +11,8 @@ FILTERS: FiltersType = {
     "entity_accern_id": "BBG000BLLFK1",
 }
 
+OUTPUT_PATH = "tests/outputs/"
+
 
 @pytest.mark.parametrize("sheet_mode", ["csv", "df"])
 @pytest.mark.parametrize("uses_filter_method", [True, False])
@@ -18,7 +20,7 @@ def test_filters_csv_full(
         sheet_mode: ModeType, uses_filter_method: bool) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "tests/outputs/"
+    output_path = OUTPUT_PATH
     output_pattern = f"test_filters_csv_full_{sheet_mode}_{uses_filter_method}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=False)
@@ -48,7 +50,7 @@ def test_filters_csv_date(
         sheet_mode: ModeType, uses_filter_method: bool) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "tests/outputs/"
+    output_path = OUTPUT_PATH
     output_pattern = f"test_filters_csv_date_{sheet_mode}_{uses_filter_method}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=True)
@@ -82,7 +84,7 @@ def test_filters_csv_date(
 def test_filters_json(uses_filter_method: bool) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "tests/outputs/"
+    output_path = OUTPUT_PATH
     output_pattern = f"test_filters_json_{uses_filter_method}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode("json", split_dates=True)

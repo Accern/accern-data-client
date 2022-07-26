@@ -6,12 +6,14 @@ import pytest
 from accern_data import ByDate, create_data_client, DATE_FORMAT
 from accern_data.util import EXAMPLE_URL, load_json
 
+OUTPUT_PATH = "tests/outputs/"
+
 
 @pytest.mark.parametrize("by_date", ["published_at", "harvested_at"])
 def test_by_date_csv_full(by_date: ByDate) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "tests/outputs/"
+    output_path = OUTPUT_PATH
     output_pattern = f"test_by_date_csv_full_{by_date}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
 
@@ -36,7 +38,7 @@ def test_by_date_csv_full(by_date: ByDate) -> None:
 def test_by_date_csv_date(by_date: ByDate) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "tests/outputs/"
+    output_path = OUTPUT_PATH
     output_pattern = f"test_by_date_csv_date_{by_date}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
 
@@ -68,7 +70,7 @@ def test_by_date_csv_date(by_date: ByDate) -> None:
 def test_by_date_json(by_date: ByDate) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "tests/outputs/"
+    output_path = OUTPUT_PATH
     output_pattern = f"test_by_date_json_{by_date}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
 
