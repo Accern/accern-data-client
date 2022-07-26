@@ -26,13 +26,7 @@ def test_by_date_csv_full(by_date: ByDate) -> None:
     df_generated = pd.read_csv(f"{output_path}{output_pattern}.csv")
     df_full = pd.read_csv("tests/data/data-2022.csv")
     if by_date != "published_at":
-        df_full = pd.read_csv(f"tests/data/data-2022-{by_date}.csv")
-    # start_date_dt = pd.to_datetime(start_date, utc=True)
-    # end_date_dt = pd.to_datetime(end_date, utc=True) + pd.Timedelta(days=1)
-    # df_full[by_date] = pd.to_datetime(df_full[by_date])
-    # df_generated[by_date] = pd.to_datetime(df_generated[by_date])
-    # filtered_df = df_full[df_full[by_date].between(start_date_dt, end_date_dt)]
-    # filtered_df = filtered_df.reset_index(drop=True)
+        df_full = pd.read_csv(f"tests/data/{by_date}/data-2022.csv")
     pd_test.assert_frame_equal(
         df_full[sorted(df_full.columns)],
         df_generated[sorted(df_generated.columns)])
