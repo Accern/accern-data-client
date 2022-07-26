@@ -39,10 +39,14 @@ from .util import (
 ExcludedFilterField = Literal[
     "crawled_at",
     "date",
+    "end_time",
+    "exclude",
     "format",
     "harvested_at",
+    "include",
     "published_at",
     "size",
+    "start_time",
     "token",
 ]
 
@@ -53,7 +57,6 @@ FilterField = Literal[
     "doc_title",
     "doc_type",
     "doc_url",
-    "end_time",
     "entity_accern_id",
     "entity_country",
     "entity_exchcode",
@@ -77,7 +80,6 @@ FilterField = Literal[
     "provider_id",
     "signal_id",
     "signal_tag",
-    "start_time",
 ]
 FiltersType = TypedDict(
     "FiltersType",
@@ -88,7 +90,6 @@ FiltersType = TypedDict(
         "doc_title": Optional[str],
         "doc_type": Optional[str],
         "doc_url": Optional[str],
-        "end_time": str,
         "entity_accern_id": Optional[str],
         "entity_country": Optional[str],
         "entity_exchcode": Optional[str],
@@ -112,7 +113,6 @@ FiltersType = TypedDict(
         "provider_id": Optional[int],
         "signal_id": Optional[str],
         "signal_tag": Optional[str],
-        "start_time": str,
     },
     total=False)
 
@@ -435,7 +435,7 @@ class DataClient:
             ) -> None:
         self._base_url = url
         self._token = token
-        self._filters: Dict[str, str] = {}
+        self._filters: Dict[str, Any] = {}
         self._mode: Optional[Mode] = None
         if indicator is not None:
             self.set_indicator(indicator)
@@ -505,7 +505,7 @@ class DataClient:
             self, filters: Dict[str, Optional[Union[bool, int, str]]]) -> None:
         self._filters = self._parse_filters(filters)
 
-    def get_filters(self) -> Dict[str, str]:
+    def get_filters(self) -> Dict[str, Any]:
         return self._filters
 
     @staticmethod
@@ -552,7 +552,7 @@ class DataClient:
     def _read_total(
             self,
             cur_date: str,
-            filters: Dict[str, str],
+            filters: Dict[str, Any],
             indicator: ProgressIndicator,
             request_kwargs: Optional[Dict[Any, Any]]) -> int:
         rkwargs = {} if request_kwargs is None else request_kwargs
@@ -565,14 +565,16 @@ class DataClient:
                 else:
                     req_params = {
                         "token": self._token,
-                        **filters,
                         "date": cur_date,
                         "format": "json",
                         "size": "1",
                         "exclude": "*",
                     }
-                    resp = requests.get(
-                        self._base_url, params=req_params, **rkwargs)
+                    resp = requests.post(
+                        self._base_url,
+                        params=req_params,
+                        json=filters,
+                        **rkwargs)
                 if not str(resp.text).strip():  # if nothing is fetched
                     return 0
                 return int(resp.json()["overall_total"])
@@ -590,7 +592,7 @@ class DataClient:
             self,
             mode: Mode[T],
             params: Dict[str, str],
-            filters: Dict[str, str],
+            filters: Dict[str, Any],
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]],
             request_kwargs: Optional[Dict[Any, Any]]) -> List[T]:
@@ -614,8 +616,11 @@ class DataClient:
                         **{**url_params, **filters, **params},
                         **{"format": mode.get_format()}
                     }
-                    resp = requests.get(
-                        self._base_url, params=req_params, **rkwargs)
+                    resp = requests.post(
+                        self._base_url,
+                        params=req_params,
+                        json=filters,
+                        **rkwargs)
                 if not str(resp.text).strip():
                     return []
                 return mode.parse_result(resp)
@@ -634,7 +639,7 @@ class DataClient:
             harvested_after: str,
             mode: Mode[T],
             params: Dict[str, str],
-            filters: Dict[str, str],
+            filters: Dict[str, Any],
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]] = None,
             request_kwargs: Optional[Dict[Any, Any]] = None,
@@ -684,7 +689,7 @@ class DataClient:
     def read_total(
             self,
             cur_date: str,
-            filters: Dict[str, str],
+            filters: Dict[str, Any],
             request_kwargs: Optional[Dict[Any, Any]] = None) -> int:
         warnings.warn(
             "read_total method is deprecated and will be removed in later "
