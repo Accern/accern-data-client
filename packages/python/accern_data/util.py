@@ -19,6 +19,7 @@ L_BAR = """{desc}: |"""
 R_BAR = """| {percentage:3.0f}% [{n}/{total}]"""
 BAR_FMT = f"{L_BAR}{{bar}}{R_BAR}"
 DEFAULT_CHUNK_SIZE = 100
+DATA_DIR = "tests/data"
 
 
 def is_example_url(url: str) -> bool:
@@ -67,7 +68,7 @@ def get_overall_total_from_dummy(
     response_obj = Response()
     start_dt, end_dt = create_start_end_date(date, filters)
     if is_test():
-        path = "tests/data/data-2022.json"
+        path = f"{DATA_DIR}/data-2022.json"
     else:
         path = get_master_file("json")
     json_obj = load_json(path)
@@ -120,7 +121,7 @@ def generate_csv_object(
     df["harvested_at"] = pd.to_datetime(df["harvested_at"])
     df["published_at"] = pd.to_datetime(df["published_at"])
     start_dt, end_dt = create_start_end_date(date, params)
-
+    df = df.sort_values(by="harvested_at")
     valid_df: pd.DataFrame = df[
         (df[date_type] >= start_dt) &
         (df[date_type] <= end_dt) &
@@ -162,6 +163,8 @@ def generate_json_object(
                 and pd.to_datetime(record["harvested_at"]) > harvested_after
                 ) and check_filters(record, filters):
             filtered_json["signals"].append(record)
+    filtered_json["signals"].sort(
+        key=lambda x: pd.to_datetime(x["harvested_at"]))
     obj = io.BytesIO(json.dumps(filtered_json).encode(encoding))
     return obj
 
@@ -178,7 +181,7 @@ def generate_file_response(
     harvested_after_dt = pd.to_datetime(harvested_after, utc=True)
 
     if is_test():
-        path = f"tests/data/data-2022.{mode}"
+        path = f"{DATA_DIR}/data-2022.{mode}"
     else:
         path = get_master_file(mode)
 

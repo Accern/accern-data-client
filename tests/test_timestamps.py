@@ -1,7 +1,7 @@
 import pandas as pd
 import pandas.testing as pd_test
 from accern_data import create_data_client, DATE_FORMAT
-from accern_data.util import EXAMPLE_URL, load_json
+from accern_data.util import DATA_DIR, EXAMPLE_URL, load_json
 
 
 def test_timestamp_csv_date() -> None:
@@ -23,8 +23,7 @@ def test_timestamp_csv_date() -> None:
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime(DATE_FORMAT)
         try:
-            df_actual = pd.read_csv(
-                f"tests/data/csv_date/{date}.csv")
+            df_actual = pd.read_csv(f"{DATA_DIR}/csv_date/{date}.csv")
             df_generated = pd.read_csv(
                 f"{output_path}{output_pattern}-{date}.csv")
         except FileNotFoundError:
@@ -55,7 +54,7 @@ def test_timestamp_csv_full() -> None:
         mode=("csv", False),
         indicator="message")
 
-    df_actual = pd.read_csv("tests/data/data-2022.csv")
+    df_actual = pd.read_csv(f"{DATA_DIR}/data-2022.csv")
     df_generated = pd.read_csv(f"{output_path}{output_pattern}.csv")
 
     start_date_dt = pd.to_datetime(start_date, utc=True)
@@ -91,7 +90,7 @@ def test_timestamp_json() -> None:
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime(DATE_FORMAT)
         try:
-            json_actual = load_json(f"tests/data/json/{date}.json")
+            json_actual = load_json(f"{DATA_DIR}/json/{date}.json")
             json_generated = load_json(
                 f"{output_path}{output_pattern}-{date}.json")
         except FileNotFoundError:

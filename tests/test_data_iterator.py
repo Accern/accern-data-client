@@ -4,7 +4,7 @@ import pandas as pd
 import pandas.testing as pd_test
 import pytest
 from accern_data import create_data_client, DATE_FORMAT, DATETIME_FORMAT
-from accern_data.util import EXAMPLE_URL, load_json
+from accern_data.util import DATA_DIR, EXAMPLE_URL, load_json
 
 DEFAULT_CHUNK_SIZE_LIST = [
     1, 5, 8, 3, 57, 13, 88, 86, 18, 9, 91, 68, 1, 99, 1, 22, 1, 12, 3, 8, 16,
@@ -19,7 +19,7 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
     end_date = "2022-03-04"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode("csv", split_dates=False, chunk_size=chunk_size)
-    dataframe = pd.read_csv("tests/data/data-2022.csv")
+    dataframe = pd.read_csv(f"{DATA_DIR}/data-2022.csv")
     n_full_chunks = None
     if chunk_size is not None:
         n_full_chunks = dataframe.shape[0] // chunk_size
@@ -59,7 +59,7 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime(DATE_FORMAT)
         try:
-            df = pd.read_csv(f"tests/data/csv_date/{date}.csv")
+            df = pd.read_csv(f"{DATA_DIR}/csv_date/{date}.csv")
         except FileNotFoundError:
             continue
         n_full_chunks = None
@@ -98,7 +98,7 @@ def test_json_iterator() -> None:
     client.set_mode("json", split_dates=True)
     jsons: List[Dict[str, Any]] = list(
         client.iterate_range(start_date=start_date, end_date=end_date))
-    js_total = load_json("tests/data/data-2022.json")
+    js_total = load_json(f"{DATA_DIR}/data-2022.json")
     for obj in jsons:
         for dt in {"crawled_at", "harvested_at", "published_at"}:
             obj[dt] = obj[dt].strftime(DATETIME_FORMAT)
@@ -109,7 +109,7 @@ def test_json_iterator() -> None:
         date = cur_date.strftime(DATE_FORMAT)
         json_date = []
         try:
-            js = load_json(f"tests/data/json_date/{date}.json")
+            js = load_json(f"{DATA_DIR}/json_date/{date}.json")
         except FileNotFoundError:
             continue
         for idx in range(beg, len(jsons)):
