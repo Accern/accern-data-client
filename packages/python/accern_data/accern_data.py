@@ -29,8 +29,8 @@ from .util import (
     field_transformation,
     generate_file_response,
     get_overall_total_from_dummy,
+    has_iprogress,
     is_example_url,
-    is_indicator_bar_available,
     MessageIndicator,
     ProgressIndicator,
     SilentIndicator,
@@ -119,7 +119,7 @@ FiltersType = TypedDict(
 
 ModeType = Literal["csv", "df", "json"]
 Indicators = Literal["pbar", "silent", "message"]
-ByDate = Literal["harvested_at", "published_at"]
+ByDate = Literal["date", "harvested_at", "published_at"]
 BY_DATE = get_args(ByDate)
 INDICATORS = get_args(Indicators)
 FILTER_FIELD = get_args(FilterField)
@@ -741,8 +741,8 @@ class DataClient:
 
     def _get_valid_indicator(
             self,
-            indicator: Optional[Union[Indicators, ProgressIndicator]],
-            total: int) -> ProgressIndicator:
+            indicator: Optional[Union[Indicators, ProgressIndicator]]
+            ) -> ProgressIndicator:
         if indicator is None:
             indicator_obj = self.get_indicator()
         elif isinstance(indicator, ProgressIndicator):
@@ -750,7 +750,7 @@ class DataClient:
         else:
             indicator_obj = self._parse_indicator(indicator)
 
-        if not is_indicator_bar_available(indicator_obj, total):
+        if isinstance(indicator_obj, BarIndicator) and not has_iprogress():
             warnings.warn(
                 "Falling back to `message` indicator.\n"
                 "Reason: The jupyter extended functionality is not available. "
@@ -846,8 +846,9 @@ class DataClient:
         valid_mode.clean_buffer()
         if end_date is None:
             end_date = start_date
-        indicator_obj = self._get_valid_indicator(
-            indicator, total=len(pd.date_range(start_date, end_date)))
+        indicator_obj = self._get_valid_indicator(indicator)
+        indicator_obj.generate_bar(
+            total=len(pd.date_range(start_date, end_date)))
         indicator_obj.set_description(desc="Fetching info")
         total = 0
         expected_records: List[int] = []

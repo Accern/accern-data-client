@@ -14,6 +14,7 @@ from . import __version__
 EXAMPLE_URL = "https://api.example.com/"
 IS_JUPYTER: Optional[bool] = None
 IS_TEST: Optional[bool] = None
+HAS_IPROGRESS: Optional[bool] = None
 L_BAR = """{desc}: |"""
 R_BAR = """| {percentage:3.0f}% [{n}/{total}]"""
 BAR_FMT = f"{L_BAR}{{bar}}{R_BAR}"
@@ -332,11 +333,12 @@ class SilentIndicator(ProgressIndicator):
         pass
 
 
-def is_indicator_bar_available(
-        indicator_obj: ProgressIndicator, total: int) -> bool:
-    try:
-        indicator_obj.generate_bar(total=total)
-        is_bar_available = True
-    except ImportError:
-        is_bar_available = False
-    return is_bar_available
+def has_iprogress() -> bool:
+    global HAS_IPROGRESS
+
+    if HAS_IPROGRESS is not None:
+        return HAS_IPROGRESS
+
+    from tqdm import notebook
+    HAS_IPROGRESS = notebook.IProgress is not None  # type: ignore
+    return HAS_IPROGRESS
