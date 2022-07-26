@@ -9,8 +9,8 @@ from accern_data.util import EXAMPLE_URL, load_json
 
 @pytest.mark.parametrize("by_date", ["published_at", "harvested_at"])
 def test_by_date_csv_full(by_date: ByDate) -> None:
-    start_date = "2022-01-06"
-    end_date = "2022-02-02"
+    start_date = "2022-01-03"
+    end_date = "2022-03-04"
     output_path = "tests/outputs/"
     output_pattern = f"test_by_date_csv_full_{by_date}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
@@ -25,21 +25,23 @@ def test_by_date_csv_full(by_date: ByDate) -> None:
         by_date=by_date)
     df_generated = pd.read_csv(f"{output_path}{output_pattern}.csv")
     df_full = pd.read_csv("tests/data/data-2022.csv")
-    start_date_dt = pd.to_datetime(start_date, utc=True)
-    end_date_dt = pd.to_datetime(end_date, utc=True) + pd.Timedelta(days=1)
-    df_full[by_date] = pd.to_datetime(df_full[by_date])
-    df_generated[by_date] = pd.to_datetime(df_generated[by_date])
-    filtered_df = df_full[df_full[by_date].between(start_date_dt, end_date_dt)]
-    filtered_df = filtered_df.reset_index(drop=True)
+    if by_date != "published_at":
+        df_full = pd.read_csv(f"tests/data/data-2022-{by_date}.csv")
+    # start_date_dt = pd.to_datetime(start_date, utc=True)
+    # end_date_dt = pd.to_datetime(end_date, utc=True) + pd.Timedelta(days=1)
+    # df_full[by_date] = pd.to_datetime(df_full[by_date])
+    # df_generated[by_date] = pd.to_datetime(df_generated[by_date])
+    # filtered_df = df_full[df_full[by_date].between(start_date_dt, end_date_dt)]
+    # filtered_df = filtered_df.reset_index(drop=True)
     pd_test.assert_frame_equal(
-        filtered_df[sorted(filtered_df.columns)],
+        df_full[sorted(df_full.columns)],
         df_generated[sorted(df_generated.columns)])
 
 
 @pytest.mark.parametrize("by_date", ["published_at", "harvested_at"])
 def test_by_date_csv_date(by_date: ByDate) -> None:
-    start_date = "2022-01-06"
-    end_date = "2022-02-02"
+    start_date = "2022-01-03"
+    end_date = "2022-03-04"
     output_path = "tests/outputs/"
     output_pattern = f"test_by_date_csv_date_{by_date}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
@@ -52,32 +54,26 @@ def test_by_date_csv_date(by_date: ByDate) -> None:
         mode=("csv", True),
         indicator="message",
         by_date=by_date)
-    df_full = pd.read_csv("tests/data/data-2022.csv")
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime(DATE_FORMAT)
         try:
             df_generated = pd.read_csv(
                 f"{output_path}{output_pattern}-{date}.csv")
+            path = f"tests/data/csv_date/{cur_date}.csv"
+            if by_date != "published_at":
+                path = f"tests/data/{by_date}/csv_date/{cur_date}.csv"
+            df_actual = pd.read_csv(path)
         except FileNotFoundError:
             continue
-        df_generated[by_date] = pd.to_datetime(df_generated[by_date])
-        df_full[by_date] = pd.to_datetime(df_full[by_date], utc=True)
-        all_dates = df_generated[by_date].apply(
-            datetime.strftime, format=DATE_FORMAT)
-        assert all_dates.between(start_date, end_date).all()
-        cur_date = pd.to_datetime(cur_date, utc=True)
-        filtered_df = df_full[df_full[by_date].between(
-            cur_date, cur_date + pd.Timedelta(days=1))]
-        filtered_df = filtered_df.reset_index(drop=True)
         pd_test.assert_frame_equal(
-            filtered_df[sorted(filtered_df.columns)],
+            df_actual[sorted(df_actual.columns)],
             df_generated[sorted(df_generated.columns)])
 
 
 @pytest.mark.parametrize("by_date", ["published_at", "harvested_at"])
 def test_by_date_json(by_date: ByDate) -> None:
-    start_date = "2022-01-06"
-    end_date = "2022-02-02"
+    start_date = "2022-01-03"
+    end_date = "2022-03-04"
     output_path = "tests/outputs/"
     output_pattern = f"test_by_date_json_{by_date}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
@@ -90,27 +86,16 @@ def test_by_date_json(by_date: ByDate) -> None:
         mode=("json", True),
         indicator="message",
         by_date=by_date)
-    json_full = load_json("tests/data/data-2022.json")
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime(DATE_FORMAT)
         cur_date = pd.to_datetime(cur_date, utc=True)
         try:
             json_generated = load_json(
                 f"{output_path}{output_pattern}-{date}.json")
+            path = f"tests/data/json/{cur_date}.csv"
+            if by_date != "published_at":
+                path = f"tests/data/{by_date}/json/{cur_date}.csv"
+            json_actual = load_json(path)
         except FileNotFoundError:
             continue
-
-        all_dates = set()
-        for obj in json_generated:
-            all_dates.add(pd.to_datetime(obj[by_date]).strftime(DATE_FORMAT))
-
-        assert pd.Series(list(all_dates)).between(start_date, end_date).all()
-
-        filtered_json = [
-            obj for obj in json_full["signals"]
-            if (cur_date <= pd.to_datetime(obj[by_date], utc=True))
-            and (pd.to_datetime(obj[by_date], utc=True) < (
-                cur_date + pd.Timedelta(days=1)))
-        ]
-
-        assert filtered_json == json_generated
+        assert json_actual == json_generated
