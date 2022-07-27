@@ -4,12 +4,12 @@ import pandas as pd
 import pandas.testing as pd_test
 import pytest
 from accern_data import create_data_client, DATE_FORMAT, DATETIME_FORMAT
-from accern_data.util import DATA_DIR, EXAMPLE_URL, load_json
+from accern_data.util import DATA_DIR, EXAMPLE_URL, load_json, write_json
 
 DEFAULT_CHUNK_SIZE_LIST = [
-    1, 5, 8, 3, 57, 13, 88, 86, 18, 9, 91, 68, 1, 99, 1, 22, 1, 12, 3, 8, 16,
-    2, 68, 1, 71, 2, 81, 3, 89, 69, 1, 96, 97, 93, 17, 1, 98, 92, 97, 14, 90,
-    48, 1, 99, 98, 32, 7, 95, 96, 14, 1, 98, 98, 98, 34, 5, 98, 40, 3,
+    5, 1, 10, 1, 69, 1, 99, 99, 2, 1, 99, 60, 1, 99, 1, 22, 1, 14, 1, 7, 1, 17,
+    1, 68, 1, 72, 1, 83, 1, 99, 59, 1, 99, 99, 99, 6, 1, 98, 98, 99, 5, 1, 99,
+    39, 1, 98, 99, 38, 1, 99, 99, 7, 1, 98, 99, 99, 36, 1, 99, 40, 2
 ]
 
 
@@ -39,7 +39,7 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
         for idx, df in enumerate(dfs):
             assert df.shape[0] == DEFAULT_CHUNK_SIZE_LIST[idx]
     assert dataframe.shape[0] == sum(df_lengths)
-    for dt in {"crawled_at", "harvested_at", "published_at"}:
+    for dt in ["crawled_at", "harvested_at", "published_at"]:
         concat_df[dt] = concat_df[dt].astype("str")
 
     dataframe = dataframe.sort_values(by="signal_id").reset_index(drop=True)
@@ -73,6 +73,7 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
         def func(row: str) -> pd.Timestamp:
             return pd.to_datetime(row, utc=True).strftime(DATE_FORMAT)
 
+        print([tup.shape[0] for tup in dfs])
         for idx in range(beg, len(dfs)):
             assert dfs[idx]["published_at"].apply(func).nunique() == 1
             if dfs[idx]["published_at"].apply(func)[0] != date:
@@ -88,7 +89,7 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
                 assert dfs[idx].shape[0] == DEFAULT_CHUNK_SIZE_LIST[idx]
         df_date = [dfs[idx] for idx in range(beg, end+1)]
         concat_df: pd.DataFrame = pd.concat(df_date).reset_index(drop=True)
-        for dt in {"crawled_at", "harvested_at", "published_at"}:
+        for dt in ["crawled_at", "harvested_at", "published_at"]:
             concat_df[dt] = concat_df[dt].astype("str")
         pd_test.assert_frame_equal(
             df[sorted(df.columns)], concat_df[sorted(concat_df.columns)])
@@ -104,9 +105,10 @@ def test_json_iterator() -> None:
         client.iterate_range(start_date=start_date, end_date=end_date))
     js_total = load_json(f"{DATA_DIR}/data-2022.json")
     for obj in jsons:
-        for dt in {"crawled_at", "harvested_at", "published_at"}:
+        for dt in ["crawled_at", "harvested_at", "published_at"]:
             obj[dt] = obj[dt].strftime(DATETIME_FORMAT)
-    assert jsons == js_total["signals"]
+    assert sorted(jsons, key=lambda x: x["signal_id"]) == sorted(
+        js_total["signals"], key=lambda x: x["signal_id"])
     beg = 0
     end = 0
     for cur_date in pd.date_range(start_date, end_date):
@@ -123,6 +125,7 @@ def test_json_iterator() -> None:
             end = idx
         for idx in range(beg, end+1):
             json_date.append(jsons[idx])
-
-        assert js == json_date
+        json_date.sort(key=lambda x: x["signal_id"])
+        js.sort(key=lambda x: x["signal_id"])
+        assert js == json_date, f"Results for {date} not matching."
         beg = end + 1
