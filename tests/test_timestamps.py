@@ -1,13 +1,7 @@
 import pandas as pd
 import pandas.testing as pd_test
 from accern_data import create_data_client, DATE_FORMAT
-from accern_data.util import (
-    DATA_DIR,
-    EXAMPLE_URL,
-    get_data_dir,
-    load_json,
-    set_data_dir,
-)
+from accern_data.util import EXAMPLE_URL, get_data_dir, load_json, set_data_dir
 
 OUTPUT_PATH = "tests/outputs/"
 

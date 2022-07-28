@@ -4,7 +4,7 @@ import pandas as pd
 import pandas.testing as pd_test
 import pytest
 from accern_data import create_data_client, DATE_FORMAT, DATETIME_FORMAT
-from accern_data.util import EXAMPLE_URL, get_data_dir, load_json
+from accern_data.util import EXAMPLE_URL, get_data_dir, load_json, set_data_dir
 
 DEFAULT_CHUNK_SIZE_LIST = [
     5, 1, 10, 1, 69, 1, 99, 99, 2, 1, 99, 60, 1, 99, 1, 22, 1, 14, 1, 7, 1, 17,
@@ -29,7 +29,6 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
         df_lengths.append(df.shape[0])
         dfs.append(df)
     concat_df = pd.concat(dfs).reset_index(drop=True)
-    print(df_lengths)
     assert (~concat_df.duplicated()).all(), "Duplicate entry is present."
     if chunk_size is not None and n_full_chunks is not None:
         for idx in range(n_full_chunks):
@@ -97,6 +96,7 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
 
 
 def test_json_iterator() -> None:
+    set_data_dir("tests/data_mini")
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
@@ -107,6 +107,9 @@ def test_json_iterator() -> None:
     for obj in jsons:
         for dt in ["crawled_at", "harvested_at", "published_at"]:
             obj[dt] = obj[dt].strftime(DATETIME_FORMAT)
+    for obj in js_total["signals"]:
+        for dt in ["crawled_at", "harvested_at", "published_at"]:
+            obj[dt] = pd.to_datetime(obj[dt]).strftime(DATETIME_FORMAT)
     assert sorted(jsons, key=lambda x: x["signal_id"]) == sorted(
         js_total["signals"], key=lambda x: x["signal_id"])
     beg = 0
