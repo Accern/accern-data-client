@@ -4,7 +4,14 @@ import pandas as pd
 import pandas.testing as pd_test
 import pytest
 from accern_data import create_data_client, DATE_FORMAT, DATETIME_FORMAT
-from accern_data.util import DATA_DIR, EXAMPLE_URL, load_json, write_json
+from accern_data.util import (
+    DATA_DIR,
+    EXAMPLE_URL,
+    get_data_dir,
+    load_json,
+    set_data_dir,
+    write_json,
+)
 
 DEFAULT_CHUNK_SIZE_LIST = [
     5, 1, 10, 1, 69, 1, 99, 99, 2, 1, 99, 60, 1, 99, 1, 22, 1, 14, 1, 7, 1, 17,
@@ -15,11 +22,12 @@ DEFAULT_CHUNK_SIZE_LIST = [
 
 @pytest.mark.parametrize("chunk_size", [1, 5, 1000, None])
 def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
+    set_data_dir("tests/data_mini")
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode("csv", split_dates=False, chunk_size=chunk_size)
-    dataframe = pd.read_csv(f"{DATA_DIR}/data-2022.csv")
+    dataframe = pd.read_csv(f"{get_data_dir()}/data-2022.csv")
     n_full_chunks = None
     if chunk_size is not None:
         n_full_chunks = dataframe.shape[0] // chunk_size
@@ -29,6 +37,7 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
         df_lengths.append(df.shape[0])
         dfs.append(df)
     concat_df = pd.concat(dfs).reset_index(drop=True)
+    print(df_lengths)
     assert (~concat_df.duplicated()).all(), "Duplicate entry is present."
     if chunk_size is not None and n_full_chunks is not None:
         for idx in range(n_full_chunks):
@@ -52,6 +61,7 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
 
 @pytest.mark.parametrize("chunk_size", [1, 10, 1000, None])
 def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
+    set_data_dir("tests/data_mini")
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
@@ -63,7 +73,7 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime(DATE_FORMAT)
         try:
-            df = pd.read_csv(f"{DATA_DIR}/csv_date/{date}.csv")
+            df = pd.read_csv(f"{get_data_dir()}/csv_date/{date}.csv")
         except FileNotFoundError:
             continue
         n_full_chunks = None
@@ -73,7 +83,6 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
         def func(row: str) -> pd.Timestamp:
             return pd.to_datetime(row, utc=True).strftime(DATE_FORMAT)
 
-        print([tup.shape[0] for tup in dfs])
         for idx in range(beg, len(dfs)):
             assert dfs[idx]["published_at"].apply(func).nunique() == 1
             if dfs[idx]["published_at"].apply(func)[0] != date:
@@ -97,13 +106,14 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
 
 
 def test_json_iterator() -> None:
+    set_data_dir("tests/data_mini")
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode("json", split_dates=True)
     jsons: List[Dict[str, Any]] = list(
         client.iterate_range(start_date=start_date, end_date=end_date))
-    js_total = load_json(f"{DATA_DIR}/data-2022.json")
+    js_total = load_json(f"{get_data_dir()}/data-2022.json")
     for obj in jsons:
         for dt in ["crawled_at", "harvested_at", "published_at"]:
             obj[dt] = obj[dt].strftime(DATETIME_FORMAT)
@@ -115,7 +125,7 @@ def test_json_iterator() -> None:
         date = cur_date.strftime(DATE_FORMAT)
         json_date = []
         try:
-            js = load_json(f"{DATA_DIR}/json_date/{date}.json")
+            js = load_json(f"{get_data_dir()}/json_date/{date}.json")
         except FileNotFoundError:
             continue
         for idx in range(beg, len(jsons)):

@@ -1,16 +1,15 @@
-from datetime import datetime
-
 import pandas as pd
 import pandas.testing as pd_test
 import pytest
 from accern_data import ByDate, create_data_client, DATE_FORMAT
-from accern_data.util import EXAMPLE_URL, load_json
+from accern_data.util import EXAMPLE_URL, get_data_dir, load_json, set_data_dir
 
 OUTPUT_PATH = "tests/outputs/"
 
 
 @pytest.mark.parametrize("by_date", ["published_at", "harvested_at"])
 def test_by_date_csv_full(by_date: ByDate) -> None:
+    set_data_dir("tests/data_mini")
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH
@@ -26,9 +25,9 @@ def test_by_date_csv_full(by_date: ByDate) -> None:
         indicator="message",
         by_date=by_date)
     df_generated = pd.read_csv(f"{output_path}{output_pattern}.csv")
-    df_full = pd.read_csv("tests/data/data-2022.csv")
+    df_full = pd.read_csv(f"{get_data_dir()}/data-2022.csv")
     if by_date != "published_at":
-        df_full = pd.read_csv(f"tests/data/{by_date}/data-2022.csv")
+        df_full = pd.read_csv(f"{get_data_dir()}/{by_date}/data-2022.csv")
     df_full = df_full.sort_values(by="signal_id").reset_index(drop=True)
     df_generated = df_generated.sort_values(
         by="signal_id").reset_index(drop=True)
@@ -39,6 +38,7 @@ def test_by_date_csv_full(by_date: ByDate) -> None:
 
 @pytest.mark.parametrize("by_date", ["published_at", "harvested_at"])
 def test_by_date_csv_date(by_date: ByDate) -> None:
+    set_data_dir("tests/data_mini")
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH
@@ -58,9 +58,9 @@ def test_by_date_csv_date(by_date: ByDate) -> None:
         try:
             df_generated = pd.read_csv(
                 f"{output_path}{output_pattern}-{date}.csv")
-            path = f"tests/data/csv_date/{cur_date}.csv"
+            path = f"{get_data_dir()}/csv_date/{cur_date}.csv"
             if by_date != "published_at":
-                path = f"tests/data/{by_date}/csv_date/{cur_date}.csv"
+                path = f"{get_data_dir()}/{by_date}/csv_date/{cur_date}.csv"
             df_actual = pd.read_csv(path)
         except FileNotFoundError:
             continue
@@ -73,12 +73,13 @@ def test_by_date_csv_date(by_date: ByDate) -> None:
             df_generated[sorted(df_generated.columns)])
 
 
-@pytest.mark.parametrize("by_date", ["harvested_at"])
+@pytest.mark.parametrize("by_date", ["published_at", "harvested_at"])
 def test_by_date_json(by_date: ByDate) -> None:
+    set_data_dir("tests/data_mini")
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH
-    output_pattern = None
+    output_pattern = f"test_by_date_json_{by_date}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
 
     client.download_range(
@@ -95,9 +96,9 @@ def test_by_date_json(by_date: ByDate) -> None:
         try:
             json_generated = load_json(
                 f"{output_path}{output_pattern}-{date}.json")
-            path = f"tests/data/json/{cur_date}.csv"
+            path = f"{get_data_dir()}/json/{cur_date}.csv"
             if by_date != "published_at":
-                path = f"tests/data/{by_date}/json/{cur_date}.csv"
+                path = f"{get_data_dir()}/{by_date}/json/{cur_date}.csv"
             json_actual = load_json(path)
         except FileNotFoundError:
             continue

@@ -45,6 +45,14 @@ def is_test() -> int:
     return IS_TEST
 
 
+def set_data_dir(path: str) -> None:
+    os.environ.setdefault("DATA_DIR", path)
+
+
+def get_data_dir() -> str:
+    return os.environ.get("DATA_DIR", default=DATA_DIR)
+
+
 def check_filters(
         record: Dict[str, Any], filters: Dict[str, str]) -> bool:
     for key, value in filters.items():
@@ -68,7 +76,7 @@ def get_overall_total_from_dummy(
     response_obj = Response()
     start_dt, end_dt = create_start_end_date(date, filters)
     if is_test():
-        path = f"{DATA_DIR}/data-2022.json"
+        path = f"{get_data_dir()}/data-2022.json"
     else:
         path = get_master_file("json")
     json_obj = load_json(path)
@@ -181,7 +189,7 @@ def generate_file_response(
     harvested_after_dt = pd.to_datetime(harvested_after, utc=True)
 
     if is_test():
-        path = f"{DATA_DIR}/data-2022.{mode}"
+        path = f"{get_data_dir()}/data-2022.{mode}"
     else:
         path = get_master_file(mode)
 

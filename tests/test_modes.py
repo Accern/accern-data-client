@@ -11,7 +11,13 @@ from accern_data import (
     Mode,
     ModeType,
 )
-from accern_data.util import DATA_DIR, EXAMPLE_URL, load_json
+from accern_data.util import (
+    DATA_DIR,
+    EXAMPLE_URL,
+    get_data_dir,
+    load_json,
+    set_data_dir,
+)
 
 OUTPUT_PATH = "tests/outputs/"
 
@@ -20,6 +26,7 @@ OUTPUT_PATH = "tests/outputs/"
 @pytest.mark.parametrize(
     "method_used", ["method", "string", "tuple", "object"])
 def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
+    set_data_dir("tests/data_mini")
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH
@@ -44,7 +51,7 @@ def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime(DATE_FORMAT)
         try:
-            df_actual = pd.read_csv(f"{DATA_DIR}/csv_date/{date}.csv")
+            df_actual = pd.read_csv(f"{get_data_dir()}/csv_date/{date}.csv")
             df_generated = pd.read_csv(
                 f"{output_path}{output_pattern}-{date}.csv")
         except FileNotFoundError:
@@ -58,6 +65,7 @@ def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
 @pytest.mark.parametrize("sheet_mode", ["csv", "df"])
 @pytest.mark.parametrize("method_used", ["method", "tuple", "object"])
 def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
+    set_data_dir("tests/data_mini")
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH
@@ -80,7 +88,7 @@ def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
         mode=mode,
         indicator="message")
 
-    df_actual = pd.read_csv(f"{DATA_DIR}/data-2022.csv")
+    df_actual = pd.read_csv(f"{get_data_dir()}/data-2022.csv")
     df_actual = df_actual.sort_values(by="signal_id").reset_index(drop=True)
     df_generated = pd.read_csv(f"{output_path}{output_pattern}.csv")
     df_generated = df_generated.sort_values(
@@ -94,6 +102,7 @@ def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
 @pytest.mark.parametrize(
     "method_used", ["method", "string", "tuple", "object"])
 def test_json(method_used: str) -> None:
+    set_data_dir("tests/data_mini")
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH
@@ -118,7 +127,7 @@ def test_json(method_used: str) -> None:
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime(DATE_FORMAT)
         try:
-            json_actual = load_json(f"{DATA_DIR}/json/{date}.json")
+            json_actual = load_json(f"{get_data_dir()}/json/{date}.json")
             json_generated = load_json(
                 f"{output_path}{output_pattern}-{date}.json")
         except FileNotFoundError:
