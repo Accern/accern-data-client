@@ -13,6 +13,7 @@ from accern_data import (
 )
 from accern_data.util import EXAMPLE_URL, get_data_dir, load_json, set_data_dir
 
+DATA_PATH = "tests/data_mini"
 OUTPUT_PATH = "tests/outputs/"
 
 
@@ -20,7 +21,7 @@ OUTPUT_PATH = "tests/outputs/"
 @pytest.mark.parametrize(
     "method_used", ["method", "string", "tuple", "object"])
 def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
-    set_data_dir("tests/data_mini")
+    set_data_dir(DATA_PATH)
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH
@@ -59,7 +60,7 @@ def test_csv_date(sheet_mode: ModeType, method_used: str) -> None:
 @pytest.mark.parametrize("sheet_mode", ["csv", "df"])
 @pytest.mark.parametrize("method_used", ["method", "tuple", "object"])
 def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
-    set_data_dir("tests/data_mini")
+    set_data_dir(DATA_PATH)
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH
@@ -96,7 +97,7 @@ def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
 @pytest.mark.parametrize(
     "method_used", ["method", "string", "tuple", "object"])
 def test_json(method_used: str) -> None:
-    set_data_dir("tests/data_mini")
+    set_data_dir(DATA_PATH)
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH

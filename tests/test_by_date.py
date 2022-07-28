@@ -4,12 +4,13 @@ import pytest
 from accern_data import ByDate, create_data_client, DATE_FORMAT
 from accern_data.util import EXAMPLE_URL, get_data_dir, load_json, set_data_dir
 
+DATA_PATH = "tests/data_mini"
 OUTPUT_PATH = "tests/outputs/"
 
 
 @pytest.mark.parametrize("by_date", ["published_at", "harvested_at"])
 def test_by_date_csv_full(by_date: ByDate) -> None:
-    set_data_dir("tests/data_mini")
+    set_data_dir(DATA_PATH)
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH
@@ -38,7 +39,7 @@ def test_by_date_csv_full(by_date: ByDate) -> None:
 
 @pytest.mark.parametrize("by_date", ["published_at", "harvested_at"])
 def test_by_date_csv_date(by_date: ByDate) -> None:
-    set_data_dir("tests/data_mini")
+    set_data_dir(DATA_PATH)
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH
@@ -75,7 +76,7 @@ def test_by_date_csv_date(by_date: ByDate) -> None:
 
 @pytest.mark.parametrize("by_date", ["published_at", "harvested_at"])
 def test_by_date_json(by_date: ByDate) -> None:
-    set_data_dir("tests/data_mini")
+    set_data_dir(DATA_PATH)
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH

@@ -3,11 +3,12 @@ import pandas.testing as pd_test
 from accern_data import create_data_client, DATE_FORMAT
 from accern_data.util import EXAMPLE_URL, get_data_dir, load_json, set_data_dir
 
+DATA_PATH = "tests/data_mini"
 OUTPUT_PATH = "tests/outputs/"
 
 
 def test_timestamp_csv_date() -> None:
-    set_data_dir("tests/data_mini")
+    set_data_dir(DATA_PATH)
     start_date = "2022-01-07T05:04:11"
     end_date = "2022-02-03T03:28:09"
     output_path = OUTPUT_PATH
@@ -43,7 +44,7 @@ def test_timestamp_csv_date() -> None:
 
 
 def test_timestamp_csv_full() -> None:
-    set_data_dir("tests/data_mini")
+    set_data_dir(DATA_PATH)
     start_date = "2022-01-07T05:04:11"
     end_date = "2022-02-03T03:28:09"
     output_path = OUTPUT_PATH
@@ -79,7 +80,7 @@ def test_timestamp_csv_full() -> None:
 
 
 def test_timestamp_json() -> None:
-    set_data_dir("tests/data_mini")
+    set_data_dir(DATA_PATH)
     start_date = "2022-01-07T05:04:11"
     end_date = "2022-02-03T03:28:09"
     output_path = "tests/outputs/"

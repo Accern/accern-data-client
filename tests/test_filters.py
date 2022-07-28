@@ -14,7 +14,7 @@ FILTERS: FiltersType = {
     "entity_ticker": "HURC",
     "entity_accern_id": "BBG000BLLFK1",
 }
-
+DATA_PATH = "tests/data_mini"
 OUTPUT_PATH = "tests/outputs/"
 
 
@@ -22,7 +22,7 @@ OUTPUT_PATH = "tests/outputs/"
 @pytest.mark.parametrize("uses_filter_method", [True, False])
 def test_filters_csv_full(
         sheet_mode: ModeType, uses_filter_method: bool) -> None:
-    set_data_dir("tests/data_mini")
+    set_data_dir(DATA_PATH)
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH
@@ -53,7 +53,7 @@ def test_filters_csv_full(
 @pytest.mark.parametrize("uses_filter_method", [True, False])
 def test_filters_csv_date(
         sheet_mode: ModeType, uses_filter_method: bool) -> None:
-    set_data_dir("tests/data_mini")
+    set_data_dir(DATA_PATH)
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH
@@ -88,7 +88,7 @@ def test_filters_csv_date(
 
 @pytest.mark.parametrize("uses_filter_method", [True, False])
 def test_filters_json(uses_filter_method: bool) -> None:
-    set_data_dir("tests/data_mini")
+    set_data_dir(DATA_PATH)
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH
