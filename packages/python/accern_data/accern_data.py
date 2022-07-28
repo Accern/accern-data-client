@@ -608,7 +608,7 @@ class DataClient:
                 else:
                     req_params = {
                         "token": self._token,
-                        **{**url_params, **filters, **params},
+                        **{**url_params, **params},
                         **{"format": mode.get_format()}
                     }
                     resp = requests.post(
