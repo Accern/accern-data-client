@@ -54,8 +54,8 @@ def check_filters(
 
 def field_transformation(value: Any) -> Union[str, List[str]]:
     if isinstance(value, list):
-        for idx in range(len(value)):
-            value[idx] = field_transformation(value[idx])
+        for idx, item in enumerate(value):
+            value[idx] = field_transformation(item)
         return value
     if isinstance(value, bool):
         return f"{value}".lower()
