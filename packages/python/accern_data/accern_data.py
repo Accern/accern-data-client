@@ -39,10 +39,14 @@ from .util import (
 ExcludedFilterField = Literal[
     "crawled_at",
     "date",
+    "end_time",
+    "exclude",
     "format",
     "harvested_at",
+    "include",
     "published_at",
     "size",
+    "start_time",
     "token",
 ]
 
@@ -53,7 +57,6 @@ FilterField = Literal[
     "doc_title",
     "doc_type",
     "doc_url",
-    "end_time",
     "entity_accern_id",
     "entity_country",
     "entity_exchcode",
@@ -77,42 +80,39 @@ FilterField = Literal[
     "provider_id",
     "signal_id",
     "signal_tag",
-    "start_time",
 ]
 FiltersType = TypedDict(
     "FiltersType",
     {
-        "doc_cluster_id": Optional[str],
-        "doc_id": Optional[str],
-        "doc_source": Optional[str],
-        "doc_title": Optional[str],
-        "doc_type": Optional[str],
-        "doc_url": Optional[str],
-        "end_time": str,
-        "entity_accern_id": Optional[str],
-        "entity_country": Optional[str],
-        "entity_exchcode": Optional[str],
-        "entity_figi": Optional[str],
-        "entity_hits": Optional[str],
-        "entity_indices": Optional[str],
-        "entity_name": Optional[str],
-        "entity_region": Optional[str],
-        "entity_relevance": Optional[int],
-        "entity_sector": Optional[str],
-        "entity_share_class": Optional[str],
-        "entity_text": Optional[str],
-        "entity_ticker": Optional[str],
-        "entity_type": Optional[str],
-        "event": Optional[str],
-        "event_accern_id": Optional[int],
-        "event_group": Optional[str],
-        "event_hits": Optional[str],
-        "event_text": Optional[str],
-        "primary_signal": Optional[Union[str, bool]],
-        "provider_id": Optional[int],
-        "signal_id": Optional[str],
-        "signal_tag": Optional[str],
-        "start_time": str,
+        "doc_cluster_id": Optional[Union[str, List[str]]],
+        "doc_id": Optional[Union[str, List[str]]],
+        "doc_source": Optional[Union[str, List[str]]],
+        "doc_title": Optional[Union[str, List[str]]],
+        "doc_type": Optional[Union[str, List[str]]],
+        "doc_url": Optional[Union[str, List[str]]],
+        "entity_accern_id": Optional[Union[str, List[str]]],
+        "entity_country": Optional[Union[str, List[str]]],
+        "entity_exchcode": Optional[Union[str, List[str]]],
+        "entity_figi": Optional[Union[str, List[str]]],
+        "entity_hits": Optional[Union[str, List[str]]],
+        "entity_indices": Optional[Union[str, List[str]]],
+        "entity_name": Optional[Union[str, List[str]]],
+        "entity_region": Optional[Union[str, List[str]]],
+        "entity_relevance": Optional[Union[int, List[int]]],
+        "entity_sector": Optional[Union[str, List[str]]],
+        "entity_share_class": Optional[Union[str, List[str]]],
+        "entity_text": Optional[Union[str, List[str]]],
+        "entity_ticker": Optional[Union[str, List[str]]],
+        "entity_type": Optional[Union[str, List[str]]],
+        "event": Optional[Union[str, List[str]]],
+        "event_accern_id": Optional[Union[int, List[int]]],
+        "event_group": Optional[Union[str, List[str]]],
+        "event_hits": Optional[Union[str, List[str]]],
+        "event_text": Optional[Union[str, List[str]]],
+        "primary_signal": Optional[Union[str, bool, List[str], List[bool]]],
+        "provider_id": Optional[Union[int, List[int]]],
+        "signal_id": Optional[Union[str, List[str]]],
+        "signal_tag": Optional[Union[str, List[str]]],
     },
     total=False)
 
@@ -435,7 +435,7 @@ class DataClient:
             ) -> None:
         self._base_url = url
         self._token = token
-        self._filters: Dict[str, str] = {}
+        self._filters: Dict[str, Any] = {}
         self._mode: Optional[Mode] = None
         if indicator is not None:
             self.set_indicator(indicator)
@@ -448,24 +448,20 @@ class DataClient:
         self._error_list.clear()
 
     @staticmethod
-    def _validate_filters(
-            filters: FiltersType) -> Dict[
-                str, Optional[Union[bool, int, str]]]:
-        valid_filters: Dict[str, Optional[Union[bool, int, str]]] = {}
+    def _validate_filters(filters: FiltersType) -> Dict[str, Any]:
+        valid_filters: Dict[str, Any] = {}
         for key, value in filters.items():
             if key not in FILTER_FIELD:
                 raise ValueError(
                     f"{key} is not a valid field."
                     f"Possible fields: {FILTER_FIELD}")
-            assert isinstance(value, (bool, int, str)) or value is None
+            assert isinstance(value, (bool, int, str, list)) or value is None
             valid_filters[key] = value
         return valid_filters
 
     @staticmethod
-    def _parse_filters(
-            filters: Dict[str, Optional[Union[bool, int, str]]]) -> Dict[
-                str, str]:
-        proper_filters: Dict[str, str] = {}
+    def _parse_filters(filters: Dict[str, Any]) -> Dict[str, Any]:
+        proper_filters: Dict[str, Any] = {}
         for key, value in filters.items():
             assert key not in EXCLUDED_FILTER_FIELD, (
                 "filters should not be containing any of "
@@ -501,11 +497,10 @@ class DataClient:
     def set_filters(self, filters: FiltersType) -> None:
         self._set_raw_filters(self._validate_filters(filters))
 
-    def _set_raw_filters(
-            self, filters: Dict[str, Optional[Union[bool, int, str]]]) -> None:
+    def _set_raw_filters(self, filters: Dict[str, Any]) -> None:
         self._filters = self._parse_filters(filters)
 
-    def get_filters(self) -> Dict[str, str]:
+    def get_filters(self) -> Dict[str, Any]:
         return self._filters
 
     @staticmethod
@@ -552,7 +547,7 @@ class DataClient:
     def _read_total(
             self,
             cur_date: str,
-            filters: Dict[str, str],
+            filters: Dict[str, Any],
             indicator: ProgressIndicator,
             request_kwargs: Optional[Dict[Any, Any]]) -> int:
         rkwargs = {} if request_kwargs is None else request_kwargs
@@ -565,14 +560,16 @@ class DataClient:
                 else:
                     req_params = {
                         "token": self._token,
-                        **filters,
                         "date": cur_date,
                         "format": "json",
                         "size": "1",
                         "exclude": "*",
                     }
-                    resp = requests.get(
-                        self._base_url, params=req_params, **rkwargs)
+                    resp = requests.post(
+                        self._base_url,
+                        params=req_params,
+                        json=filters,
+                        **rkwargs)
                 if not str(resp.text).strip():  # if nothing is fetched
                     return 0
                 return int(resp.json()["overall_total"])
@@ -590,7 +587,7 @@ class DataClient:
             self,
             mode: Mode[T],
             params: Dict[str, str],
-            filters: Dict[str, str],
+            filters: Dict[str, Any],
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]],
             request_kwargs: Optional[Dict[Any, Any]]) -> List[T]:
@@ -614,8 +611,11 @@ class DataClient:
                         **{**url_params, **filters, **params},
                         **{"format": mode.get_format()}
                     }
-                    resp = requests.get(
-                        self._base_url, params=req_params, **rkwargs)
+                    resp = requests.post(
+                        self._base_url,
+                        params=req_params,
+                        json=filters,
+                        **rkwargs)
                 if not str(resp.text).strip():
                     return []
                 return mode.parse_result(resp)
@@ -634,7 +634,7 @@ class DataClient:
             harvested_after: str,
             mode: Mode[T],
             params: Dict[str, str],
-            filters: Dict[str, str],
+            filters: Dict[str, Any],
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]] = None,
             request_kwargs: Optional[Dict[Any, Any]] = None,
@@ -684,7 +684,7 @@ class DataClient:
     def read_total(
             self,
             cur_date: str,
-            filters: Dict[str, str],
+            filters: Dict[str, Any],
             request_kwargs: Optional[Dict[Any, Any]] = None) -> int:
         warnings.warn(
             "read_total method is deprecated and will be removed in later "
