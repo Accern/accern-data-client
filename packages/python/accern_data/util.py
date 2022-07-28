@@ -3,7 +3,7 @@ import json
 import os
 import site
 import sys
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import pandas as pd
 import tqdm
@@ -52,7 +52,11 @@ def check_filters(
     return True
 
 
-def field_transformation(value: Any) -> str:
+def field_transformation(value: Any) -> Union[str, List[str]]:
+    if isinstance(value, list):
+        for idx in range(len(value)):
+            value[idx] = field_transformation(value[idx])
+        return value
     if isinstance(value, bool):
         return f"{value}".lower()
     return f"{value}"
