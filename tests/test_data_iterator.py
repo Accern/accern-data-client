@@ -4,14 +4,7 @@ import pandas as pd
 import pandas.testing as pd_test
 import pytest
 from accern_data import create_data_client, DATE_FORMAT, DATETIME_FORMAT
-from accern_data.util import (
-    DATA_DIR,
-    EXAMPLE_URL,
-    get_data_dir,
-    load_json,
-    set_data_dir,
-    write_json,
-)
+from accern_data.util import EXAMPLE_URL, get_data_dir, load_json
 
 DEFAULT_CHUNK_SIZE_LIST = [
     5, 1, 10, 1, 69, 1, 99, 99, 2, 1, 99, 60, 1, 99, 1, 22, 1, 14, 1, 7, 1, 17,
@@ -22,7 +15,6 @@ DEFAULT_CHUNK_SIZE_LIST = [
 
 @pytest.mark.parametrize("chunk_size", [1, 5, 1000, None])
 def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
-    set_data_dir("tests/data_mini")
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
@@ -61,7 +53,6 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
 
 @pytest.mark.parametrize("chunk_size", [1, 10, 1000, None])
 def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
-    set_data_dir("tests/data_mini")
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
@@ -106,7 +97,6 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
 
 
 def test_json_iterator() -> None:
-    set_data_dir("tests/data_mini")
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
