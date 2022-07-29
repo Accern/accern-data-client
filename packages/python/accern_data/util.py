@@ -46,11 +46,12 @@ def is_test() -> int:
 
 
 def set_data_dir(path: str) -> None:
-    os.environ.setdefault("DATA_DIR", path)
+    global DATA_DIR
+    DATA_DIR = path
 
 
 def get_data_dir() -> str:
-    return os.environ.get("DATA_DIR", default=DATA_DIR)
+    return DATA_DIR
 
 
 def check_filters(
