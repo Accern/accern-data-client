@@ -18,8 +18,6 @@ if ! [ -z ${FILES} ]; then
         run_test $CUR_TEST $IDX
         IDX=$((IDX+1))
     done
-    python3 -c "from tests.utils import merge_results; merge_results('./test-results')"
-    rm -r test-results/parts
 else
     IDX=0
     for CUR in $(find 'tests' \( -name '*.py' -and -name 'test_*' \) \
@@ -30,6 +28,6 @@ else
         run_test ${CUR} $CUR_TEST $IDX
         IDX=$((IDX+1))
     done
-    python3 -c "from tests.utils import merge_results; merge_results('./test-results')"
-    rm -r test-results/parts
 fi
+python3 -c "from tests.utils import merge_results; merge_results('./test-results')"
+rm -r test-results/parts

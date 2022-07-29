@@ -167,7 +167,7 @@ jobs:
         OUT=$(python -c "from tests.utils import split_tests; split_tests('/Users/ankurgoswami/Documents/accern-data-client/test-results/results.xml', 2, ${{ matrix.ci_node_index }})")
         IFS=',' read -a FILES <<< "$OUT"
         echo "ARRAY1######################" ${FILES[@]}
-        ./run_pytest.sh ${ARRAY2[@]}
+        ./coverage/coverage.sh ${ARRAY2[@]}
 
         pwd
         ls -al
@@ -186,17 +186,11 @@ jobs:
         IFS=',' read -a FILES <<< "$OUT"
 
         echo "ARRA2######################"  ${FILES[@]}
-        ./run_pytest.sh ${ARRAY2[@]}
+        ./coverage/coverage.sh ${ARRAY2[@]}
 
         pwd
         ls -al
         ls -al test-results
-
-
-
-    - name: Run Tests Coverage
-      run: |
-        make coverage-report
 
     - name: Save test-result Cache
       uses: actions/cache@v3
