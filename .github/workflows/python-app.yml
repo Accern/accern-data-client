@@ -152,7 +152,6 @@ jobs:
         make lint-type-check
 
     - name: Run test on Node ${{ matrix.ci_node_index }}
-      if: ${{ matrix.ci_node_index == 0 }}
       run: |
         set -e
         mkdir -p test-results
@@ -167,25 +166,6 @@ jobs:
         OUT=$(python -c "from tests.utils import split_tests; split_tests('/Users/ankurgoswami/Documents/accern-data-client/test-results/results.xml', ${{ matrix.ci_node_total }}, ${{ matrix.ci_node_index }})")
         IFS=',' read -a FILES <<< "$OUT"
         echo "ARRAY1######################" ${FILES[@]}
-        ./coverage/coverage.sh ${ARRAY2[@]}
-
-        pwd
-        ls -al
-        ls -al test-results
-    - name: Run test on ci_node_index 1
-      if: ${{ matrix.ci_node_index == 1 }}
-      run: |
-        set -e
-        mkdir -p test-results
-
-        pwd
-        ls -al
-        ls -al test-results
-
-        OUT=$(python -c "from tests.utils import split_tests; split_tests('/Users/ankurgoswami/Documents/accern-data-client/test-results/results.xml', ${{ matrix.ci_node_total }}, ${{ matrix.ci_node_index }})")
-        IFS=',' read -a FILES <<< "$OUT"
-
-        echo "ARRA2######################"  ${FILES[@]}
         ./coverage/coverage.sh ${ARRAY2[@]}
 
         pwd
