@@ -78,6 +78,8 @@ jobs:
     strategy:
       matrix:
         python: ['3.7', '3.8', '3.9']
+        ci_node_total: [2]
+        ci_node_index: [0, 1]
 
     steps:
     - uses: actions/checkout@v2
@@ -86,6 +88,39 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python }}
+
+    - name: Restore test-result Cache
+        id: restore-cache-test-0
+        uses: actions/cache@v3
+        with:
+          path: test-results/*
+          key:  v1-test-${{ matrix.python }}-results-{{ checksum('test-results/result.xml') }}
+          restore-keys: |
+            results-${{ matrix.ci_node_index }}
+    - name: Move cache file to new folder 1
+      run: |
+          ls -l test-results/*
+          mkdir -p test-result-cache
+          mv test-results/results.xml test-result-cache/result-0.xml
+    - name: Restore test-result Cache
+      id: restore-cache-test-1
+      uses: actions/cache@v3
+      with:
+        path: test-results/*
+        key:  v1-test-results-${{ matrix.python }}-{{ checksum('test-results/result.xml') }}
+        restore-keys: |
+          results-${{ matrix.ci_node_index }}
+    - name: Move cache file to new folder 2
+      run: |
+          ls -l test-results/*
+          mkdir -p test-result-cache
+          mv test-results/results.xml test-result-cache/result-1.xml
+
+
+
+
+
+
 
     - name: Cache python modules ${{ matrix.python }}
       uses: actions/cache@v2
@@ -105,9 +140,62 @@ jobs:
       run: |
         make lint-type-check
 
+    - name: Run test on ci_node_index 0
+      if: ${{ matrix.ci_node_index == 0 }}
+      run: |
+        . venv/bin/activate
+        set -e
+        mkdir -p test-results
+
+        pwd
+        ls -al test-results
+        ls -l
+
+        echo "test-result-cache*******************"
+        ls -l test-result-cache
+
+        OUT=$(python -c "from tests.utils import split_tests; split_tests('/Users/ankurgoswami/Documents/accern-data-client/test-results/results.xml', 2, ${{ ci_node_index }})")
+        IFS=',' read -a FILES <<< "$OUT"
+        echo "ARRAY1######################" ${FILES[@]}
+        ./run_pytest.sh ${ARRAY2[@]}
+
+        pwd
+        ls -al
+        ls -al test-results
+    - name: Run test on ci_node_index 1
+      if: ${{ matrix.ci_node_index == 1 }}
+      run: |
+        . venv/bin/activate
+        set -e
+        mkdir -p test-results
+
+        pwd
+        ls -al
+        ls -al test-results
+
+        OUT=$(python -c "from tests.utils import split_tests; split_tests('/Users/ankurgoswami/Documents/accern-data-client/test-results/results.xml', 2, ${{ ci_node_index }})")
+        IFS=',' read -a FILES <<< "$OUT"
+
+        echo "ARRA2######################"  ${FILES[@]}
+        ./run_pytest.sh ${ARRAY2[@]}
+
+        pwd
+        ls -al
+        ls -al test-results
+
+
+
     - name: Run Tests Coverage
       run: |
         make coverage-report
+
+    - name: Save test-result Cache
+      uses: actions/cache@v3
+      with:
+        path: test-results/*
+        key: v1-test-results-${{ matrix.python }}-${{ matrix.ci_node_index }}-{{ checksum('test-results/result.xml') }}
+        restore-keys: |
+          results-${{ matrix.ci_node_index }}
 
     - name: Git Check (tests may not alter any git visible files)
       run: |

@@ -73,6 +73,6 @@ def split_tests(filepath: str, total_nodes: int, cur_node: int):
             ix = find_lowest_total_time(test_sets)
             lowest_list, lowest_time = test_sets[ix]
             test_sets[ix] = (lowest_list + [key], lowest_time + timing)
-        print(test_sets[cur_node][0])
-        return test_sets[cur_node][0]
-    raise TypeError(f"File {fname} is not a valid xml file.")
+        print(','.join(test_sets[cur_node][0]))
+    else:
+        raise TypeError(f"File {fname} is not a valid xml file.")
