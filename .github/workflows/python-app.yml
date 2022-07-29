@@ -178,9 +178,7 @@ jobs:
     - name: Download all results
       # Downloads result-*.xml,
       uses: actions/download-artifact@v2
-      with:
-        path: test-results/
     - name: Merge results
       run: |
-        cat test-results/result-3.7-0
-        ls -l
+        mv result-*/result-* test-results/parts/
+        ls -l test-results
