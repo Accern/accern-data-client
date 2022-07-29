@@ -147,13 +147,13 @@ jobs:
 
     - name: List dir
       run: |
-        ls -l coverage
+        ls -l
 
     - name: Upload Artifact(coverage reports)
       uses: actions/upload-artifact@v3
       with:
         name: coverage-${{ matrix.python }}-${{ matrix.ci_node_index }}
-        path: coverage/.coverage
+        path: .coverage
 
     - name: Git Check (tests may not alter any git visible files)
       run: |
