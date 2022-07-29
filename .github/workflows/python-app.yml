@@ -149,3 +149,34 @@ jobs:
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  coverage:
+    needs: tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.9']
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python }}
+
+    - name: Cache python modules
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.pythonLocation }}
+        key: ${{ env.pythonLocation }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements.lint.txt') }}
+
+    - name: Install dependencies
+      run: |
+        make install
+
+      - name: Download all artifacts
+        # Downloads result-*.xml,
+        uses: actions/download-artifact@v2
+      - name: Merge results
+        run: |
+          ls -l
