@@ -173,10 +173,14 @@ jobs:
     - name: Install dependencies
       run: |
         make install
+        mkdir -p test-results
 
-    - name: Download all artifacts
+    - name: Download all results
       # Downloads result-*.xml,
       uses: actions/download-artifact@v2
+      with:
+        name: result-
+        path: test-results/*
     - name: Merge results
       run: |
         ls -l
