@@ -90,15 +90,17 @@ jobs:
         python-version: ${{ matrix.python }}
 
     - name: Get last commit hash
+      id: last-commit
       run: |
-        echo "LAST_COMMIT=$(git rev-parse HEAD^1)" >> $GITHUB_ENV
-        echo ${{ env.LAST_COMMIT }}
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        # echo "LAST_COMMIT=$(git rev-parse HEAD^1)" >> $GITHUB_ENV
+        # echo ${{ env.LAST_COMMIT }}
 
     - name: Restore test-result Cache
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  v1-test-results-${{ matrix.python }}-${{ env.LAST_COMMIT }}
+        key:  v1-test-results-${{ matrix.python }}-${{ steps.vars.outputs.sha_short }}"
         restore-keys: |
           test-results-${{ matrix.python }}-
 
