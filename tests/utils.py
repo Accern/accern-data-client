@@ -60,17 +60,22 @@ def merge_results(base_folder: str) -> None:
 def split_tests(filepath: str, total_nodes: int, cur_node: int) -> None:
     _, fname = os.path.split(filepath)
     if XML_FILE_PATTERN.match(fname):
+        test_files = find_tests("tests")
         try:
             tree = ET.parse(filepath)
             test_time_map: Dict[str, float] = defaultdict(int)
             for testcases in tree.getroot()[0]:
-                classname = testcases.attrib["classname"]
+                classname = testcases.attrib["classname"].replace(
+                    ".", os.path.sep)
                 test_time_map[classname] += float(testcases.attrib["time"])
+
+            for file in test_files:
+                if file not in test_time_map.keys():
+                    test_time_map[file] = DEFAULT_TEST_DURATION
 
             time_keys: List[Tuple[str, float]] = sorted(
                 test_time_map.items(), key=lambda el: el[1], reverse=True)
         except FileNotFoundError:
-            test_files = find_tests("tests")
             time_keys = [(file, DEFAULT_TEST_DURATION) for file in test_files]
 
         def find_lowest_total_time(

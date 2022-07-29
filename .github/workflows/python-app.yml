@@ -158,7 +158,6 @@ jobs:
 
         pwd
         ls -al test-results
-        ls -l
 
         echo "test-result-cache*******************"
         ls -l test-result-cache
