@@ -29,6 +29,7 @@ from .util import (
     field_transformation,
     generate_file_response,
     get_overall_total_from_dummy,
+    has_iprogress,
     is_example_url,
     MessageIndicator,
     ProgressIndicator,
@@ -118,6 +119,8 @@ FiltersType = TypedDict(
 
 ModeType = Literal["csv", "df", "json"]
 Indicators = Literal["pbar", "silent", "message"]
+ByDate = Literal["date", "harvested_at", "published_at"]
+BY_DATE = get_args(ByDate)
 INDICATORS = get_args(Indicators)
 FILTER_FIELD = get_args(FilterField)
 EXCLUDED_FILTER_FIELD = get_args(ExcludedFilterField)
@@ -403,7 +406,8 @@ class JSONMode(Mode[Dict[str, Any]]):
             return obj
 
         obj = [stringify_dates(cur) for cur in self._res]
-        write_json(obj, fname, sort_keys=True)
+        if len(obj) > 0:
+            write_json(obj, fname, sort_keys=True)
 
     def split(
             self,
@@ -549,9 +553,21 @@ class DataClient:
             self) -> List[Tuple[Optional[Dict[str, str]], str]]:
         return list(self._error_list)
 
+    @staticmethod
+    def _get_date_type(obj: Dict[str, str]) -> Tuple[str, str]:
+        for date_type in ["date", "harvested_at"]:
+            try:
+                date_val = obj[date_type]
+                break
+            except KeyError:
+                pass
+        if date_type == "date":
+            date_type = "published_at"
+        return date_type, date_val
+
     def _read_total(
             self,
-            cur_date: str,
+            date: Dict[str, str],
             filters: Dict[str, str],
             indicator: ProgressIndicator,
             request_kwargs: Optional[Dict[Any, Any]]) -> int:
@@ -560,13 +576,14 @@ class DataClient:
             try:
                 req_params = None
                 if is_example_url(self._base_url):
+                    date_type, date_val = self._get_date_type(date)
                     resp = get_overall_total_from_dummy(
-                        cur_date, filters)
+                        date_type, date_val, filters)
                 else:
                     req_params = {
                         "token": self._token,
                         **filters,
-                        "date": cur_date,
+                        **date,
                         "format": "json",
                         "size": "1",
                         "exclude": "*",
@@ -600,10 +617,11 @@ class DataClient:
             rkwargs = {} if request_kwargs is None else request_kwargs
             try:
                 if is_example_url(self._base_url):
-                    date = params["date"]
+                    date_type, date_val = self._get_date_type(params)
                     harvested_after = params["harvested_after"]
                     resp = generate_file_response(
-                        date,
+                        date_type,
+                        date_val,
                         harvested_after,
                         params,
                         mode.get_format(),
@@ -692,7 +710,7 @@ class DataClient:
             DeprecationWarning,
             stacklevel=2)
         return self._read_total(
-            cur_date=cur_date,
+            date={"date": cur_date},
             filters=filters,
             indicator=self.get_indicator(),
             request_kwargs=request_kwargs)
@@ -722,13 +740,26 @@ class DataClient:
             {**self.get_filters(), **self._validate_filters(filters)})
 
     def _get_valid_indicator(
-            self, indicator: Optional[Union[Indicators, ProgressIndicator]],
+            self,
+            indicator: Optional[Union[Indicators, ProgressIndicator]]
             ) -> ProgressIndicator:
         if indicator is None:
-            return self.get_indicator()
-        if isinstance(indicator, ProgressIndicator):
-            return indicator
-        return self._parse_indicator(indicator)
+            indicator_obj = self.get_indicator()
+        elif isinstance(indicator, ProgressIndicator):
+            indicator_obj = indicator
+        else:
+            indicator_obj = self._parse_indicator(indicator)
+
+        if isinstance(indicator_obj, BarIndicator) and not has_iprogress():
+            warnings.warn(
+                "Falling back to `message` indicator.\n"
+                "Reason: The jupyter extended functionality is not available. "
+                "In order to activate it install using accern-data[jupyter] "
+                "(e.g., `pip install accern-data[jupyter]`).",
+                Warning,
+                stacklevel=2)
+            indicator_obj = self._parse_indicator("message")
+        return indicator_obj
 
     def download_range(
             self,
@@ -744,6 +775,7 @@ class DataClient:
                 ] = None,
             filters: Optional[FiltersType] = None,
             indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
+            by_date: ByDate = "published_at",
             url_params: Optional[Dict[str, str]] = None,
             request_kwargs: Optional[Dict[Any, Any]] = None) -> None:
         opath = "." if output_path is None else output_path
@@ -779,6 +811,7 @@ class DataClient:
                 filters=filters,
                 indicator=indicator,
                 set_active_mode=set_active_mode,
+                by_date=by_date,
                 url_params=url_params,
                 request_kwargs=request_kwargs):
             assert valid_mode is not None
@@ -805,6 +838,7 @@ class DataClient:
             set_active_mode: Optional[
                 Callable[
                     [Mode[T], pd.Timestamp, ProgressIndicator], None]] = None,
+            by_date: ByDate = "published_at",
             url_params: Optional[Dict[str, str]] = None,
             request_kwargs: Optional[Dict[Any, Any]] = None) -> Iterator[T]:
         valid_mode = self._get_valid_mode(mode)
@@ -826,6 +860,15 @@ class DataClient:
         start_date_only_dt = pd.to_datetime(start_date_only)
         end_date_only_dt = pd.to_datetime(end_date_only)
 
+        def get_by_date_param(by_date: str, date: str) -> Dict[str, str]:
+            if by_date not in BY_DATE:
+                raise ValueError(
+                    f"Incorrect value {by_date} for by_date. "
+                    f"Must be one of {BY_DATE}")
+            if by_date == "published_at":
+                return {"date": date}
+            return {by_date: date}
+
         def parse_time(date: str, params: Dict[str, str]) -> Dict[str, str]:
             times: Dict[str, str] = {}
             valid_params = params
@@ -842,7 +885,7 @@ class DataClient:
             date = cur_date.strftime(DATE_FORMAT)
             expected_records.append(
                 self._read_total(
-                    date,
+                    get_by_date_param(by_date, date),
                     parse_time(date, valid_filters),
                     indicator=indicator_obj,
                     request_kwargs=request_kwargs))
@@ -857,7 +900,7 @@ class DataClient:
                 set_active_mode(valid_mode, cur_date, indicator_obj)
             date = cur_date.strftime(DATE_FORMAT)
             indicator_obj.set_description(f"Downloading signals for {date}")
-            params = {"date": date}
+            params = get_by_date_param(by_date, date)
             params = parse_time(date, params)
             for data in self._scroll(
                     "1900-01-01",
