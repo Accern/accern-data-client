@@ -139,22 +139,26 @@ jobs:
         ls -al
         ls -al test-results
 
-    - name: Upload Artifact
+    - name: Upload Artifact(results)
       uses: actions/upload-artifact@v3
       with:
         name: result-${{ matrix.python }}-${{ matrix.ci_node_index }}
         path: test-results/result-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml
 
+    - name: List dir
+      run: |
+        ls -l
+
+    - name: Upload Artifact(coverage reports)
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-${{ matrix.python }}-${{ matrix.ci_node_index }}
+        path: .coverage
+
     - name: Git Check (tests may not alter any git visible files)
       run: |
         git status -sb --porcelain
         [ -z "$(git status --porcelain)" ]
-
-    - name: SonarQube
-      uses: sonarsource/sonarqube-scan-action@master
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
   coverage:
     needs: tests
@@ -201,3 +205,18 @@ jobs:
         ls -l test-results/parts
         python3 -c "from tests.utils import merge_results; merge_results('./test-results', 'result.xml')"
         ls -l test-results
+
+    - name: Download all coverage reports
+      # Downloads result-*.xml,
+      uses: actions/download-artifact@v2
+    - name: Merge results
+      run: |
+        coverage combine coverage*/.coverage
+        coverage xml -o coverage/reports/xml_report.xml
+        coverage html -d coverage/reports/html_report
+
+    - name: SonarQube
+      uses: sonarsource/sonarqube-scan-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
