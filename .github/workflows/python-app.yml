@@ -124,9 +124,6 @@ jobs:
         pwd
         ls -al test-results
 
-        echo "test-result-cache*******************"
-        ls -l test-result-cache
-
         OUT=$(python -c "from tests.utils import split_tests; split_tests('/Users/ankurgoswami/Documents/accern-data-client/test-results/results.xml', ${{ matrix.ci_node_total }}, ${{ matrix.ci_node_index }})")
         IFS=',' read -a FILES <<< "$OUT"
         echo "ARRAY1######################" ${FILES[@]}
