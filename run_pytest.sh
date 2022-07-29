@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
-export IS_TEST=1; shift
+export IS_TEST=1
 FILES=($@)
 
 find * \( -name '*.py' -o -name '*.pyi' \) -and -not -path './venv/*' \
@@ -18,14 +18,18 @@ if ! [ -z ${FILES} ]; then
         run_test $CUR_TEST $IDX
         IDX=$((IDX+1))
     done
-    python3 -c "from tests.util import merge_results; merge_results('./test-results')"
+    python3 -c "from tests.utils import merge_results; merge_results('./test-results')"
     rm -r test-results/parts
 else
+    IDX=0
     for CUR in $(find 'tests' \( -name '*.py' -and -name 'test_*' \) \
             -and -not -path 'tests/data/*' \
             -and -not -path 'tests/data_mini/*' \
             -and -not -path 'tests/__pycache__/*' |
             sort -sf); do
-        run_test ${CUR}
+        run_test ${CUR} $CUR_TEST $IDX
+        IDX=$((IDX+1))
     done
+    python3 -c "from tests.utils import merge_results; merge_results('./test-results')"
+    rm -r test-results/parts
 fi
