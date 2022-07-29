@@ -173,7 +173,7 @@ jobs:
     - name: Install dependencies
       run: |
         make install
-        mkdir -p test-results
+        mkdir -p test-results/parts
 
     - name: Download all results
       # Downloads result-*.xml,
