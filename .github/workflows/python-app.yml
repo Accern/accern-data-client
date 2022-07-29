@@ -145,10 +145,6 @@ jobs:
         name: result-${{ matrix.python }}-${{ matrix.ci_node_index }}
         path: test-results/result-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml
 
-    - name: List dir
-      run: |
-        ls -l
-
     - name: Upload Artifact(coverage reports)
       uses: actions/upload-artifact@v3
       with:
@@ -207,13 +203,13 @@ jobs:
         ls -l test-results
 
     - name: Download all coverage reports
-      # Downloads result-*.xml,
       uses: actions/download-artifact@v2
-    - name: Merge results
+    - name: Merge coverage reports
       run: |
         coverage combine coverage*/.coverage
         coverage xml -o coverage/reports/xml_report.xml
         coverage html -d coverage/reports/html_report
+        coverage report
 
     - name: SonarQube
       uses: sonarsource/sonarqube-scan-action@master
