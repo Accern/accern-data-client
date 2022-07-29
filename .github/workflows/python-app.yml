@@ -90,13 +90,12 @@ jobs:
         python-version: ${{ matrix.python }}
 
     - name: Restore test-result Cache
-      id: restore-cache-test-0
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  v1-test-results-${{ matrix.python }}-${{ matrix.ci_node_index }}-{{ checksum('test-results/result.xml') }}
+        key:  v1-test-results-${{ matrix.python }}-${{ git rev-parse HEAD^1 }}
         restore-keys: |
-          test-results-${{ matrix.python }}-${{ matrix.ci_node_index }}-
+          test-results-${{ matrix.python }}-
 
     - name: Cache python modules
       uses: actions/cache@v2
@@ -155,7 +154,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ['3.9']
+        python: ['3.7', '3.8', '3.9']
     steps:
     - uses: actions/checkout@v2
 
@@ -163,6 +162,12 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python }}
+
+    - name: Restore test-result Cache (Dummy step)
+      uses: actions/cache@v3
+      with:
+        path: test-results/*
+        key:  v1-test-results-${{ matrix.python }}-${{ git rev-parse HEAD }}
 
     - name: Cache python modules
       uses: actions/cache@v2
@@ -180,5 +185,7 @@ jobs:
       uses: actions/download-artifact@v2
     - name: Merge results
       run: |
-        mv result-*/result-* test-results/parts/
+        mv result-${{ matrix.python }}-*/result-${{ matrix.python }}-* test-results/parts/
+        ls -l test-results/parts
+        python3 -c "from tests.utils import merge_results; merge_results('./test-results', 'result.xml')"
         ls -l test-results
