@@ -98,6 +98,12 @@ jobs:
         restore-keys: |
           test-results-${{ matrix.python }}-${{ matrix.ci_node_index }}-
 
+    - name: Cache python modules
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.pythonLocation }}
+        key: ${{ env.pythonLocation }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements.lint.txt') }}
+
     - name: Install dependencies
       run: |
         make install
