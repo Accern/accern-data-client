@@ -141,7 +141,7 @@ jobs:
         make lint-type-check
 
     - name: Run test on ci_node_index 0
-      if: ${{ matrix.ci_node_index == 0 }}
+      if: ${{ matrix.ci_node_index }} == 0
       run: |
         . venv/bin/activate
         set -e
@@ -163,7 +163,7 @@ jobs:
         ls -al
         ls -al test-results
     - name: Run test on ci_node_index 1
-      if: ${{ matrix.ci_node_index == 1 }}
+      if: ${{ matrix.ci_node_index }} == 1
       run: |
         . venv/bin/activate
         set -e
