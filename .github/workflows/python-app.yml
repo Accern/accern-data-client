@@ -94,48 +94,9 @@ jobs:
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  v1-test-${{ matrix.python }}-results-${{ matrix.ci_node_index }}-{{ checksum('test-results/result.xml') }}
-        restore-keys: |
-          results-${{ matrix.ci_node_index }}
-    - name: Move cache file to new folder 1
-      run: |
-          mkdir -p test-result-cache
-          if test -f "test-results/results.xml"; then
-            echo "inside if new folder 1"
-            ls -al test-results
-            mv test-results/results.xml test-result-cache/result-0.xml
-            cat test-result-cache/result-0.xml
-          fi
-          ls -l test-result-cache
-    - name: Restore test-result Cache
-      id: restore-cache-test-1
-      uses: actions/cache@v3
-      with:
-        path: test-results/*
         key:  v1-test-results-${{ matrix.python }}-${{ matrix.ci_node_index }}-{{ checksum('test-results/result.xml') }}
         restore-keys: |
-          results-${{ matrix.ci_node_index }}
-    - name: Move cache file to new folder 2
-      run: |
-          if test -f "test-results/results.xml"; then
-            echo "inside if new folder 2"
-            ls -al test-results
-            mv test-results/results.xml test-result-cache/result-1.xml
-            cat test-result-cache/result-1.xml
-          fi
-          ls -l test-result-cache
-
-
-
-
-
-
-
-    - name: Cache python modules ${{ matrix.python }}
-      uses: actions/cache@v2
-      with:
-        path: ${{ env.pythonLocation }}
-        key: ${{ env.pythonLocation }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements.lint.txt') }}
+          test-results-${{ matrix.python }}-${{ matrix.ci_node_index }}-
 
     - name: Install dependencies
       run: |
@@ -169,13 +130,11 @@ jobs:
         ls -al
         ls -al test-results
 
-    - name: Save test-result Cache
-      uses: actions/cache@v3
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
       with:
-        path: test-results/*
-        key: v1-test-results-${{ matrix.python }}-${{ matrix.ci_node_index }}-{{ checksum('test-results/result.xml') }}
-        restore-keys: |
-          results-${{ matrix.ci_node_index }}
+        name: result-${{ matrix.python }}-${{ matrix.ci_node_index }}
+        path: test-results/result-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml
 
     - name: Git Check (tests may not alter any git visible files)
       run: |
