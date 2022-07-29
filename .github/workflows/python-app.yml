@@ -92,6 +92,7 @@ jobs:
     - name: Get last commit hash
       run: |
         echo "LAST_COMMIT=$(git rev-parse HEAD^1)" >> $GITHUB_ENV
+        echo ${{ env.LAST_COMMIT }}
 
     - name: Restore test-result Cache
       uses: actions/cache@v3
@@ -170,6 +171,7 @@ jobs:
     - name: Get current commit hash
       run: |
         echo "CUR_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
+        echo ${{ env.CUR_COMMIT }}
 
     - name: Restore test-result Cache (Dummy step)
       uses: actions/cache@v3
