@@ -167,7 +167,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  v1-test-results-${{ matrix.python }}-${{ git rev-parse HEAD }}
+        key:  v1-test-results-${{ matrix.python }}-$(git rev-parse HEAD)
 
     - name: Cache python modules
       uses: actions/cache@v2
