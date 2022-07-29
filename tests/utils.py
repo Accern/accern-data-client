@@ -4,7 +4,18 @@ import xml.etree.ElementTree as ET
 from collections import defaultdict
 from typing import Dict, List, Tuple
 
-XML_FILE_PATTERN = re.compile(r".*.xml")
+XML_FILE_PATTERN = re.compile(r".*\.xml")
+TEST_FILE_PATTERN = re.compile(r"^test_.*\.py$")
+DEFAULT_TEST_DURATION = 10.0
+
+
+def find_tests(directory: str) -> List[str]:
+    items = os.listdir(directory)
+    test_files = []
+    for item in items:
+        if not os.path.isdir(item) and TEST_FILE_PATTERN.match(item):
+            test_files.append(os.path.join(directory, item))
+    return test_files
 
 
 def merge_results(base_folder: str) -> None:
@@ -46,17 +57,24 @@ def merge_results(base_folder: str) -> None:
         encoding="utf-8")
 
 
-def split_tests(filepath: str, total_nodes: int, cur_node: int):
+def split_tests(filepath: str, total_nodes: int, cur_node: int) -> None:
     _, fname = os.path.split(filepath)
     if XML_FILE_PATTERN.match(fname):
-        tree = ET.parse(filepath)
-        test_time_map: Dict[str, float] = defaultdict(int)
-        for testcases in tree.getroot()[0]:
-            classname = testcases.attrib["classname"]
-            test_time_map[classname] += float(testcases.attrib["time"])
+        try:
+            tree = ET.parse(filepath)
+            test_time_map: Dict[str, float] = defaultdict(int)
+            for testcases in tree.getroot()[0]:
+                classname = testcases.attrib["classname"]
+                test_time_map[classname] += float(testcases.attrib["time"])
+
+            time_keys: List[Tuple[str, float]] = sorted(
+                test_time_map.items(), key=lambda el: el[1], reverse=True)
+        except FileNotFoundError:
+            test_files = find_tests("tests")
+            time_keys = [(file, DEFAULT_TEST_DURATION) for file in test_files]
 
         def find_lowest_total_time(
-                test_sets: List[Tuple[List[str], float]]) -> int:
+                    test_sets: List[Tuple[List[str], float]]) -> int:
             minimum = None
             idx = -1
             for ix, val in enumerate(test_sets):
@@ -65,8 +83,6 @@ def split_tests(filepath: str, total_nodes: int, cur_node: int):
                     idx = ix
             return idx
 
-        time_keys: List[Tuple[str, float]] = sorted(
-            test_time_map.items(), key=lambda el: el[1], reverse=True)
         test_sets: List[Tuple[List[str], float]] = [
             ([], 0.0) for _ in range(total_nodes)]
         for key, timing in time_keys:
