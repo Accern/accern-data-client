@@ -18,7 +18,7 @@ def find_tests(directory: str) -> List[str]:
     return test_files
 
 
-def merge_results(base_folder: str) -> None:
+def merge_results(base_folder: str, out_filename: str = "result.xml") -> None:
     xml_files = sorted(os.listdir(os.path.join(base_folder, "parts")))
 
     testsuites = ET.Element("testsuites")
@@ -52,7 +52,7 @@ def merge_results(base_folder: str) -> None:
 
     new_tree = ET.ElementTree(testsuites)
     new_tree.write(
-        os.path.join(base_folder, "results.xml"),
+        os.path.join(base_folder, out_filename),
         xml_declaration=True,
         encoding="utf-8")
 

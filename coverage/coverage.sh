@@ -2,7 +2,8 @@
 
 set -e
 export IS_TEST=1
-
+RESULT_FNAME=$1;shift
+FILES=($@)
 coverage erase
 
 find * \( -name '*.py' -o -name '*.pyi' \) -and -not -path './venv/*' \
@@ -32,7 +33,8 @@ else
     IDX=$((IDX+1))
     done
 fi
-python3 -c "from tests.utils import merge_results; merge_results('./test-results')"
+python3 -c "from tests.utils import merge_results; merge_results('./test-results', '${RESULT_FNAME}')"
+echo "${RESULT_FNAME} generated"
 rm -r test-results/parts
 
 coverage xml -o coverage/reports/xml_report.xml
