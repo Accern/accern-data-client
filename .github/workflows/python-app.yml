@@ -179,7 +179,6 @@ jobs:
       # Downloads result-*.xml,
       uses: actions/download-artifact@v2
       with:
-        name: result-
         path: test-results/*
     - name: Merge results
       run: |
