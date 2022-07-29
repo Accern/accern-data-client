@@ -89,11 +89,15 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
 
+    - name: Get last commit hash
+      run: |
+        echo "LAST_COMMIT=$(git rev-parse HEAD^1)" >> $GITHUB_ENV
+
     - name: Restore test-result Cache
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  v1-test-results-${{ matrix.python }}-$(git rev-parse HEAD^1)
+        key:  v1-test-results-${{ matrix.python }}-${{ env.LAST_COMMIT }}
         restore-keys: |
           test-results-${{ matrix.python }}-
 
@@ -163,11 +167,15 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
 
+    - name: Get current commit hash
+      run: |
+        echo "CUR_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
     - name: Restore test-result Cache (Dummy step)
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  v1-test-results-${{ matrix.python }}-$(git rev-parse HEAD)
+        key:  v1-test-results-${{ matrix.python }}-${{ env.CUR_COMMIT }}
 
     - name: Cache python modules
       uses: actions/cache@v2
