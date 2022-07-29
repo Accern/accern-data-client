@@ -94,27 +94,38 @@ jobs:
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  v1-test-${{ matrix.python }}-results-{{ checksum('test-results/result.xml') }}
+        key:  v1-test-${{ matrix.python }}-results-${{ matrix.ci_node_index }}-{{ checksum('test-results/result.xml') }}
         restore-keys: |
           results-${{ matrix.ci_node_index }}
     - name: Move cache file to new folder 1
       run: |
-          ls -l test-results/*
           mkdir -p test-result-cache
-          mv test-results/results.xml test-result-cache/result-0.xml
+          ls -l
+          if test -f "test-results/results.xml"; then
+            echo "inside if new folder 1"
+            ls -al test-results
+            mv test-results/results.xml test-result-cache/result-0.xml
+            cat test-result-cache/result-0.xml
+          fi
+          ls -l
     - name: Restore test-result Cache
       id: restore-cache-test-1
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  v1-test-results-${{ matrix.python }}-{{ checksum('test-results/result.xml') }}
+        key:  v1-test-results-${{ matrix.python }}-${{ matrix.ci_node_index }}-{{ checksum('test-results/result.xml') }}
         restore-keys: |
           results-${{ matrix.ci_node_index }}
     - name: Move cache file to new folder 2
       run: |
-          ls -l test-results/*
-          mkdir -p test-result-cache
-          mv test-results/results.xml test-result-cache/result-1.xml
+          ls -al
+          if test -f "test-results/results.xml"; then
+            echo "inside if new folder 2"
+            ls -al test-results
+            mv test-results/results.xml test-result-cache/result-1.xml
+            cat test-result-cache/result-1.xml
+          fi
+          ls -l test-result-cache
 
 
 
