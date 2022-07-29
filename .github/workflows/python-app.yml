@@ -174,9 +174,9 @@ jobs:
       run: |
         make install
 
-      - name: Download all artifacts
-        # Downloads result-*.xml,
-        uses: actions/download-artifact@v2
-      - name: Merge results
-        run: |
-          ls -l
+    - name: Download all artifacts
+      # Downloads result-*.xml,
+      uses: actions/download-artifact@v2
+    - name: Merge results
+      run: |
+        ls -l
