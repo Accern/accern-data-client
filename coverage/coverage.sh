@@ -39,4 +39,3 @@ rm -r test-results/parts
 
 coverage xml -o coverage/reports/xml_report.xml
 coverage html -d coverage/reports/html_report
-coverage erase
