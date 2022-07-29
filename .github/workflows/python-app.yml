@@ -90,13 +90,13 @@ jobs:
         python-version: ${{ matrix.python }}
 
     - name: Restore test-result Cache
-        id: restore-cache-test-0
-        uses: actions/cache@v3
-        with:
-          path: test-results/*
-          key:  v1-test-${{ matrix.python }}-results-{{ checksum('test-results/result.xml') }}
-          restore-keys: |
-            results-${{ matrix.ci_node_index }}
+      id: restore-cache-test-0
+      uses: actions/cache@v3
+      with:
+        path: test-results/*
+        key:  v1-test-${{ matrix.python }}-results-{{ checksum('test-results/result.xml') }}
+        restore-keys: |
+          results-${{ matrix.ci_node_index }}
     - name: Move cache file to new folder 1
       run: |
           ls -l test-results/*
