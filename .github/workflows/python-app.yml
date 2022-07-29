@@ -93,7 +93,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  v1-test-results-${{ matrix.python }}-${{ git rev-parse HEAD^1 }}
+        key:  v1-test-results-${{ matrix.python }}-$(git rev-parse HEAD^1)
         restore-keys: |
           test-results-${{ matrix.python }}-
 
