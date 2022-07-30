@@ -126,7 +126,7 @@ jobs:
         OUT=$(python -c "from tests.utils import split_tests; split_tests('test-results/results.xml', ${{ matrix.ci_node_total }}, ${{ matrix.ci_node_index }})")
         IFS=',' read -a FILES <<< "$OUT"
         echo "ARRAY1######################" ${FILES[@]}
-        ./coverage/coverage.sh result-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml ${FILES[@]}
+        ./coverage/coverage.sh results-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml ${FILES[@]}
 
         pwd
         ls -al
@@ -135,8 +135,8 @@ jobs:
     - name: Upload Artifact(results)
       uses: actions/upload-artifact@v3
       with:
-        name: result-${{ matrix.python }}-${{ matrix.ci_node_index }}
-        path: test-results/result-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml
+        name: results-${{ matrix.python }}-${{ matrix.ci_node_index }}
+        path: test-results/results-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml
 
     - name: Remove local test-results folder
       run: |
@@ -179,11 +179,11 @@ jobs:
         mkdir -p test-results/parts
 
     - name: Download all results
-      # Downloads result-*.xml,
+      # Downloads results-*.xml,
       uses: actions/download-artifact@v2
     - name: Merge results
       run: |
-        mv result-${{ matrix.python }}-*/result-${{ matrix.python }}-* test-results/parts/
+        mv results-${{ matrix.python }}-*/results-${{ matrix.python }}-* test-results/parts/
         ls -l test-results/parts
         python3 -c "from tests.utils import merge_results; merge_results('./test-results', 'results.xml')"
         ls -l test-results

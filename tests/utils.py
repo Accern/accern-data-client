@@ -19,7 +19,7 @@ def find_tests(directory: str) -> List[str]:
     return test_files
 
 
-def merge_results(base_folder: str, out_filename: str = "result.xml") -> None:
+def merge_results(base_folder: str, out_filename: str = "results.xml") -> None:
     xml_files = sorted(os.listdir(os.path.join(base_folder, "parts")))
 
     testsuites = ET.Element("testsuites")
