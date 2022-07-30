@@ -100,7 +100,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  v1-test-results-${{ matrix.python }}-${{ steps.vars.outputs.sha_short }}"
+        key:  v1-test-results-${{ matrix.python }}
         restore-keys: |
           test-results-${{ matrix.python }}-
 
@@ -175,12 +175,6 @@ jobs:
         echo "CUR_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
         echo ${{ env.CUR_COMMIT }}
 
-    - name: Restore test-result Cache (Dummy step)
-      uses: actions/cache@v3
-      with:
-        path: test-results/*
-        key:  v1-test-results-${{ matrix.python }}-${{ env.CUR_COMMIT }}
-
     - name: Cache python modules
       uses: actions/cache@v2
       with:
@@ -201,6 +195,12 @@ jobs:
         ls -l test-results/parts
         python3 -c "from tests.utils import merge_results; merge_results('./test-results', 'result.xml')"
         ls -l test-results
+
+    - name: Restore test-result Cache (Dummy step)
+      uses: actions/cache@v3
+      with:
+        path: test-results/*
+        key:  v1-test-results-${{ matrix.python }}-${{ hashFiles('test-results/result.xml') }}
 
     - name: Download all coverage reports
       uses: actions/download-artifact@v2
