@@ -100,7 +100,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  v1-test-results-cache-${{ matrix.python }}
+        key:  v1-test-results-cache-${{ matrix.python }}  # meant to be wrong so that restore-keys can find it
         restore-keys: |
           test-results-${{ matrix.python }}-
 
@@ -200,11 +200,11 @@ jobs:
         python3 -c "from tests.utils import merge_results; merge_results('./test-results', 'result.xml')"
         ls -l test-results
 
-    - name: Restore test-result Cache (Dummy step)
+    - name: Restore test-result Cache (Dummy step)  # This is a dummy step, i.e., we don't want to restore cache here. The post counterpart of this step would save our cache.
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  v1-test-results-${{ matrix.python }}-${{ hashFiles('test-results/result.xml') }}
+        key:  test-results-${{ matrix.python }}-${{ hashFiles('test-results/result.xml') }}
 
     - name: Download all coverage reports
       uses: actions/download-artifact@v2
