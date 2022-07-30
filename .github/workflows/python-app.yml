@@ -95,7 +95,7 @@ jobs:
         path: test-results/*
         key:  v1-test-results-cache-${{ matrix.python }}  # meant to be wrong so that restore-keys can find it
         restore-keys: |
-          test-results-${{ matrix.python }}-
+          test-results-cache-${{ matrix.python }}-
 
     - name: Cache python modules
       uses: actions/cache@v2
@@ -122,7 +122,6 @@ jobs:
 
         pwd
         ls -al test-results
-        python -c "from tests.utils import split_tests; split_tests('test-results/results.xml', ${{ matrix.ci_node_total }}, ${{ matrix.ci_node_index }})"
         OUT=$(python -c "from tests.utils import split_tests; split_tests('test-results/results.xml', ${{ matrix.ci_node_total }}, ${{ matrix.ci_node_index }})")
         IFS=',' read -a FILES <<< "$OUT"
         echo "ARRAY1######################" ${FILES[@]}
@@ -192,7 +191,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  test-results-${{ matrix.python }}-${{ hashFiles('test-results/results.xml') }}
+        key:  test-results-cache-${{ matrix.python }}-${{ hashFiles('test-results/results.xml') }}
 
     - name: Download all coverage reports
       uses: actions/download-artifact@v2
