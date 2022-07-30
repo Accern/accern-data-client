@@ -100,7 +100,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  v1-test-results-${{ matrix.python }}
+        key:  v1-test-results-cache-${{ matrix.python }}
         restore-keys: |
           test-results-${{ matrix.python }}-
 
@@ -144,6 +144,10 @@ jobs:
       with:
         name: result-${{ matrix.python }}-${{ matrix.ci_node_index }}
         path: test-results/result-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml
+
+    - name: Remove local test-results folder
+      run: |
+        rmdir -rf test-results
 
     - name: Upload Artifact(coverage reports)
       uses: actions/upload-artifact@v3
