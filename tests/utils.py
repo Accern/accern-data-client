@@ -64,6 +64,7 @@ def split_tests(filepath: str, total_nodes: int, cur_node: int) -> None:
         test_files = find_tests("tests")
         try:
             tree = ET.parse(filepath)
+            print("Parsing file")
             test_time_map: Dict[str, float] = defaultdict(int)
             for testcases in tree.getroot()[0]:
                 classname = testcases.attrib["classname"].replace(
