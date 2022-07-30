@@ -147,7 +147,7 @@ jobs:
 
     - name: Remove local test-results folder
       run: |
-        rmdir -r test-results
+        rm -r test-results
 
     - name: Upload Artifact(coverage reports)
       uses: actions/upload-artifact@v3
