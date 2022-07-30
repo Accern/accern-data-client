@@ -89,13 +89,6 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
 
-    - name: Get last commit hash
-      id: last-commit
-      run: |
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-        # echo "LAST_COMMIT=$(git rev-parse HEAD^1)" >> $GITHUB_ENV
-        # echo ${{ env.LAST_COMMIT }}
-
     - name: Restore test-result Cache
       uses: actions/cache@v3
       with:
@@ -130,7 +123,7 @@ jobs:
         pwd
         ls -al test-results
 
-        OUT=$(python -c "from tests.utils import split_tests; split_tests('/Users/ankurgoswami/Documents/accern-data-client/test-results/results.xml', ${{ matrix.ci_node_total }}, ${{ matrix.ci_node_index }})")
+        OUT=$(python -c "from tests.utils import split_tests; split_tests('/Users/ankurgoswami/Documents/accern-data-client/test-results/result.xml', ${{ matrix.ci_node_total }}, ${{ matrix.ci_node_index }})")
         IFS=',' read -a FILES <<< "$OUT"
         echo "ARRAY1######################" ${FILES[@]}
         ./coverage/coverage.sh result-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml ${FILES[@]}
@@ -173,11 +166,6 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python }}
-
-    - name: Get current commit hash
-      run: |
-        echo "CUR_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
-        echo ${{ env.CUR_COMMIT }}
 
     - name: Cache python modules
       uses: actions/cache@v2
