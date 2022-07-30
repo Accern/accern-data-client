@@ -7,6 +7,7 @@ from typing import Dict, List, Tuple
 XML_FILE_PATTERN = re.compile(r".*\.xml")
 TEST_FILE_PATTERN = re.compile(r"^test_.*\.py$")
 DEFAULT_TEST_DURATION = 10.0
+PY_EXT = ".py"
 
 
 def find_tests(directory: str) -> List[str]:
@@ -67,7 +68,8 @@ def split_tests(filepath: str, total_nodes: int, cur_node: int) -> None:
             for testcases in tree.getroot()[0]:
                 classname = testcases.attrib["classname"].replace(
                     ".", os.path.sep)
-                test_time_map[classname] += float(testcases.attrib["time"])
+                test_time_map[f"{classname}{PY_EXT}"] += float(
+                    testcases.attrib["time"])
 
             for file in test_files:
                 if file not in test_time_map.keys():
