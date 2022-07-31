@@ -119,6 +119,7 @@ jobs:
       run: |
         set -e
         mkdir -p test-results
+        rm -r test-results/parts
 
         pwd
         ls -al test-results
@@ -130,7 +131,6 @@ jobs:
 
         pwd
         ls -al test-results
-        ls -al test-results/parts
         cat test-results/results-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml
 
     - name: Upload Artifact(results)
