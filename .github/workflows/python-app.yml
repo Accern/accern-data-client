@@ -122,14 +122,16 @@ jobs:
 
         pwd
         ls -al test-results
+        cat test-results/results.xml
         OUT=$(python -c "from tests.utils import split_tests; split_tests('test-results/results.xml', ${{ matrix.ci_node_total }}, ${{ matrix.ci_node_index }})")
         IFS=',' read -a FILES <<< "$OUT"
         echo "ARRAY1######################" ${FILES[@]}
         ./coverage/coverage.sh results-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml ${FILES[@]}
 
         pwd
-        ls -al
         ls -al test-results
+        ls -al test-results/parts
+        cat test-results/results-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml
 
     - name: Upload Artifact(results)
       uses: actions/upload-artifact@v3
