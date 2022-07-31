@@ -5,11 +5,11 @@ on:
     branches: ['*']
 
 jobs:
-  build:
+  lints:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ['3.7', '3.8', '3.9']
+        python: ['3.9']
 
     steps:
     - uses: actions/checkout@v2
@@ -19,7 +19,85 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
 
-    - name: Cache python modules ${{ matrix.python }}
+    - name: Cache python modules
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.pythonLocation }}
+        key: ${{ env.pythonLocation }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements.lint.txt') }}
+
+    - name: Install dependencies
+      run: |
+        make install
+
+    - name: Lint Code (use uppercase TODO, XXX, FIXME, NOTE and explain nopep8)
+      run: |
+        make lint-comment
+
+    - name: Lint Code (use empty main inits)
+      run: |
+        make lint-emptyinit
+
+    - name: Lint Code (sort requirements)
+      run: |
+        make lint-requirements
+
+    - name: Lint Code (use f"" style formating)
+      run: |
+        make lint-stringformat
+
+    - name: Lint Code (indent in fours)
+      run: |
+        make lint-indent
+
+    - name: Lint Code (no f"a", "{a}", or f'{a}')
+      run: |
+        make lint-forgottenformat
+
+    - name: Only pyi in stubs
+      run: |
+        make lint-pyi
+
+    - name: Lint Code (missing trailing comma)
+      run: |
+        make lint-flake8
+
+    - name: Lint Code (pycodestyle)
+      run: |
+        make lint-pycodestyle
+
+    - name: Lint Code (type-check)
+      run: |
+        make lint-type-check
+
+    - name: Lint Code (pylint)
+      run: |
+        make lint-pylint
+
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.7', '3.8', '3.9']
+        ci_node_total: [2]
+        ci_node_index: [0, 1]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python }}
+
+    - name: Restore test-result Cache
+      uses: actions/cache@v3
+      with:
+        path: test-results/*
+        key:  v1-test-results-cache-${{ matrix.python }}  # meant to be wrong so that restore-keys can find it
+        restore-keys: |
+          test-results-cache-${{ matrix.python }}-
+
+    - name: Cache python modules
       uses: actions/cache@v2
       with:
         path: ${{ env.pythonLocation }}
@@ -33,67 +111,88 @@ jobs:
       run: |
         pip install -e .
 
-    - name: Lint Code (use uppercase TODO, XXX, FIXME, NOTE and explain nopep8)
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-comment
-
-    - name: Lint Code (use empty main inits)
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-emptyinit
-
-    - name: Lint Code (sort requirements)
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-requirements
-
-    - name: Lint Code (use f"" style formating)
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-stringformat
-
-    - name: Lint Code (indent in fours)
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-indent
-
-    - name: Lint Code (no f"a", "{a}", or f'{a}')
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-forgottenformat
-
-    - name: Only pyi in stubs
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-pyi
-
-    - name: Lint Code (missing trailing comma)
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-flake8
-
-    - name: Lint Code (pycodestyle)
-      if: ${{ matrix.python == '3.9'}}
-      run: |
-        make lint-pycodestyle
-
     - name: Lint Code (type-check)
       run: |
         make lint-type-check
 
-    - name: Lint Code (pylint)
+    - name: Run test on Node ${{ matrix.ci_node_index }}
       run: |
-        make lint-pylint
+        set -e
+        mkdir -p test-results
+        rm -r test-results/parts || echo "no files to delete"
+        OUT=$(python -c "from tests.utils import split_tests; split_tests('test-results/results.xml', ${{ matrix.ci_node_total }}, ${{ matrix.ci_node_index }})")
+        IFS=',' read -a FILES <<< "$OUT"
+        echo "Selected Files are: " ${FILES[@]}
+        ./coverage/coverage.sh results-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml ${FILES[@]}
 
-    - name: Run Tests Coverage
+    - name: Upload Artifact(results)
+      uses: actions/upload-artifact@v3
+      with:
+        name: results-${{ matrix.python }}-${{ matrix.ci_node_index }}
+        path: test-results/results-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml
+
+    - name: Remove local test-results folder  # We don't want to create cache YET.
       run: |
-        make coverage-report
+        rm -r test-results
+
+    - name: Upload Artifact(coverage reports)
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-${{ matrix.python }}-${{ matrix.ci_node_index }}
+        path: .coverage
 
     - name: Git Check (tests may not alter any git visible files)
       run: |
         git status -sb --porcelain
         [ -z "$(git status --porcelain)" ]
+
+  coverage:
+    needs: tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.7', '3.8', '3.9']
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python }}
+
+    - name: Cache python modules
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.pythonLocation }}
+        key: ${{ env.pythonLocation }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements.lint.txt') }}
+
+    - name: Install dependencies
+      run: |
+        make install
+        mkdir -p test-results/parts
+
+    - name: Download all results
+      # Downloads results-*.xml,
+      uses: actions/download-artifact@v2
+    - name: Merge results
+      run: |
+        mv results-${{ matrix.python }}-*/results-${{ matrix.python }}-* test-results/parts/
+        python3 -c "from tests.utils import merge_results; merge_results('./test-results', 'results.xml')"
+
+    - name: Restore test-result Cache (Dummy step)  # This is a dummy step, i.e., we don't want to restore cache here. The post counterpart of this step would save our cache.
+      uses: actions/cache@v3
+      with:
+        path: test-results/*
+        key:  test-results-cache-${{ matrix.python }}-${{ hashFiles('test-results/results.xml') }}
+
+    - name: Download all coverage reports
+      uses: actions/download-artifact@v2
+    - name: Merge coverage reports
+      run: |
+        coverage combine coverage*/.coverage
+        coverage xml -o coverage/reports/xml_report.xml
+        coverage html -d coverage/reports/html_report
+        coverage report
 
     - name: SonarQube
       uses: sonarsource/sonarqube-scan-action@master

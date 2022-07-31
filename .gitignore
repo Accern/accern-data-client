@@ -13,6 +13,8 @@ dist/
 # Test cases
 .pytest_cache/
 tests/outputs/
+test-results/
+test-result-cache/
 
 # Coverage
 .coverage
