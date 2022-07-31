@@ -119,19 +119,11 @@ jobs:
       run: |
         set -e
         mkdir -p test-results
-        rm -r test-results/parts
-
-        pwd
-        ls -al test-results
-        cat test-results/results.xml
+        rm -r test-results/parts || echo "no files to delete"
         OUT=$(python -c "from tests.utils import split_tests; split_tests('test-results/results.xml', ${{ matrix.ci_node_total }}, ${{ matrix.ci_node_index }})")
         IFS=',' read -a FILES <<< "$OUT"
-        echo "ARRAY1######################" ${FILES[@]}
+        echo "Selected Files are: " ${FILES[@]}
         ./coverage/coverage.sh results-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml ${FILES[@]}
-
-        pwd
-        ls -al test-results
-        cat test-results/results-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml
 
     - name: Upload Artifact(results)
       uses: actions/upload-artifact@v3
@@ -139,7 +131,7 @@ jobs:
         name: results-${{ matrix.python }}-${{ matrix.ci_node_index }}
         path: test-results/results-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml
 
-    - name: Remove local test-results folder
+    - name: Remove local test-results folder  # We don't want to create cache YET.
       run: |
         rm -r test-results
 
@@ -185,9 +177,7 @@ jobs:
     - name: Merge results
       run: |
         mv results-${{ matrix.python }}-*/results-${{ matrix.python }}-* test-results/parts/
-        ls -l test-results/parts
         python3 -c "from tests.utils import merge_results; merge_results('./test-results', 'results.xml')"
-        ls -l test-results
 
     - name: Restore test-result Cache (Dummy step)  # This is a dummy step, i.e., we don't want to restore cache here. The post counterpart of this step would save our cache.
       uses: actions/cache@v3
