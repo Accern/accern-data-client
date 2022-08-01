@@ -49,10 +49,11 @@ def is_test() -> int:
 def check_filters(
         record: Dict[str, Any], filters: Dict[str, 'FilterValue']) -> bool:
     for key, value in filters.items():
-        if isinstance(value, list):
-            if field_transformation(record[key]) not in value:
+        transformed_val = field_transformation(value)
+        if isinstance(transformed_val, list):
+            if field_transformation(record[key]) not in transformed_val:
                 return False
-        if field_transformation(record[key]) != value:
+        if field_transformation(record[key]) != transformed_val:
             return False
     return True
 
@@ -60,10 +61,8 @@ def check_filters(
 def field_transformation(value: Any) -> Union[str, List[str]]:
     if isinstance(value, list):
         for idx, item in enumerate(value):
-            value[idx] = field_transformation(item)
+            value[idx] = f"{item}"
         return value
-    if isinstance(value, bool):
-        return f"{value}".lower()
     return f"{value}"
 
 

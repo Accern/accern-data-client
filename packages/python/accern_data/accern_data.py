@@ -26,7 +26,6 @@ from typing_extensions import get_args, Literal, TypedDict
 
 from .util import (
     BarIndicator,
-    field_transformation,
     generate_file_response,
     get_overall_total_from_dummy,
     is_example_url,
@@ -464,12 +463,10 @@ class DataClient:
     def _parse_filters(
             filters: Dict[str, FilterValue]) -> Dict[str, FilterValue]:
         proper_filters: Dict[str, FilterValue] = {}
-        for key, value in filters.items():
+        for key in filters.keys():
             assert key not in EXCLUDED_FILTER_FIELD, (
                 "filters should not be containing any of "
                 f"{EXCLUDED_FILTER_FIELD}")
-            if value is not None:
-                proper_filters[key] = field_transformation(value)
         return proper_filters
 
     def set_indicator(
