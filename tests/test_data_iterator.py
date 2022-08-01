@@ -4,12 +4,18 @@ import pandas as pd
 import pandas.testing as pd_test
 import pytest
 from accern_data import create_data_client, DATE_FORMAT, DATETIME_FORMAT
-from accern_data.util import EXAMPLE_URL, load_json
+from accern_data.util import (
+    EXAMPLE_URL,
+    get_data_dir,
+    load_json,
+    set_data_dir,
+    write_json,
+)
 
 DEFAULT_CHUNK_SIZE_LIST = [
-    1, 5, 8, 3, 57, 13, 88, 86, 18, 9, 91, 68, 1, 99, 1, 22, 1, 12, 3, 8, 16,
-    2, 68, 1, 71, 2, 81, 3, 89, 69, 1, 96, 97, 93, 17, 1, 98, 92, 97, 14, 90,
-    48, 1, 99, 98, 32, 7, 95, 96, 14, 1, 98, 98, 98, 34, 5, 98, 40, 3,
+    5, 1, 10, 1, 69, 1, 99, 99, 2, 1, 99, 60, 1, 99, 1, 22, 1, 14, 1, 7, 1, 17,
+    1, 68, 1, 72, 1, 83, 1, 99, 59, 1, 99, 99, 99, 6, 1, 98, 98, 99, 5, 1, 99,
+    39, 1, 98, 99, 38, 1, 99, 99, 7, 1, 98, 99, 99, 36, 1, 99, 40, 2
 ]
 
 
@@ -19,7 +25,7 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
     end_date = "2022-03-04"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode("csv", split_dates=False, chunk_size=chunk_size)
-    dataframe = pd.read_csv("tests/data/data-2022.csv")
+    dataframe = pd.read_csv(f"{get_data_dir()}/data-2022.csv")
     n_full_chunks = None
     if chunk_size is not None:
         n_full_chunks = dataframe.shape[0] // chunk_size
@@ -39,7 +45,7 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
         for idx, df in enumerate(dfs):
             assert df.shape[0] == DEFAULT_CHUNK_SIZE_LIST[idx]
     assert dataframe.shape[0] == sum(df_lengths)
-    for dt in {"crawled_at", "harvested_at", "published_at"}:
+    for dt in ["crawled_at", "harvested_at", "published_at"]:
         concat_df[dt] = concat_df[dt].astype("str")
     pd_test.assert_frame_equal(
         dataframe[sorted(dataframe.columns)],
@@ -59,7 +65,7 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime(DATE_FORMAT)
         try:
-            df = pd.read_csv(f"tests/data/csv_date/{date}.csv")
+            df = pd.read_csv(f"{get_data_dir()}/csv_date/{date}.csv")
         except FileNotFoundError:
             continue
         n_full_chunks = None
@@ -84,7 +90,7 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
                 assert dfs[idx].shape[0] == DEFAULT_CHUNK_SIZE_LIST[idx]
         df_date = [dfs[idx] for idx in range(beg, end+1)]
         concat_df: pd.DataFrame = pd.concat(df_date).reset_index(drop=True)
-        for dt in {"crawled_at", "harvested_at", "published_at"}:
+        for dt in ["crawled_at", "harvested_at", "published_at"]:
             concat_df[dt] = concat_df[dt].astype("str")
         pd_test.assert_frame_equal(
             df[sorted(df.columns)], concat_df[sorted(concat_df.columns)])
@@ -92,16 +98,20 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
 
 
 def test_json_iterator() -> None:
+    set_data_dir("tests/data_mini")
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode("json", split_dates=True)
     jsons: List[Dict[str, Any]] = list(
         client.iterate_range(start_date=start_date, end_date=end_date))
-    js_total = load_json("tests/data/data-2022.json")
+    js_total = load_json(f"{get_data_dir()}/data-2022.json")
     for obj in jsons:
-        for dt in {"crawled_at", "harvested_at", "published_at"}:
+        for dt in ["crawled_at", "harvested_at", "published_at"]:
             obj[dt] = obj[dt].strftime(DATETIME_FORMAT)
+    for obj in js_total["signals"]:
+        for dt in ["crawled_at", "harvested_at", "published_at"]:
+            obj[dt] = pd.to_datetime(obj[dt]).strftime(DATETIME_FORMAT)
     assert jsons == js_total["signals"]
     beg = 0
     end = 0
@@ -109,7 +119,7 @@ def test_json_iterator() -> None:
         date = cur_date.strftime(DATE_FORMAT)
         json_date = []
         try:
-            js = load_json(f"tests/data/json_date/{date}.json")
+            js = load_json(f"{get_data_dir()}/json_date/{date}.json")
         except FileNotFoundError:
             continue
         for idx in range(beg, len(jsons)):
@@ -119,6 +129,5 @@ def test_json_iterator() -> None:
             end = idx
         for idx in range(beg, end+1):
             json_date.append(jsons[idx])
-
-        assert js == json_date
+        assert js == json_date, f"Results for {date} not matching."
         beg = end + 1
