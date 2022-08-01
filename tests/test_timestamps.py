@@ -69,11 +69,8 @@ def test_timestamp_csv_full() -> None:
                 df_actual["published_at"], utc=True)) &
             (pd.to_datetime(
                 df_actual["published_at"], utc=True) <= end_date_dt)]
-    df_generated = df_generated.sort_values(
-        by="signal_id").reset_index(drop=True)
-    filtered_df = filtered_df.sort_values(
-        by="signal_id").reset_index(drop=True)
-
+    filtered_df = filtered_df.reset_index(drop=True)
+    df_generated = df_generated.reset_index(drop=True)
     pd_test.assert_frame_equal(
         filtered_df[sorted(filtered_df.columns)],
         df_generated[sorted(df_generated.columns)])

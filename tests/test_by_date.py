@@ -29,9 +29,6 @@ def test_by_date_csv_full(by_date: ByDate) -> None:
     df_full = pd.read_csv(f"{get_data_dir()}/data-2022.csv")
     if by_date != "published_at":
         df_full = pd.read_csv(f"{get_data_dir()}/{by_date}/data-2022.csv")
-    df_full = df_full.sort_values(by="signal_id").reset_index(drop=True)
-    df_generated = df_generated.sort_values(
-        by="signal_id").reset_index(drop=True)
     pd_test.assert_frame_equal(
         df_full[sorted(df_full.columns)],
         df_generated[sorted(df_generated.columns)])
@@ -65,10 +62,6 @@ def test_by_date_csv_date(by_date: ByDate) -> None:
             df_actual = pd.read_csv(path)
         except FileNotFoundError:
             continue
-        df_actual = df_actual.sort_values(
-            by="signal_id").reset_index(drop=True)
-        df_generated = df_generated.sort_values(
-            by="signal_id").reset_index(drop=True)
         pd_test.assert_frame_equal(
             df_actual[sorted(df_actual.columns)],
             df_generated[sorted(df_generated.columns)])
@@ -80,7 +73,7 @@ def test_by_date_json(by_date: ByDate) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH
-    output_pattern = f"test_by_date_json_{by_date}"
+    output_pattern = None
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
 
     client.download_range(

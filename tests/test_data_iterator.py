@@ -4,7 +4,13 @@ import pandas as pd
 import pandas.testing as pd_test
 import pytest
 from accern_data import create_data_client, DATE_FORMAT, DATETIME_FORMAT
-from accern_data.util import EXAMPLE_URL, get_data_dir, load_json, set_data_dir
+from accern_data.util import (
+    EXAMPLE_URL,
+    get_data_dir,
+    load_json,
+    set_data_dir,
+    write_json,
+)
 
 DEFAULT_CHUNK_SIZE_LIST = [
     5, 1, 10, 1, 69, 1, 99, 99, 2, 1, 99, 60, 1, 99, 1, 22, 1, 14, 1, 7, 1, 17,
@@ -41,10 +47,6 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
     assert dataframe.shape[0] == sum(df_lengths)
     for dt in ["crawled_at", "harvested_at", "published_at"]:
         concat_df[dt] = concat_df[dt].astype("str")
-
-    dataframe = dataframe.sort_values(by="signal_id").reset_index(drop=True)
-    concat_df = concat_df.sort_values(by="signal_id").reset_index(drop=True)
-
     pd_test.assert_frame_equal(
         dataframe[sorted(dataframe.columns)],
         concat_df[sorted(concat_df.columns)])
@@ -110,8 +112,7 @@ def test_json_iterator() -> None:
     for obj in js_total["signals"]:
         for dt in ["crawled_at", "harvested_at", "published_at"]:
             obj[dt] = pd.to_datetime(obj[dt]).strftime(DATETIME_FORMAT)
-    assert sorted(jsons, key=lambda x: x["signal_id"]) == sorted(
-        js_total["signals"], key=lambda x: x["signal_id"])
+    assert jsons == js_total["signals"]
     beg = 0
     end = 0
     for cur_date in pd.date_range(start_date, end_date):
@@ -128,7 +129,5 @@ def test_json_iterator() -> None:
             end = idx
         for idx in range(beg, end+1):
             json_date.append(jsons[idx])
-        json_date.sort(key=lambda x: x["signal_id"])
-        js.sort(key=lambda x: x["signal_id"])
         assert js == json_date, f"Results for {date} not matching."
         beg = end + 1

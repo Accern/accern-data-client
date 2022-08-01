@@ -84,10 +84,7 @@ def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
         indicator="message")
 
     df_actual = pd.read_csv(f"{get_data_dir()}/data-2022.csv")
-    df_actual = df_actual.sort_values(by="signal_id").reset_index(drop=True)
     df_generated = pd.read_csv(f"{output_path}{output_pattern}.csv")
-    df_generated = df_generated.sort_values(
-        by="signal_id").reset_index(drop=True)
 
     pd_test.assert_frame_equal(
         df_actual[sorted(df_actual.columns)],
@@ -101,7 +98,7 @@ def test_json(method_used: str) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH
-    output_pattern = f"test_json_{method_used}"
+    output_pattern = None
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     if method_used == "method":
         client.set_mode("json", split_dates=True)

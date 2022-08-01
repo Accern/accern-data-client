@@ -56,7 +56,7 @@ def test_csv_full_csv_date_consistency(sheet_mode: ModeType) -> None:
 @pytest.mark.parametrize("sheet_mode", ["csv", "df"])
 def test_json_csv_date_consistency(sheet_mode: ModeType) -> None:
     start_date = "2022-01-03"
-    end_date = "2022-03-04"
+    end_date = "2022-01-04"
     output_pattern = f"test_json_csv_date_consistency_{sheet_mode}"
     output_path = OUTPUT_PATH
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
@@ -96,6 +96,8 @@ def test_json_csv_date_consistency(sheet_mode: ModeType) -> None:
         csv_obj["entity_sector"].fillna("N/A", inplace=True)
         csv_obj.fillna("", inplace=True)
         csv_json = csv_obj.to_dict("records")
-        csv_json.sort(key=lambda x: x["signal_id"])
-        json_obj.sort(key=lambda x: x["signal_id"])
+        for i in range(len(csv_json)):
+            for key in csv_json[i].keys():
+                if csv_json[i][key] != json_obj[i][key]:
+                    print(i, key, csv_json[i][key], json_obj[i][key], type(csv_json[i][key]), type(json_obj[i][key]))
         assert csv_json == json_obj, f"Results for {date} are different."
