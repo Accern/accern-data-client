@@ -9,10 +9,10 @@ import pandas as pd
 import tqdm
 from requests import Response
 
+from . import __version__
+
 if TYPE_CHECKING:
     from .accern_data import FilterValue
-
-from . import __version__
 
 EXAMPLE_URL = "https://api.example.com/"
 IS_JUPYTER: Optional[bool] = None
