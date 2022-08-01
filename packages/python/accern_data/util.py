@@ -3,11 +3,14 @@ import json
 import os
 import site
 import sys
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
 
 import pandas as pd
 import tqdm
 from requests import Response
+
+if TYPE_CHECKING:
+    from .accern_data import FilterValue
 
 from . import __version__
 
@@ -44,9 +47,10 @@ def is_test() -> int:
 
 
 def check_filters(
-        record: Dict[str, Any], filters: Dict[str, str]) -> bool:
+        record: Dict[str, Any], filters: Dict[str, FilterValue]) -> bool:
     for key, value in filters.items():
         if key not in {"start_time", "end_time"}:
+            # FIXME: check list here
             if field_transformation(record[key]) != value:
                 return False
     return True
@@ -63,11 +67,11 @@ def field_transformation(value: Any) -> Union[str, List[str]]:
 
 
 def get_overall_total_from_dummy(
-        date: str,
-        filters: Dict[str, str],
+        params: Dict[str, str],
+        filters: Dict[str, FilterValue],
         encoding: str = "utf-8") -> Response:
     response_obj = Response()
-    start_dt, end_dt = create_start_end_date(date, filters)
+    start_dt, end_dt = create_start_end_date(params["date"], params)
     if is_test():
         path = "tests/data/data-2022.json"
     else:
@@ -113,15 +117,14 @@ def create_start_end_date(
 
 def generate_csv_object(
         path: str,
-        date: str,
         params: Dict[str, str],
         harvested_after: pd.Timestamp,
-        filters: Dict[str, str],
+        filters: Dict[str, FilterValue],
         encoding: str) -> io.BytesIO:
     df = pd.read_csv(path)
     df["harvested_at"] = pd.to_datetime(df["harvested_at"])
     df["published_at"] = pd.to_datetime(df["published_at"])
-    start_dt, end_dt = create_start_end_date(date, params)
+    start_dt, end_dt = create_start_end_date(params["date"], params)
 
     valid_df: pd.DataFrame = df[
         (df["published_at"] >= start_dt) &
@@ -143,10 +146,9 @@ def generate_csv_object(
 
 def generate_json_object(
         path: str,
-        date: str,
         params: Dict[str, str],
         harvested_after: pd.Timestamp,
-        filters: Dict[str, str],
+        filters: Dict[str, FilterValue],
         encoding: str) -> io.BytesIO:
     json_obj = load_json(path)
     filtered_json = {
@@ -154,7 +156,7 @@ def generate_json_object(
         for key, val in json_obj.items()
         if key != "signals"
     }
-    start_dt, end_dt = create_start_end_date(date, params)
+    start_dt, end_dt = create_start_end_date(params["date"], params)
     filtered_json["signals"] = []
     for record in json_obj["signals"]:
         if (
@@ -170,14 +172,12 @@ def generate_json_object(
 
 
 def generate_file_response(
-        date: str,
-        harvested_after: str,
         params: Dict[str, str],
         mode: str,
-        filters: Dict[str, str],
+        filters: Dict[str, FilterValue],
         encoding: str = "utf-8") -> Response:
     response_obj = Response()
-    harvested_after_dt = pd.to_datetime(harvested_after, utc=True)
+    harvested_after_dt = pd.to_datetime(params["harvested_after"], utc=True)
 
     if is_test():
         path = f"tests/data/data-2022.{mode}"
@@ -186,10 +186,10 @@ def generate_file_response(
 
     if mode == "csv":
         obj = generate_csv_object(
-            path, date, params, harvested_after_dt, filters, encoding)
+            path, params, harvested_after_dt, filters, encoding)
     else:
         obj = generate_json_object(
-            path, date, params, harvested_after_dt, filters, encoding)
+            path, params, harvested_after_dt, filters, encoding)
     obj.seek(0)
     response_obj._content = obj.read()
     response_obj.encoding = encoding

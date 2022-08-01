@@ -557,8 +557,7 @@ class DataClient:
             try:
                 req_params = None
                 if is_example_url(self._base_url):
-                    resp = get_overall_total_from_dummy(
-                        params["date"], filters)
+                    resp = get_overall_total_from_dummy(params, filters)
                 else:
                     req_params = {
                         "token": self._token,
@@ -599,14 +598,8 @@ class DataClient:
             rkwargs = {} if request_kwargs is None else request_kwargs
             try:
                 if is_example_url(self._base_url):
-                    date = params["date"]
-                    harvested_after = params["harvested_after"]
                     resp = generate_file_response(
-                        date,
-                        harvested_after,
-                        params,
-                        mode.get_format(),
-                        filters=filters)
+                        params, mode.get_format(), filters=filters)
                 else:
                     req_params = {
                         "token": self._token,
