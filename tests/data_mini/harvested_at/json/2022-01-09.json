@@ -27,7 +27,7 @@
         "entity_ticker": "FDS",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
         "event_hits": [
             "compensation expense",

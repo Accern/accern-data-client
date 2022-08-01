@@ -29,7 +29,7 @@
         "entity_ticker": "BA",
         "entity_type": "us_equity",
         "event": "Social - Data Security",
-        "event_accern_id": 95246,
+        "event_accern_id": "95246",
         "event_group": "Social",
         "event_hits": [
             "cybersecurity",
@@ -76,7 +76,7 @@
         "entity_ticker": "LRN",
         "entity_type": "us_equity",
         "event": "General Business Actions - IT Costs",
-        "event_accern_id": 102064,
+        "event_accern_id": "102064",
         "event_group": "General Business Actions",
         "event_hits": [
             "software development costs"
@@ -124,7 +124,7 @@
         "entity_ticker": "MSFT",
         "entity_type": "us_equity",
         "event": "Social - Product Quality & Safety",
-        "event_accern_id": 95258,
+        "event_accern_id": "95258",
         "event_group": "Social",
         "event_hits": [
             "product safety"
@@ -169,7 +169,7 @@
         "entity_ticker": "FUL",
         "entity_type": "us_equity",
         "event": "Social - Data Security",
-        "event_accern_id": 95246,
+        "event_accern_id": "95246",
         "event_group": "Social",
         "event_hits": [
             "data protection regulation"
@@ -214,7 +214,7 @@
         "entity_ticker": "FUL",
         "entity_type": "us_equity",
         "event": "Environment - Environmental Report",
-        "event_accern_id": 102172,
+        "event_accern_id": "102172",
         "event_group": "Environment",
         "event_hits": [
             "environmental protection",

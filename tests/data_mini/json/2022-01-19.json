@@ -27,7 +27,7 @@
         "entity_ticker": "NVEC",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"
@@ -75,7 +75,7 @@
         "entity_ticker": "PG",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"
@@ -123,7 +123,7 @@
         "entity_ticker": "PG",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "administrative expense"
@@ -171,7 +171,7 @@
         "entity_ticker": "PG",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "administrative expense"
@@ -216,7 +216,7 @@
         "entity_ticker": "NVEC",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
         "event_hits": [
             "product development"
@@ -264,7 +264,7 @@
         "entity_ticker": "PG",
         "entity_type": "us_equity",
         "event": "Social - Marketing and Sales Expenses",
-        "event_accern_id": 105913,
+        "event_accern_id": "105913",
         "event_group": "Social",
         "event_hits": [
             "marketing",
@@ -313,7 +313,7 @@
         "entity_ticker": "NVEC",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting"
@@ -361,7 +361,7 @@
         "entity_ticker": "PG",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting"
@@ -409,7 +409,7 @@
         "entity_ticker": "PG",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
         "event_hits": [
             "compensation expense",
@@ -455,7 +455,7 @@
         "entity_ticker": "NVEC",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "decrease",

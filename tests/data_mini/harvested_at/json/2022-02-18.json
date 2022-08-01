@@ -28,7 +28,7 @@
         "entity_ticker": "ARE",
         "entity_type": "us_equity",
         "event": "Governance - Process To Control Compliance With Environmental Standards By Regulators",
-        "event_accern_id": 111689,
+        "event_accern_id": "111689",
         "event_group": "Governance",
         "event_hits": [
             "comply",
@@ -75,7 +75,7 @@
         "entity_ticker": "SPH",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Reviewing And Guiding Corporate Strategy",
-        "event_accern_id": 111703,
+        "event_accern_id": "111703",
         "event_group": "Governance",
         "event_hits": [
             "risk management policy"
@@ -120,7 +120,7 @@
         "entity_ticker": "UVV",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
         "event_hits": [
             "product development"

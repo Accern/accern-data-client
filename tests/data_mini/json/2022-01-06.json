@@ -27,7 +27,7 @@
         "entity_ticker": "RECN",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting"
@@ -72,7 +72,7 @@
         "entity_ticker": "RECN",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"
@@ -117,7 +117,7 @@
         "entity_ticker": "PSMT",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "maintain disclosure controls and procedures",
@@ -164,7 +164,7 @@
         "entity_ticker": "WDFC",
         "entity_type": "us_equity",
         "event": "Social - Product Quality & Safety",
-        "event_accern_id": 95258,
+        "event_accern_id": "95258",
         "event_group": "Social",
         "event_hits": [
             "quality control"
@@ -209,7 +209,7 @@
         "entity_ticker": "RECN",
         "entity_type": "us_equity",
         "event": "Governance - Digitalization Strategy",
-        "event_accern_id": 111687,
+        "event_accern_id": "111687",
         "event_group": "Governance",
         "event_hits": [
             "digital strategies",
@@ -255,7 +255,7 @@
         "entity_ticker": "PSMT",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting"
@@ -300,7 +300,7 @@
         "entity_ticker": "WDFC",
         "entity_type": "us_equity",
         "event": "Social - Marketing Expenses",
-        "event_accern_id": 102069,
+        "event_accern_id": "102069",
         "event_group": "Social",
         "event_hits": [
             "advertising",
@@ -346,7 +346,7 @@
         "entity_ticker": "WDFC",
         "entity_type": "us_equity",
         "event": "Social - Product Quality & Safety",
-        "event_accern_id": 95258,
+        "event_accern_id": "95258",
         "event_group": "Social",
         "event_hits": [
             "quality assurance"
@@ -391,7 +391,7 @@
         "entity_ticker": "RECN",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
         "event_hits": [
             "to develop"
@@ -436,7 +436,7 @@
         "entity_ticker": "WDFC",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
         "event_hits": [
             "incentive compensation",

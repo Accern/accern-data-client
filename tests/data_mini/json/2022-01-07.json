@@ -27,7 +27,7 @@
         "entity_ticker": "LNDC",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting"
@@ -72,7 +72,7 @@
         "entity_ticker": "HURC",
         "entity_type": "us_equity",
         "event": "Governance - Total IT Expenses",
-        "event_accern_id": 105910,
+        "event_accern_id": "105910",
         "event_group": "Governance",
         "event_hits": [
             "software development costs"
@@ -117,7 +117,7 @@
         "entity_ticker": "HURC",
         "entity_type": "us_equity",
         "event": "Social - Training For Employees In Consumer Relations",
-        "event_accern_id": 111681,
+        "event_accern_id": "111681",
         "event_group": "Social",
         "event_hits": [
             "customer service",
@@ -163,7 +163,7 @@
         "entity_ticker": "LNDC",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
         "event_hits": [
             "compensation expense"
@@ -208,7 +208,7 @@
         "entity_ticker": "HURC",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "administrative expenses",
@@ -254,7 +254,7 @@
         "entity_ticker": "HURC",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting"
@@ -299,7 +299,7 @@
         "entity_ticker": "LNDC",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"
@@ -344,7 +344,7 @@
         "entity_ticker": "HURC",
         "entity_type": "us_equity",
         "event": "Governance - Management of the Legal & Regulatory Environment",
-        "event_accern_id": 95272,
+        "event_accern_id": "95272",
         "event_group": "Governance",
         "event_hits": [
             "federal reserve board"
@@ -389,7 +389,7 @@
         "entity_ticker": "LNDC",
         "entity_type": "us_equity",
         "event": "Social - Marketing and Sales Expenses",
-        "event_accern_id": 105913,
+        "event_accern_id": "105913",
         "event_group": "Social",
         "event_hits": [
             "cost of sales",
@@ -437,7 +437,7 @@
         "entity_ticker": "HURC",
         "entity_type": "us_equity",
         "event": "Governance - Stakeholder Related Matters: Mechanisms For Employee Participation",
-        "event_accern_id": 111733,
+        "event_accern_id": "111733",
         "event_group": "Governance",
         "event_hits": [
             "employee engagement"

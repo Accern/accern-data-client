@@ -28,7 +28,7 @@
         "entity_ticker": "EL",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"
@@ -72,7 +72,7 @@
         "entity_ticker": "SPH",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "administrative expenses",
@@ -119,7 +119,7 @@
         "entity_ticker": "HRB",
         "entity_type": "us_equity",
         "event": "Governance - Legal costs",
-        "event_accern_id": 102067,
+        "event_accern_id": "102067",
         "event_group": "Governance",
         "event_hits": [
             "legal fees"
@@ -164,7 +164,7 @@
         "entity_ticker": "CMCO",
         "entity_type": "us_equity",
         "event": "Governance - Legal costs",
-        "event_accern_id": 102067,
+        "event_accern_id": "102067",
         "event_group": "Governance",
         "event_hits": [
             "legal costs"
@@ -210,7 +210,7 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "Governance - Legal costs",
-        "event_accern_id": 102067,
+        "event_accern_id": "102067",
         "event_group": "Governance",
         "event_hits": [
             "legal fees"
@@ -258,7 +258,7 @@
         "entity_ticker": "MSFT",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "administrative expenses increased",

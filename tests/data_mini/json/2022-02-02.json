@@ -27,7 +27,7 @@
         "entity_ticker": "IESC",
         "entity_type": "us_equity",
         "event": "Social - Employee Benefits",
-        "event_accern_id": 105757,
+        "event_accern_id": "105757",
         "event_group": "Social",
         "event_hits": [
             "employee benefit"
@@ -72,7 +72,7 @@
         "entity_ticker": "UFI",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
         "event_hits": [
             "incentive compensation",
@@ -118,7 +118,7 @@
         "entity_ticker": "UFI",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting"
@@ -163,7 +163,7 @@
         "entity_ticker": "UFI",
         "entity_type": "us_equity",
         "event": "Environment - Environmental Report",
-        "event_accern_id": 102172,
+        "event_accern_id": "102172",
         "event_group": "Environment",
         "event_hits": [
             "environmental protection"
@@ -208,7 +208,7 @@
         "entity_ticker": "UVV",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
         "event_hits": [
             "compensation expense",
@@ -256,7 +256,7 @@
         "entity_ticker": "IESC",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
         "event_hits": [
             "compensation expense"
@@ -301,7 +301,7 @@
         "entity_ticker": "UFI",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"
@@ -346,7 +346,7 @@
         "entity_ticker": "UVV",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "maintain disclosure controls and procedures",
@@ -392,7 +392,7 @@
         "entity_ticker": "UVV",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
         "event_hits": [
             "product development"
@@ -437,7 +437,7 @@
         "entity_ticker": "UVV",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting"

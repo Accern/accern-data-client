@@ -30,7 +30,7 @@
         "entity_ticker": "PG",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting"
@@ -75,7 +75,7 @@
         "entity_ticker": "FUL",
         "entity_type": "us_equity",
         "event": "Environment - Environmental Report",
-        "event_accern_id": 102172,
+        "event_accern_id": "102172",
         "event_group": "Environment",
         "event_hits": [
             "environmental protection",
@@ -123,7 +123,7 @@
         "entity_ticker": "INFO",
         "entity_type": "us_equity",
         "event": "Social - Data Security",
-        "event_accern_id": 95246,
+        "event_accern_id": "95246",
         "event_group": "Social",
         "event_hits": [
             "cyber security",
@@ -175,7 +175,7 @@
         "entity_ticker": "SNX",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"

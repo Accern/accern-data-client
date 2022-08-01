@@ -28,7 +28,7 @@
         "entity_ticker": "EL",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"
@@ -72,7 +72,7 @@
         "entity_ticker": "SPH",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "administrative expenses",
@@ -118,7 +118,7 @@
         "entity_ticker": "EGHT",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "administrative expenses"
@@ -163,7 +163,7 @@
         "entity_ticker": "PBH",
         "entity_type": "us_equity",
         "event": "Social - Marketing Expenses",
-        "event_accern_id": 102069,
+        "event_accern_id": "102069",
         "event_group": "Social",
         "event_hits": [
             "advertising",
@@ -210,7 +210,7 @@
         "entity_ticker": "EGHT",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
         "event_hits": [
             "compensation expense",
@@ -259,7 +259,7 @@
         "entity_ticker": "EL",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "administrative expenses",
@@ -304,7 +304,7 @@
         "entity_ticker": "SPH",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Reviewing And Guiding Corporate Strategy",
-        "event_accern_id": 111703,
+        "event_accern_id": "111703",
         "event_group": "Governance",
         "event_hits": [
             "risk management policy"
@@ -349,7 +349,7 @@
         "entity_ticker": "EGHT",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "administrative expenses"
@@ -394,7 +394,7 @@
         "entity_ticker": "MMS",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
         "event_hits": [
             "compensation expense"
@@ -439,7 +439,7 @@
         "entity_ticker": "PBH",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "administrative expense"

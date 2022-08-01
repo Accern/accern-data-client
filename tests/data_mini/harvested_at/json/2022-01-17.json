@@ -27,7 +27,7 @@
         "entity_ticker": "WOR",
         "entity_type": "us_equity",
         "event": "Social - Employee Benefits",
-        "event_accern_id": 105757,
+        "event_accern_id": "105757",
         "event_group": "Social",
         "event_hits": [
             "employee benefit",
@@ -73,7 +73,7 @@
         "entity_ticker": "WOR",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures",
@@ -118,7 +118,7 @@
         "entity_ticker": "SAR",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"
@@ -163,7 +163,7 @@
         "entity_ticker": "HURC",
         "entity_type": "us_equity",
         "event": "Governance - Total IT Expenses",
-        "event_accern_id": 105910,
+        "event_accern_id": "105910",
         "event_group": "Governance",
         "event_hits": [
             "software development costs"
@@ -208,7 +208,7 @@
         "entity_ticker": "HURC",
         "entity_type": "us_equity",
         "event": "Social - Training For Employees In Consumer Relations",
-        "event_accern_id": 111681,
+        "event_accern_id": "111681",
         "event_group": "Social",
         "event_hits": [
             "customer service",
@@ -254,7 +254,7 @@
         "entity_ticker": "LNDC",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
         "event_hits": [
             "compensation expense"
@@ -298,7 +298,7 @@
         "entity_ticker": "SGH",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"

@@ -27,7 +27,7 @@
         "entity_ticker": "WOR",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
         "event_hits": [
             "to develop"
@@ -72,7 +72,7 @@
         "entity_ticker": "NVEC",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"
@@ -117,7 +117,7 @@
         "entity_ticker": "RPM",
         "entity_type": "us_equity",
         "event": "Environment - Environmental Report",
-        "event_accern_id": 102172,
+        "event_accern_id": "102172",
         "event_group": "Environment",
         "event_hits": [
             "environmental matters"
@@ -161,7 +161,7 @@
         "entity_ticker": "SMPL",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting",
@@ -207,7 +207,7 @@
         "entity_ticker": "BBCP",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"

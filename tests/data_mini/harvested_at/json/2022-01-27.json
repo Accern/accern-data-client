@@ -27,7 +27,7 @@
         "entity_ticker": "WOR",
         "entity_type": "us_equity",
         "event": "Social - Data Security",
-        "event_accern_id": 95246,
+        "event_accern_id": "95246",
         "event_group": "Social",
         "event_hits": [
             "cyber security risks",
@@ -76,7 +76,7 @@
         "entity_ticker": "PG",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "administrative expense"

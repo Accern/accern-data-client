@@ -26,7 +26,7 @@
         "entity_ticker": "SMPL",
         "entity_type": "us_equity",
         "event": "Social - Marketing Expenses",
-        "event_accern_id": 102069,
+        "event_accern_id": "102069",
         "event_group": "Social",
         "event_hits": [
             "marketing",

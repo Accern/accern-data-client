@@ -27,7 +27,7 @@
         "entity_ticker": "RPM",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
         "event_hits": [
             "compensation expense"
@@ -71,7 +71,7 @@
         "entity_ticker": "SAR",
         "entity_type": "us_equity",
         "event": "Governance - Management of the Legal & Regulatory Environment",
-        "event_accern_id": 95272,
+        "event_accern_id": "95272",
         "event_group": "Governance",
         "event_hits": [
             "federal reserve board"
@@ -116,7 +116,7 @@
         "entity_ticker": "RECN",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting"
@@ -161,7 +161,7 @@
         "entity_ticker": "RECN",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"

@@ -29,7 +29,7 @@
         "entity_ticker": "BA",
         "entity_type": "us_equity",
         "event": "Social - Data Security",
-        "event_accern_id": 95246,
+        "event_accern_id": "95246",
         "event_group": "Social",
         "event_hits": [
             "cybersecurity",
@@ -78,7 +78,7 @@
         "entity_ticker": "BA",
         "entity_type": "us_equity",
         "event": "Social - Total Number Of Customers",
-        "event_accern_id": 111744,
+        "event_accern_id": "111744",
         "event_group": "Social",
         "event_hits": [
             "number of",
@@ -125,7 +125,7 @@
         "entity_ticker": "ARE",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
         "event_hits": [
             "redevelopment",
@@ -172,7 +172,7 @@
         "entity_ticker": "ARE",
         "entity_type": "us_equity",
         "event": "Governance - Code Of Ethics, Conduct For Employees",
-        "event_accern_id": 111674,
+        "event_accern_id": "111674",
         "event_group": "Governance",
         "event_hits": [
             "code of ethics"
@@ -219,7 +219,7 @@
         "entity_ticker": "BA",
         "entity_type": "us_equity",
         "event": "Social - Marketing and Sales Expenses",
-        "event_accern_id": 105913,
+        "event_accern_id": "105913",
         "event_group": "Social",
         "event_hits": [
             "cost of sales"
@@ -265,7 +265,7 @@
         "entity_ticker": "ARE",
         "entity_type": "us_equity",
         "event": "Environment - Climate Change Risk",
-        "event_accern_id": 111763,
+        "event_accern_id": "111763",
         "event_group": "Environment",
         "event_hits": [
             "climate change impacts",
@@ -319,7 +319,7 @@
         "entity_ticker": "ARE",
         "entity_type": "us_equity",
         "event": "Governance - Legal costs",
-        "event_accern_id": 102067,
+        "event_accern_id": "102067",
         "event_group": "Governance",
         "event_hits": [
             "legal fees"
@@ -366,7 +366,7 @@
         "entity_ticker": "BA",
         "entity_type": "us_equity",
         "event": "Social - Total Number Of Customers",
-        "event_accern_id": 111744,
+        "event_accern_id": "111744",
         "event_group": "Social",
         "event_hits": [
             "number of",
@@ -413,7 +413,7 @@
         "entity_ticker": "ARE",
         "entity_type": "us_equity",
         "event": "Governance - Process To Control Compliance With Environmental Standards By Regulators",
-        "event_accern_id": 111689,
+        "event_accern_id": "111689",
         "event_group": "Governance",
         "event_hits": [
             "comply",
@@ -462,7 +462,7 @@
         "entity_ticker": "ARE",
         "entity_type": "us_equity",
         "event": "Governance - Code Of Ethics, Conduct For Employees",
-        "event_accern_id": 111674,
+        "event_accern_id": "111674",
         "event_group": "Governance",
         "event_hits": [
             "policy",

@@ -27,7 +27,7 @@
         "entity_ticker": "RPM",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control",
@@ -73,7 +73,7 @@
         "entity_ticker": "LNDC",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting"
@@ -117,7 +117,7 @@
         "entity_ticker": "SGH",
         "entity_type": "us_equity",
         "event": "Social - Marketing and Sales Expenses",
-        "event_accern_id": 105913,
+        "event_accern_id": "105913",
         "event_group": "Social",
         "event_hits": [
             "cost of sales"

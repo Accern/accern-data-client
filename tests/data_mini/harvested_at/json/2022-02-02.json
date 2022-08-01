@@ -27,7 +27,7 @@
         "entity_ticker": "NVEC",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting"
@@ -71,7 +71,7 @@
         "entity_ticker": "SMIT",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
         "event_hits": [
             "compensation",
@@ -118,7 +118,7 @@
         "entity_ticker": "LRN",
         "entity_type": "us_equity",
         "event": "Social - Marketing Expenses",
-        "event_accern_id": 102069,
+        "event_accern_id": "102069",
         "event_group": "Social",
         "event_hits": [
             "marketing expenses"
@@ -163,7 +163,7 @@
         "entity_ticker": "INFO",
         "entity_type": "us_equity",
         "event": "Social - Product Quality & Safety",
-        "event_accern_id": 95258,
+        "event_accern_id": "95258",
         "event_group": "Social",
         "event_hits": [
             "product",

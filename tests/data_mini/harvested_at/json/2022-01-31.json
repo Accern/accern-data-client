@@ -30,7 +30,7 @@
         "entity_ticker": "PG",
         "entity_type": "us_equity",
         "event": "Social - Marketing and Sales Expenses",
-        "event_accern_id": 105913,
+        "event_accern_id": "105913",
         "event_group": "Social",
         "event_hits": [
             "marketing",
@@ -80,7 +80,7 @@
         "entity_ticker": "ADBE",
         "entity_type": "us_equity",
         "event": "Governance - Executive Compensation",
-        "event_accern_id": 83,
+        "event_accern_id": "83",
         "event_group": "Governance",
         "event_hits": [
             "director compensation"
@@ -125,7 +125,7 @@
         "entity_ticker": "UBA",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "administrative costs",
@@ -176,7 +176,7 @@
         "entity_ticker": "CVLT",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting",
@@ -223,7 +223,7 @@
         "entity_ticker": "INFO",
         "entity_type": "us_equity",
         "event": "Social - Total Number Of Customers",
-        "event_accern_id": 111744,
+        "event_accern_id": "111744",
         "event_group": "Social",
         "event_hits": [
             "number of customers"
@@ -268,7 +268,7 @@
         "entity_ticker": "INFO",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting"

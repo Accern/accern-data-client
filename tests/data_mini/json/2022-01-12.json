@@ -26,7 +26,7 @@
         "entity_ticker": "BBCP",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
         "event_hits": [
             "compensation expense",
@@ -72,7 +72,7 @@
         "entity_ticker": "BBCP",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "administrative expenses"
@@ -116,7 +116,7 @@
         "entity_ticker": "BBCP",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "administrative expenses"
@@ -160,7 +160,7 @@
         "entity_ticker": "BBCP",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
         "event_hits": [
             "to develop"
@@ -204,7 +204,7 @@
         "entity_ticker": "BBCP",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"
@@ -248,7 +248,7 @@
         "entity_ticker": "BBCP",
         "entity_type": "us_equity",
         "event": "Social - Total Number Of Customers",
-        "event_accern_id": 111744,
+        "event_accern_id": "111744",
         "event_group": "Social",
         "event_hits": [
             "number of customers"
@@ -292,7 +292,7 @@
         "entity_ticker": "BBCP",
         "entity_type": "us_equity",
         "event": "Governance - Code Of Ethics, Conduct For Employees",
-        "event_accern_id": 111674,
+        "event_accern_id": "111674",
         "event_group": "Governance",
         "event_hits": [
             "adopted",

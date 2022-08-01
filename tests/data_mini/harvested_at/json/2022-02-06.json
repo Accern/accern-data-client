@@ -27,7 +27,7 @@
         "entity_ticker": "LEN/B",
         "entity_type": "us_equity",
         "event": "Social - Marketing and Sales Expenses",
-        "event_accern_id": 105913,
+        "event_accern_id": "105913",
         "event_group": "Social",
         "event_hits": [
             "advertising costs",
@@ -74,7 +74,7 @@
         "entity_ticker": "NVEC",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "decrease",
@@ -123,7 +123,7 @@
         "entity_ticker": "BA",
         "entity_type": "us_equity",
         "event": "Social - Total Number Of Customers",
-        "event_accern_id": 111744,
+        "event_accern_id": "111744",
         "event_group": "Social",
         "event_hits": [
             "number of",
@@ -169,7 +169,7 @@
         "entity_ticker": "LRN",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "administrative expenses"
@@ -215,7 +215,7 @@
         "entity_ticker": "ROK",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting"
@@ -261,7 +261,7 @@
         "entity_ticker": "KBH",
         "entity_type": "us_equity",
         "event": "Environment - Climate Change Risk",
-        "event_accern_id": 111763,
+        "event_accern_id": "111763",
         "event_group": "Environment",
         "event_hits": [
             "climate risk",
@@ -311,7 +311,7 @@
         "entity_ticker": "CVLT",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
         "event_hits": [
             "administrative expenses",
@@ -359,7 +359,7 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"
@@ -407,7 +407,7 @@
         "entity_ticker": "MSFT",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
         "event_hits": [
             "compensation expense"
@@ -452,7 +452,7 @@
         "entity_ticker": "SNX",
         "entity_type": "us_equity",
         "event": "Governance - Code Of Ethics, Conduct For Employees",
-        "event_accern_id": 111674,
+        "event_accern_id": "111674",
         "event_group": "Governance",
         "event_hits": [
             "adopted",

@@ -26,7 +26,7 @@
         "entity_ticker": "UTI",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
         "event_hits": [
             "to develop"
@@ -70,7 +70,7 @@
         "entity_ticker": "UTI",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"
@@ -114,7 +114,7 @@
         "entity_ticker": "CMPR",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"
@@ -159,7 +159,7 @@
         "entity_ticker": "IESC",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
         "event_hits": [
             "compensation expense"
@@ -205,7 +205,7 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "Social - Data Security",
-        "event_accern_id": 95246,
+        "event_accern_id": "95246",
         "event_group": "Social",
         "event_hits": [
             "cyber attacks",
@@ -251,7 +251,7 @@
         "entity_ticker": "SNX",
         "entity_type": "us_equity",
         "event": "Governance - Stakeholder Related Matters: Mechanisms For Employee Participation",
-        "event_accern_id": 111733,
+        "event_accern_id": "111733",
         "event_group": "Governance",
         "event_hits": [
             "employee engagement"

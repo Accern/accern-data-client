@@ -28,7 +28,7 @@
         "entity_ticker": "LEN",
         "entity_type": "us_equity",
         "event": "Social - Marketing and Sales Expenses",
-        "event_accern_id": 105913,
+        "event_accern_id": "105913",
         "event_group": "Social",
         "event_hits": [
             "advertising costs",
@@ -76,7 +76,7 @@
         "entity_ticker": "KBH",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
         "event_hits": [
             "to develop"
@@ -122,7 +122,7 @@
         "entity_ticker": "ADBE",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal controls",
@@ -169,7 +169,7 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "General Business Actions - IT Costs",
-        "event_accern_id": 102064,
+        "event_accern_id": "102064",
         "event_group": "General Business Actions",
         "event_hits": [
             "software development costs",

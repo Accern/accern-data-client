@@ -28,7 +28,7 @@
         "entity_ticker": "ADBE",
         "entity_type": "us_equity",
         "event": "Social - Data Security",
-        "event_accern_id": 95246,
+        "event_accern_id": "95246",
         "event_group": "Social",
         "event_hits": [
             "information security",
@@ -75,7 +75,7 @@
         "entity_ticker": "ADBE",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
         "event_hits": [
             "industry",
@@ -124,7 +124,7 @@
         "entity_ticker": "ADBE",
         "entity_type": "us_equity",
         "event": "Social - Marketing Expenses",
-        "event_accern_id": 102069,
+        "event_accern_id": "102069",
         "event_group": "Social",
         "event_hits": [
             "advertising expenses advertising costs",
@@ -171,7 +171,7 @@
         "entity_ticker": "ADBE",
         "entity_type": "us_equity",
         "event": "Governance - Executive Compensation",
-        "event_accern_id": 83,
+        "event_accern_id": "83",
         "event_group": "Governance",
         "event_hits": [
             "director compensation"
@@ -217,7 +217,7 @@
         "entity_ticker": "KBH",
         "entity_type": "us_equity",
         "event": "Environment - Climate Change Risk",
-        "event_accern_id": 111763,
+        "event_accern_id": "111763",
         "event_group": "Environment",
         "event_hits": [
             "climate risk",
@@ -268,7 +268,7 @@
         "entity_ticker": "KBH",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
         "event_hits": [
             "to develop"
@@ -314,7 +314,7 @@
         "entity_ticker": "ADBE",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal controls",

@@ -28,7 +28,7 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"
@@ -74,7 +74,7 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "Social - Training costs",
-        "event_accern_id": 102066,
+        "event_accern_id": "102066",
         "event_group": "Social",
         "event_hits": [
             "training costs"
@@ -120,7 +120,7 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "General Business Actions - IT Costs",
-        "event_accern_id": 102064,
+        "event_accern_id": "102064",
         "event_group": "General Business Actions",
         "event_hits": [
             "software development costs",
@@ -167,7 +167,7 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "Governance - Total IT Expenses",
-        "event_accern_id": 105910,
+        "event_accern_id": "105910",
         "event_group": "Governance",
         "event_hits": [
             "software development costs"
@@ -213,7 +213,7 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "Governance - Legal costs",
-        "event_accern_id": 102067,
+        "event_accern_id": "102067",
         "event_group": "Governance",
         "event_hits": [
             "legal fees"
@@ -259,7 +259,7 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "Social - Employee Engagement, Diversity & Inclusion",
-        "event_accern_id": 95263,
+        "event_accern_id": "95263",
         "event_group": "Social",
         "event_hits": [
             "employee retention"
@@ -305,7 +305,7 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "Social - Data Security",
-        "event_accern_id": 95246,
+        "event_accern_id": "95246",
         "event_group": "Social",
         "event_hits": [
             "cyber attacks",
@@ -352,7 +352,7 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
         "event_hits": [
             "to develop"
@@ -398,7 +398,7 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "Governance - Process To Control Compliance With Environmental Standards By Regulators",
-        "event_accern_id": 111689,
+        "event_accern_id": "111689",
         "event_group": "Governance",
         "event_hits": [
             "environmental regulations"
@@ -444,7 +444,7 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting",

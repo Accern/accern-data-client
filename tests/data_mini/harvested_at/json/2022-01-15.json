@@ -27,7 +27,7 @@
         "entity_ticker": "PSMT",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "maintain disclosure controls and procedures",
@@ -74,7 +74,7 @@
         "entity_ticker": "WDFC",
         "entity_type": "us_equity",
         "event": "Social - Product Quality & Safety",
-        "event_accern_id": 95258,
+        "event_accern_id": "95258",
         "event_group": "Social",
         "event_hits": [
             "quality control"
@@ -119,7 +119,7 @@
         "entity_ticker": "RECN",
         "entity_type": "us_equity",
         "event": "Governance - Digitalization Strategy",
-        "event_accern_id": 111687,
+        "event_accern_id": "111687",
         "event_group": "Governance",
         "event_hits": [
             "digital strategies",

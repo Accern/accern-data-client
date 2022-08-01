@@ -27,7 +27,7 @@
         "entity_ticker": "INFO",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
         "event_hits": [
             "disclosure controls and procedures"
@@ -72,7 +72,7 @@
         "entity_ticker": "INFO",
         "entity_type": "us_equity",
         "event": "Social - Total Number Of Customers",
-        "event_accern_id": 111744,
+        "event_accern_id": "111744",
         "event_group": "Social",
         "event_hits": [
             "number of customers"
@@ -117,7 +117,7 @@
         "entity_ticker": "INFO",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting"
@@ -162,7 +162,7 @@
         "entity_ticker": "INFO",
         "entity_type": "us_equity",
         "event": "Social - Product Quality & Safety",
-        "event_accern_id": 95258,
+        "event_accern_id": "95258",
         "event_group": "Social",
         "event_hits": [
             "product",
@@ -208,7 +208,7 @@
         "entity_ticker": "INFO",
         "entity_type": "us_equity",
         "event": "Social - Data Security",
-        "event_accern_id": 95246,
+        "event_accern_id": "95246",
         "event_group": "Social",
         "event_hits": [
             "cyber security",
@@ -260,7 +260,7 @@
         "entity_ticker": "INFO",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
         "event_hits": [
             "internal control over financial reporting"
@@ -305,7 +305,7 @@
         "entity_ticker": "INFO",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
         "event_hits": [
             "design",
@@ -354,7 +354,7 @@
         "entity_ticker": "INFO",
         "entity_type": "us_equity",
         "event": "Governance - Management of the Legal & Regulatory Environment",
-        "event_accern_id": 95272,
+        "event_accern_id": "95272",
         "event_group": "Governance",
         "event_hits": [
             "compliance with",
@@ -402,7 +402,7 @@
         "entity_ticker": "INFO",
         "entity_type": "us_equity",
         "event": "Social - Employee Benefits",
-        "event_accern_id": 105757,
+        "event_accern_id": "105757",
         "event_group": "Social",
         "event_hits": [
             "employee benefit"
