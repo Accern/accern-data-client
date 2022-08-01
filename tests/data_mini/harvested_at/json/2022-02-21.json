@@ -12,8 +12,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BCGK26",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "8x8 Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -26,7 +29,9 @@
         "event": "Governance - Administrative Expenses",
         "event_accern_id": 105914,
         "event_group": "Governance",
-        "event_hits": "[\"administrative expenses\"]",
+        "event_hits": [
+            "administrative expenses"
+        ],
         "event_relevance": 10.125,
         "event_sentiment": 9.4663305283,
         "event_text": "[redacted]",
@@ -52,8 +57,10 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BJSQB5",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000"
+        ],
         "entity_name": "Universal Technical Institute Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -66,7 +73,11 @@
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
         "event_accern_id": 111709,
         "event_group": "Governance",
-        "event_hits": "[\"internal control over financial reporting\",\"internal controls\",\"financial reporting\"]",
+        "event_hits": [
+            "internal control over financial reporting",
+            "internal controls",
+            "financial reporting"
+        ],
         "event_relevance": 48.75,
         "event_sentiment": 17.2499599457,
         "event_text": "[redacted]",
@@ -92,8 +103,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BW94W3",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Universal Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -106,7 +120,9 @@
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
         "event_accern_id": 111709,
         "event_group": "Governance",
-        "event_hits": "[\"internal control over financial reporting\"]",
+        "event_hits": [
+            "internal control over financial reporting"
+        ],
         "event_relevance": 30.0,
         "event_sentiment": 14.228931427,
         "event_text": "[redacted]",

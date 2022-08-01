@@ -12,8 +12,13 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BCSV38",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"DJIA\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "DJIA",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "The Boeing Company",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -26,7 +31,11 @@
         "event": "Social - Data Security",
         "event_accern_id": 95246,
         "event_group": "Social",
-        "event_hits": "[\"cybersecurity\",\"cyber attacks\",\"personally identifiable information\"]",
+        "event_hits": [
+            "cybersecurity",
+            "cyber attacks",
+            "personally identifiable information"
+        ],
         "event_relevance": 13.9412,
         "event_sentiment": -2.7932246923,
         "event_text": "[redacted]",
@@ -52,8 +61,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000QSXRZ5",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "K12 Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -66,7 +78,9 @@
         "event": "General Business Actions - IT Costs",
         "event_accern_id": 102064,
         "event_group": "General Business Actions",
-        "event_hits": "[\"software development costs\"]",
+        "event_hits": [
+            "software development costs"
+        ],
         "event_relevance": 13.125,
         "event_sentiment": 9.3802976608,
         "event_text": "[redacted]",
@@ -92,8 +106,14 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BPHG07",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"DJIA\",\"S&P 500\",\"NASDAQ Computer\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "DJIA",
+            "S&P 500",
+            "NASDAQ Computer",
+            "Russell 3000"
+        ],
         "entity_name": "Microsoft Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -106,7 +126,9 @@
         "event": "Social - Product Quality & Safety",
         "event_accern_id": 95258,
         "event_group": "Social",
-        "event_hits": "[\"product safety\"]",
+        "event_hits": [
+            "product safety"
+        ],
         "event_relevance": 3.9204,
         "event_sentiment": -31.9924907684,
         "event_text": "[redacted]",
@@ -132,8 +154,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BJZBK0",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "H. B. Fuller Company",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -146,7 +171,9 @@
         "event": "Social - Data Security",
         "event_accern_id": 95246,
         "event_group": "Social",
-        "event_hits": "[\"data protection regulation\"]",
+        "event_hits": [
+            "data protection regulation"
+        ],
         "event_relevance": 7.5,
         "event_sentiment": 16.75050354,
         "event_text": "[redacted]",
@@ -172,8 +199,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BJZBK0",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "H. B. Fuller Company",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -186,7 +216,10 @@
         "event": "Environment - Environmental Report",
         "event_accern_id": 102172,
         "event_group": "Environment",
-        "event_hits": "[\"environmental protection\",\"environmental matters\"]",
+        "event_hits": [
+            "environmental protection",
+            "environmental matters"
+        ],
         "event_relevance": 25.5,
         "event_sentiment": 9.5928428173,
         "event_text": "[redacted]",

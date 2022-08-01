@@ -12,8 +12,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000HL7PG4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Worthington Industries, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -26,7 +29,9 @@
         "event": "Governance - Administrative Expenses",
         "event_accern_id": 105914,
         "event_group": "Governance",
-        "event_hits": "[\"administrative expense\"]",
+        "event_hits": [
+            "administrative expense"
+        ],
         "event_relevance": 24.0,
         "event_sentiment": 7.4282450676,
         "event_text": "[redacted]",
@@ -52,8 +57,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BDJMS9",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "FactSet Research Systems Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -66,7 +74,9 @@
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
         "event_accern_id": 111709,
         "event_group": "Governance",
-        "event_hits": "[\"internal control over financial reporting\"]",
+        "event_hits": [
+            "internal control over financial reporting"
+        ],
         "event_relevance": 37.5,
         "event_sentiment": 12.8068094254,
         "event_text": "[redacted]",

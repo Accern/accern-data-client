@@ -12,8 +12,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BMZ937",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Kansas City Southern",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -26,7 +30,9 @@
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
         "event_accern_id": 111710,
         "event_group": "Governance",
-        "event_hits": "[\"disclosure controls and procedures\"]",
+        "event_hits": [
+            "disclosure controls and procedures"
+        ],
         "event_relevance": 41.25,
         "event_sentiment": 18.2468495369,
         "event_text": "[redacted]",
@@ -52,8 +58,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BMZ937",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Kansas City Southern",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -66,7 +76,9 @@
         "event": "Social - Training costs",
         "event_accern_id": 102066,
         "event_group": "Social",
-        "event_hits": "[\"training costs\"]",
+        "event_hits": [
+            "training costs"
+        ],
         "event_relevance": 10.5194,
         "event_sentiment": 9.4191322327,
         "event_text": "[redacted]",
@@ -92,8 +104,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BMZ937",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Kansas City Southern",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -106,7 +122,10 @@
         "event": "General Business Actions - IT Costs",
         "event_accern_id": 102064,
         "event_group": "General Business Actions",
-        "event_hits": "[\"software development costs\",\"expenses related\"]",
+        "event_hits": [
+            "software development costs",
+            "expenses related"
+        ],
         "event_relevance": 17.8246,
         "event_sentiment": -1.0946442336,
         "event_text": "[redacted]",
@@ -132,8 +151,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BMZ937",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Kansas City Southern",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -146,7 +169,9 @@
         "event": "Governance - Total IT Expenses",
         "event_accern_id": 105910,
         "event_group": "Governance",
-        "event_hits": "[\"software development costs\"]",
+        "event_hits": [
+            "software development costs"
+        ],
         "event_relevance": 7.2159,
         "event_sentiment": 16.1064105034,
         "event_text": "[redacted]",
@@ -172,8 +197,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BMZ937",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Kansas City Southern",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -186,7 +215,9 @@
         "event": "Governance - Legal costs",
         "event_accern_id": 102067,
         "event_group": "Governance",
-        "event_hits": "[\"legal fees\"]",
+        "event_hits": [
+            "legal fees"
+        ],
         "event_relevance": 9.0909,
         "event_sentiment": 10.1208939552,
         "event_text": "[redacted]",
@@ -212,8 +243,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BMZ937",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Kansas City Southern",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -226,7 +261,9 @@
         "event": "Social - Employee Engagement, Diversity & Inclusion",
         "event_accern_id": 95263,
         "event_group": "Social",
-        "event_hits": "[\"employee retention\"]",
+        "event_hits": [
+            "employee retention"
+        ],
         "event_relevance": 3.9755,
         "event_sentiment": 0.665009737,
         "event_text": "[redacted]",
@@ -252,8 +289,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BMZ937",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Kansas City Southern",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -266,7 +307,10 @@
         "event": "Social - Data Security",
         "event_accern_id": 95246,
         "event_group": "Social",
-        "event_hits": "[\"cyber attacks\",\"cyber security\"]",
+        "event_hits": [
+            "cyber attacks",
+            "cyber security"
+        ],
         "event_relevance": 14.6103,
         "event_sentiment": 12.9656934738,
         "event_text": "[redacted]",
@@ -292,8 +336,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BMZ937",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Kansas City Southern",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -306,7 +354,9 @@
         "event": "Governance - Product Development, R&D and Innovation",
         "event_accern_id": 105722,
         "event_group": "Governance",
-        "event_hits": "[\"to develop\"]",
+        "event_hits": [
+            "to develop"
+        ],
         "event_relevance": 13.6184,
         "event_sentiment": -14.7853879929,
         "event_text": "[redacted]",
@@ -332,8 +382,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BMZ937",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Kansas City Southern",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -346,7 +400,9 @@
         "event": "Governance - Process To Control Compliance With Environmental Standards By Regulators",
         "event_accern_id": 111689,
         "event_group": "Governance",
-        "event_hits": "[\"environmental regulations\"]",
+        "event_hits": [
+            "environmental regulations"
+        ],
         "event_relevance": 13.7337,
         "event_sentiment": 23.1033287048,
         "event_text": "[redacted]",
@@ -372,8 +428,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BMZ937",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Kansas City Southern",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -386,7 +446,11 @@
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
         "event_accern_id": 111709,
         "event_group": "Governance",
-        "event_hits": "[\"internal control over financial reporting\",\"internal control\",\"financial\"]",
+        "event_hits": [
+            "internal control over financial reporting",
+            "internal control",
+            "financial"
+        ],
         "event_relevance": 48.75,
         "event_sentiment": 17.7010936737,
         "event_text": "[redacted]",

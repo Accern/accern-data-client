@@ -12,8 +12,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000G1H723",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Landec Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -26,7 +29,9 @@
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
         "event_accern_id": 111709,
         "event_group": "Governance",
-        "event_hits": "[\"internal control over financial reporting\"]",
+        "event_hits": [
+            "internal control over financial reporting"
+        ],
         "event_relevance": 37.5,
         "event_sentiment": 17.4882316589,
         "event_text": "[redacted]",
@@ -52,8 +57,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BLLFK1",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Hurco Companies, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -66,7 +74,9 @@
         "event": "Governance - Total IT Expenses",
         "event_accern_id": 105910,
         "event_group": "Governance",
-        "event_hits": "[\"software development costs\"]",
+        "event_hits": [
+            "software development costs"
+        ],
         "event_relevance": 6.9615,
         "event_sentiment": 2.8124189377,
         "event_text": "[redacted]",
@@ -92,8 +102,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BLLFK1",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Hurco Companies, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -106,7 +119,10 @@
         "event": "Social - Training For Employees In Consumer Relations",
         "event_accern_id": 111681,
         "event_group": "Social",
-        "event_hits": "[\"customer service\",\"training\"]",
+        "event_hits": [
+            "customer service",
+            "training"
+        ],
         "event_relevance": 6.7976,
         "event_sentiment": 11.0616505941,
         "event_text": "[redacted]",
@@ -132,8 +148,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000G1H723",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Landec Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -146,7 +165,9 @@
         "event": "Social - Cost of Employee Salaries and Benefits",
         "event_accern_id": 105912,
         "event_group": "Social",
-        "event_hits": "[\"compensation expense\"]",
+        "event_hits": [
+            "compensation expense"
+        ],
         "event_relevance": 6.6428,
         "event_sentiment": -13.6084709167,
         "event_text": "[redacted]",
@@ -172,8 +193,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BLLFK1",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Hurco Companies, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -186,7 +210,10 @@
         "event": "Governance - Administrative Expenses",
         "event_accern_id": 105914,
         "event_group": "Governance",
-        "event_hits": "[\"administrative expenses\",\"administrative expense\"]",
+        "event_hits": [
+            "administrative expenses",
+            "administrative expense"
+        ],
         "event_relevance": 13.9231,
         "event_sentiment": -24.1554734806,
         "event_text": "[redacted]",
@@ -212,8 +239,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BLLFK1",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Hurco Companies, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -226,7 +256,9 @@
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
         "event_accern_id": 111709,
         "event_group": "Governance",
-        "event_hits": "[\"internal control over financial reporting\"]",
+        "event_hits": [
+            "internal control over financial reporting"
+        ],
         "event_relevance": 8.8796,
         "event_sentiment": 16.754625241,
         "event_text": "[redacted]",
@@ -252,8 +284,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000G1H723",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Landec Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -266,7 +301,9 @@
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
         "event_accern_id": 111710,
         "event_group": "Governance",
-        "event_hits": "[\"disclosure controls and procedures\"]",
+        "event_hits": [
+            "disclosure controls and procedures"
+        ],
         "event_relevance": 52.5,
         "event_sentiment": 20.4298820496,
         "event_text": "[redacted]",
@@ -292,8 +329,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BLLFK1",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Hurco Companies, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -306,7 +346,9 @@
         "event": "Governance - Management of the Legal & Regulatory Environment",
         "event_accern_id": 95272,
         "event_group": "Governance",
-        "event_hits": "[\"federal reserve board\"]",
+        "event_hits": [
+            "federal reserve board"
+        ],
         "event_relevance": 13.1044,
         "event_sentiment": 17.395772934,
         "event_text": "[redacted]",
@@ -332,8 +374,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000G1H723",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Landec Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -346,7 +391,12 @@
         "event": "Social - Marketing and Sales Expenses",
         "event_accern_id": 105913,
         "event_group": "Social",
-        "event_hits": "[\"cost of sales\",\"sales\",\"expenses\",\"sales and marketing expenses\"]",
+        "event_hits": [
+            "cost of sales",
+            "sales",
+            "expenses",
+            "sales and marketing expenses"
+        ],
         "event_relevance": 26.5714,
         "event_sentiment": 1.6420822144,
         "event_text": "[redacted]",
@@ -372,8 +422,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BLLFK1",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Hurco Companies, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -386,7 +439,9 @@
         "event": "Governance - Stakeholder Related Matters: Mechanisms For Employee Participation",
         "event_accern_id": 111733,
         "event_group": "Governance",
-        "event_hits": "[\"employee engagement\"]",
+        "event_hits": [
+            "employee engagement"
+        ],
         "event_relevance": 9.8901,
         "event_sentiment": 21.4515428543,
         "event_text": "[redacted]",

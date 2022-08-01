@@ -12,8 +12,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BTL214",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "PriceSmart, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -26,7 +29,11 @@
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
         "event_accern_id": 111710,
         "event_group": "Governance",
-        "event_hits": "[\"maintain disclosure controls and procedures\",\"disclosure controls and procedures\",\"maintain\"]",
+        "event_hits": [
+            "maintain disclosure controls and procedures",
+            "disclosure controls and procedures",
+            "maintain"
+        ],
         "event_relevance": 63.75,
         "event_sentiment": 24.5899353027,
         "event_text": "[redacted]",
@@ -52,8 +59,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BWP4Q2",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "WD-40 Company",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -66,7 +76,9 @@
         "event": "Social - Product Quality & Safety",
         "event_accern_id": 95258,
         "event_group": "Social",
-        "event_hits": "[\"quality control\"]",
+        "event_hits": [
+            "quality control"
+        ],
         "event_relevance": 11.0,
         "event_sentiment": 7.7201991081,
         "event_text": "[redacted]",
@@ -92,8 +104,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BHYXT8",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Resources Connection, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -106,7 +121,10 @@
         "event": "Governance - Digitalization Strategy",
         "event_accern_id": 111687,
         "event_group": "Governance",
-        "event_hits": "[\"digital strategies\",\"digital transformation\"]",
+        "event_hits": [
+            "digital strategies",
+            "digital transformation"
+        ],
         "event_relevance": 21.8571,
         "event_sentiment": 62.0174570084,
         "event_text": "[redacted]",
