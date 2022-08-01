@@ -96,7 +96,7 @@ def test_timestamp_json() -> None:
     for cur_date in pd.date_range(start_date, end_date):
         date = cur_date.strftime(DATE_FORMAT)
         try:
-            json_actual = load_json(f"{get_data_dir()}/json/{date}.json")
+            json_actual = load_json(f"{get_data_dir()}/json/data-2022.json")
             json_generated = load_json(
                 f"{output_path}{output_pattern}-{date}.json")
         except FileNotFoundError:
@@ -106,4 +106,4 @@ def test_timestamp_json() -> None:
             if (start_date_dt <= pd.to_datetime(obj["published_at"], utc=True))
             and (pd.to_datetime(obj["published_at"], utc=True) <= end_date_dt)
         ]
-        assert json_generated == filtered_json
+        assert json_generated == filtered_json, f"Failing for {date}."
