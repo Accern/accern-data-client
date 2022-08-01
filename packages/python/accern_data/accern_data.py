@@ -115,6 +115,7 @@ FiltersType = TypedDict(
         "signal_tag": Optional[Union[str, List[str]]],
     },
     total=False)
+FilterValue = Optional[Union[bool, int, str, List[bool], List[int], List[str]]]
 
 ModeType = Literal["csv", "df", "json"]
 Indicators = Literal["pbar", "silent", "message"]
@@ -435,7 +436,7 @@ class DataClient:
             ) -> None:
         self._base_url = url
         self._token = token
-        self._filters: Dict[str, Any] = {}
+        self._filters: Dict[str, FilterValue] = {}
         self._mode: Optional[Mode] = None
         if indicator is not None:
             self.set_indicator(indicator)
@@ -448,8 +449,8 @@ class DataClient:
         self._error_list.clear()
 
     @staticmethod
-    def _validate_filters(filters: FiltersType) -> Dict[str, Any]:
-        valid_filters: Dict[str, Any] = {}
+    def _validate_filters(filters: FiltersType) -> Dict[str, FilterValue]:
+        valid_filters: Dict[str, FilterValue] = {}
         for key, value in filters.items():
             if key not in FILTER_FIELD:
                 raise ValueError(
@@ -460,8 +461,8 @@ class DataClient:
         return valid_filters
 
     @staticmethod
-    def _parse_filters(filters: Dict[str, Any]) -> Dict[str, Any]:
-        proper_filters: Dict[str, Any] = {}
+    def _parse_filters(filters: Dict[str, Any]) -> Dict[str, FilterValue]:
+        proper_filters: Dict[str, FilterValue] = {}
         for key, value in filters.items():
             assert key not in EXCLUDED_FILTER_FIELD, (
                 "filters should not be containing any of "
@@ -497,10 +498,10 @@ class DataClient:
     def set_filters(self, filters: FiltersType) -> None:
         self._set_raw_filters(self._validate_filters(filters))
 
-    def _set_raw_filters(self, filters: Dict[str, Any]) -> None:
+    def _set_raw_filters(self, filters: Dict[str, FilterValue]) -> None:
         self._filters = self._parse_filters(filters)
 
-    def get_filters(self) -> Dict[str, Any]:
+    def get_filters(self) -> Dict[str, FilterValue]:
         return self._filters
 
     @staticmethod
@@ -547,7 +548,7 @@ class DataClient:
     def _read_total(
             self,
             cur_date: str,
-            filters: Dict[str, Any],
+            filters: Dict[str, FilterValue],
             indicator: ProgressIndicator,
             request_kwargs: Optional[Dict[Any, Any]]) -> int:
         rkwargs = {} if request_kwargs is None else request_kwargs
@@ -587,7 +588,7 @@ class DataClient:
             self,
             mode: Mode[T],
             params: Dict[str, str],
-            filters: Dict[str, Any],
+            filters: Dict[str, FilterValue],
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]],
             request_kwargs: Optional[Dict[Any, Any]]) -> List[T]:
@@ -634,7 +635,7 @@ class DataClient:
             harvested_after: str,
             mode: Mode[T],
             params: Dict[str, str],
-            filters: Dict[str, Any],
+            filters: Dict[str, FilterValue],
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]] = None,
             request_kwargs: Optional[Dict[Any, Any]] = None,
@@ -684,7 +685,7 @@ class DataClient:
     def read_total(
             self,
             cur_date: str,
-            filters: Dict[str, Any],
+            filters: Dict[str, FilterValue],
             request_kwargs: Optional[Dict[Any, Any]] = None) -> int:
         warnings.warn(
             "read_total method is deprecated and will be removed in later "
@@ -715,7 +716,7 @@ class DataClient:
         return self._parse_mode(*mode)
 
     def _get_valid_filters(
-            self, filters: Optional[FiltersType]) -> Dict[str, str]:
+            self, filters: Optional[FiltersType]) -> Dict[str, FilterValue]:
         if filters is None:
             return self.get_filters()
         return self._parse_filters(
