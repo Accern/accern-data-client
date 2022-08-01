@@ -47,12 +47,13 @@ def is_test() -> int:
 
 
 def check_filters(
-        record: Dict[str, Any], filters: Dict[str, FilterValue]) -> bool:
+        record: Dict[str, Any], filters: Dict[str, 'FilterValue']) -> bool:
     for key, value in filters.items():
-        if key not in {"start_time", "end_time"}:
-            # FIXME: check list here
-            if field_transformation(record[key]) != value:
+        if isinstance(value, list):
+            if field_transformation(record[key]) not in value:
                 return False
+        if field_transformation(record[key]) != value:
+            return False
     return True
 
 
@@ -68,7 +69,7 @@ def field_transformation(value: Any) -> Union[str, List[str]]:
 
 def get_overall_total_from_dummy(
         params: Dict[str, str],
-        filters: Dict[str, FilterValue],
+        filters: Dict[str, 'FilterValue'],
         encoding: str = "utf-8") -> Response:
     response_obj = Response()
     start_dt, end_dt = create_start_end_date(params["date"], params)
@@ -119,7 +120,7 @@ def generate_csv_object(
         path: str,
         params: Dict[str, str],
         harvested_after: pd.Timestamp,
-        filters: Dict[str, FilterValue],
+        filters: Dict[str, 'FilterValue'],
         encoding: str) -> io.BytesIO:
     df = pd.read_csv(path)
     df["harvested_at"] = pd.to_datetime(df["harvested_at"])
@@ -136,7 +137,10 @@ def generate_csv_object(
     else:
         result = pd.Series(True, index=valid_df.index)
         for key, val in filters.items():
-            result &= (valid_df[key].apply(field_transformation) == val)
+            if isinstance(val, list):
+                result &= valid_df[key].apply(field_transformation).isin(val)
+            else:
+                result &= (valid_df[key].apply(field_transformation) == val)
         filtered_df = valid_df[result]
     obj = io.BytesIO()
     filtered_df.iloc[:DEFAULT_CHUNK_SIZE, :].to_csv(
@@ -148,7 +152,7 @@ def generate_json_object(
         path: str,
         params: Dict[str, str],
         harvested_after: pd.Timestamp,
-        filters: Dict[str, FilterValue],
+        filters: Dict[str, 'FilterValue'],
         encoding: str) -> io.BytesIO:
     json_obj = load_json(path)
     filtered_json = {
@@ -174,7 +178,7 @@ def generate_json_object(
 def generate_file_response(
         params: Dict[str, str],
         mode: str,
-        filters: Dict[str, FilterValue],
+        filters: Dict[str, 'FilterValue'],
         encoding: str = "utf-8") -> Response:
     response_obj = Response()
     harvested_after_dt = pd.to_datetime(params["harvested_after"], utc=True)
