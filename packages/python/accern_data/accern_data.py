@@ -461,7 +461,8 @@ class DataClient:
         return valid_filters
 
     @staticmethod
-    def _parse_filters(filters: Dict[str, Any]) -> Dict[str, FilterValue]:
+    def _parse_filters(
+            filters: Dict[str, FilterValue]) -> Dict[str, FilterValue]:
         proper_filters: Dict[str, FilterValue] = {}
         for key, value in filters.items():
             assert key not in EXCLUDED_FILTER_FIELD, (
@@ -547,7 +548,7 @@ class DataClient:
 
     def _read_total(
             self,
-            cur_date: str,
+            params: Dict[str, str],
             filters: Dict[str, FilterValue],
             indicator: ProgressIndicator,
             request_kwargs: Optional[Dict[Any, Any]]) -> int:
@@ -557,11 +558,11 @@ class DataClient:
                 req_params = None
                 if is_example_url(self._base_url):
                     resp = get_overall_total_from_dummy(
-                        cur_date, filters)
+                        params["date"], filters)
                 else:
                     req_params = {
                         "token": self._token,
-                        "date": cur_date,
+                        **params,
                         "format": "json",
                         "size": "1",
                         "exclude": "*",
@@ -693,7 +694,7 @@ class DataClient:
             DeprecationWarning,
             stacklevel=2)
         return self._read_total(
-            cur_date=cur_date,
+            params={"date": cur_date},
             filters=filters,
             indicator=self.get_indicator(),
             request_kwargs=request_kwargs)
@@ -827,24 +828,20 @@ class DataClient:
         start_date_only_dt = pd.to_datetime(start_date_only)
         end_date_only_dt = pd.to_datetime(end_date_only)
 
-        def parse_time(date: str, params: Dict[str, str]) -> Dict[str, str]:
+        def parse_time(date: str) -> Dict[str, str]:
             times: Dict[str, str] = {}
-            valid_params = params
             if date == start_date_only and start_date_only_dt != start_date_dt:
                 times["start_time"] = start_date_dt.strftime(TIME_FORMAT)
             if date == end_date_only and end_date_only_dt != end_date_dt:
                 times["end_time"] = end_date_dt.strftime(TIME_FORMAT)
-            if times:
-                valid_params = params.copy()
-                valid_params.update(times)
-            return valid_params
+            return times
 
         for cur_date in pd.date_range(start_date_only, end_date_only):
             date = cur_date.strftime(DATE_FORMAT)
             expected_records.append(
                 self._read_total(
-                    date,
-                    parse_time(date, valid_filters),
+                    {"date": date, **parse_time(date)},
+                    filters=valid_filters,
                     indicator=indicator_obj,
                     request_kwargs=request_kwargs))
             indicator_obj.update(1)
@@ -858,8 +855,7 @@ class DataClient:
                 set_active_mode(valid_mode, cur_date, indicator_obj)
             date = cur_date.strftime(DATE_FORMAT)
             indicator_obj.set_description(f"Downloading signals for {date}")
-            params = {"date": date}
-            params = parse_time(date, params)
+            params = {"date": date, **parse_time(date)}
             for data in self._scroll(
                     "1900-01-01",
                     valid_mode,
