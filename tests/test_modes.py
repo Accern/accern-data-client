@@ -125,4 +125,4 @@ def test_json(method_used: str) -> None:
         except FileNotFoundError:
             continue
 
-        assert json_actual == json_generated
+        assert json_actual == json_generated, f"Different for {date}."
