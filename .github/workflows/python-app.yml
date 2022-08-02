@@ -185,7 +185,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  v1-test-results-${{ matrix.python }}-${{ hashFiles('tests/test*.py') }}-${{ hashFiles('tests/data*'') }}
+        key:  v1-test-results-${{ matrix.python }}-${{ hashFiles('tests/test*.py') }}-${{ hashFiles('tests/data*') }}
 
     - name: Download all coverage reports
       uses: actions/download-artifact@v2
