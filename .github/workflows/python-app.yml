@@ -20,10 +20,10 @@ jobs:
         python-version: ${{ matrix.python }}
 
     - name: Cache python modules
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ env.pythonLocation }}
-        key: ${{ env.pythonLocation }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements.lint.txt') }}
+        key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements.lint.txt') }}
 
     - name: Install dependencies
       run: |
@@ -93,15 +93,15 @@ jobs:
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  v1-test-results-${{ matrix.python }}  # meant to be wrong so that restore-keys can find it
+        key:  v1-test-results-${{ matrix.python }}-${{ hashFiles('tests/test*.py')}}-${{ hashFiles('tests/data*') }}
         restore-keys: |
           test-results-${{ matrix.python }}-
 
     - name: Cache python modules
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ env.pythonLocation }}
-        key: ${{ env.pythonLocation }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements.lint.txt') }}
+        key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements.lint.txt') }}
 
     - name: Install dependencies
       run: |
@@ -163,10 +163,10 @@ jobs:
         python-version: ${{ matrix.python }}
 
     - name: Cache python modules
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ env.pythonLocation }}
-        key: ${{ env.pythonLocation }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements.lint.txt') }}
+        key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements.lint.txt') }}
 
     - name: Install dependencies
       run: |
@@ -185,7 +185,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  test-results-${{ matrix.python }}-${{ hashFiles('test-results/results.xml') }}
+        key:  v1-test-results-${{ matrix.python }}-${{ hashFiles('tests/test*.py')}}-${{ hashFiles('tests/data*'') }}
 
     - name: Download all coverage reports
       uses: actions/download-artifact@v2

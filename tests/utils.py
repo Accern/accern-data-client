@@ -81,7 +81,7 @@ def split_tests(filepath: str, total_nodes: int, cur_node: int) -> None:
             time_keys = [(file, DEFAULT_TEST_DURATION) for file in test_files]
 
         def find_lowest_total_time(
-                    test_sets: List[Tuple[List[str], float]]) -> int:
+                test_sets: List[Tuple[List[str], float]]) -> int:
             minimum = None
             idx = -1
             for ix, val in enumerate(test_sets):
