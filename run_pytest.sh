@@ -29,5 +29,5 @@ else
         IDX=$((IDX+1))
     done
 fi
-python3 -c "from tests.utils import merge_results; merge_results('./test-results')"
+python3 -m tests merge_results --dir test-results --out-fname results.xml
 rm -r test-results/parts

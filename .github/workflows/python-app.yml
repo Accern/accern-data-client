@@ -179,7 +179,7 @@ jobs:
     - name: Merge results
       run: |
         mv results-${{ matrix.python }}-*/results-${{ matrix.python }}-* test-results/parts/
-        python3 -c "from tests.utils import merge_results; merge_results('./test-results', 'results.xml')"
+        python3 -m tests merge_results --dir test-results --out-fname results.xml
 
     - name: Restore test-result Cache (Dummy step)  # This is a dummy step, i.e., we don't want to restore cache here. The post counterpart of this step would save our cache.
       uses: actions/cache@v3
