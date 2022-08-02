@@ -12,8 +12,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000HL7PG4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Worthington Industries, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -24,9 +27,11 @@
         "entity_ticker": "WOR",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expense\"]",
+        "event_hits": [
+            "administrative expense"
+        ],
         "event_relevance": 24.0,
         "event_sentiment": 7.4282450676,
         "event_text": "[redacted]",
@@ -52,8 +57,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000HL7PG4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Worthington Industries, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -64,9 +72,12 @@
         "entity_ticker": "WOR",
         "entity_type": "us_equity",
         "event": "Social - Employee Benefits",
-        "event_accern_id": 105757,
+        "event_accern_id": "105757",
         "event_group": "Social",
-        "event_hits": "[\"employee benefit\",\"employee benefits\"]",
+        "event_hits": [
+            "employee benefit",
+            "employee benefits"
+        ],
         "event_relevance": 40.5,
         "event_sentiment": 12.9538777669,
         "event_text": "[redacted]",
@@ -92,8 +103,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000HL7PG4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Worthington Industries, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -104,9 +118,12 @@
         "entity_ticker": "WOR",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
-        "event_hits": "[\"disclosure controls and procedures\",\"maintain disclosure controls and procedures\"]",
+        "event_hits": [
+            "disclosure controls and procedures",
+            "maintain disclosure controls and procedures"
+        ],
         "event_relevance": 60.0,
         "event_sentiment": 18.827955246,
         "event_text": "[redacted]",
@@ -132,8 +149,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000HL7PG4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Worthington Industries, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -144,9 +164,11 @@
         "entity_ticker": "WOR",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
-        "event_hits": "[\"incentive compensation\"]",
+        "event_hits": [
+            "incentive compensation"
+        ],
         "event_relevance": 10.9286,
         "event_sentiment": 20.8359565735,
         "event_text": "[redacted]",
@@ -172,8 +194,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000HL7PG4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Worthington Industries, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -184,9 +209,11 @@
         "entity_ticker": "WOR",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
-        "event_hits": "[\"to develop\"]",
+        "event_hits": [
+            "to develop"
+        ],
         "event_relevance": 33.75,
         "event_sentiment": 23.0133533478,
         "event_text": "[redacted]",
@@ -212,8 +239,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000HL7PG4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Worthington Industries, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -224,9 +254,12 @@
         "entity_ticker": "WOR",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expense\",\"decrease\"]",
+        "event_hits": [
+            "administrative expense",
+            "decrease"
+        ],
         "event_relevance": 30.8571,
         "event_sentiment": 49.1279497147,
         "event_text": "[redacted]",
@@ -252,8 +285,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000HL7PG4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Worthington Industries, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -264,9 +300,12 @@
         "entity_ticker": "WOR",
         "entity_type": "us_equity",
         "event": "Social - Data Security",
-        "event_accern_id": 95246,
+        "event_accern_id": "95246",
         "event_group": "Social",
-        "event_hits": "[\"cyber security risks\",\"information security\"]",
+        "event_hits": [
+            "cyber security risks",
+            "information security"
+        ],
         "event_relevance": 30.0,
         "event_sentiment": 7.1164045334,
         "event_text": "[redacted]",
@@ -292,8 +331,10 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG00L7XTPR7",
-        "entity_hits": "[]",
-        "entity_indices": "[\"N/A\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "N/A"
+        ],
         "entity_name": "Tilray Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -304,9 +345,11 @@
         "entity_ticker": "TLRY",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expenses\"]",
+        "event_hits": [
+            "administrative expenses"
+        ],
         "event_relevance": 18.75,
         "event_sentiment": 9.5826530457,
         "event_text": "[redacted]",
@@ -332,8 +375,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000HL7PG4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Worthington Industries, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -344,9 +390,11 @@
         "entity_ticker": "WOR",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
-        "event_hits": "[\"internal control over financial reporting\"]",
+        "event_hits": [
+            "internal control over financial reporting"
+        ],
         "event_relevance": 30.0,
         "event_sentiment": 14.8872489929,
         "event_text": "[redacted]",
@@ -372,8 +420,10 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG00L7XTPR7",
-        "entity_hits": "[]",
-        "entity_indices": "[\"N/A\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "N/A"
+        ],
         "entity_name": "Tilray Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -384,9 +434,12 @@
         "entity_ticker": "TLRY",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expenses\",\"administrative costs\"]",
+        "event_hits": [
+            "administrative expenses",
+            "administrative costs"
+        ],
         "event_relevance": 23.1818,
         "event_sentiment": 11.3295454979,
         "event_text": "[redacted]",

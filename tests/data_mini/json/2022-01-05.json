@@ -12,8 +12,10 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG00H3T9L81",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Russell 3000"
+        ],
         "entity_name": "The Simply Good Foods Company",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -24,9 +26,13 @@
         "entity_ticker": "SMPL",
         "entity_type": "us_equity",
         "event": "Social - Marketing Expenses",
-        "event_accern_id": 102069,
+        "event_accern_id": "102069",
         "event_group": "Social",
-        "event_hits": "[\"marketing\",\"marketing expenses\",\"marketing costs\"]",
+        "event_hits": [
+            "marketing",
+            "marketing expenses",
+            "marketing costs"
+        ],
         "event_relevance": 27.0,
         "event_sentiment": 18.7078266144,
         "event_text": "[redacted]",
@@ -52,8 +58,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000DCPNF4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "RPM International Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -64,9 +73,12 @@
         "entity_ticker": "RPM",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
-        "event_hits": "[\"internal control\",\"internal control over financial reporting\"]",
+        "event_hits": [
+            "internal control",
+            "internal control over financial reporting"
+        ],
         "event_relevance": 45.0,
         "event_sentiment": 17.5471248627,
         "event_text": "[redacted]",
@@ -92,8 +104,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000DCPNF4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "RPM International Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -104,9 +119,11 @@
         "entity_ticker": "RPM",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
-        "event_hits": "[\"compensation expense\"]",
+        "event_hits": [
+            "compensation expense"
+        ],
         "event_relevance": 13.0714,
         "event_sentiment": 6.4083874226,
         "event_text": "[redacted]",
@@ -132,8 +149,10 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000Q6S5V1",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000"
+        ],
         "entity_name": "Saratoga Investment Corp",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -144,9 +163,11 @@
         "entity_ticker": "SAR",
         "entity_type": "us_equity",
         "event": "Governance - Management of the Legal & Regulatory Environment",
-        "event_accern_id": 95272,
+        "event_accern_id": "95272",
         "event_group": "Governance",
-        "event_hits": "[\"federal reserve board\"]",
+        "event_hits": [
+            "federal reserve board"
+        ],
         "event_relevance": 90.0,
         "event_sentiment": 16.3391494751,
         "event_text": "[redacted]",
@@ -172,8 +193,10 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000Q6S5V1",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000"
+        ],
         "entity_name": "Saratoga Investment Corp",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -184,9 +207,11 @@
         "entity_ticker": "SAR",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
-        "event_hits": "[\"disclosure controls and procedures\"]",
+        "event_hits": [
+            "disclosure controls and procedures"
+        ],
         "event_relevance": 52.5,
         "event_sentiment": 19.8992805481,
         "event_text": "[redacted]",
@@ -212,8 +237,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000DCPNF4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "RPM International Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -224,9 +252,11 @@
         "entity_ticker": "RPM",
         "entity_type": "us_equity",
         "event": "Environment - Environmental Report",
-        "event_accern_id": 102172,
+        "event_accern_id": "102172",
         "event_group": "Environment",
-        "event_hits": "[\"environmental matters\"]",
+        "event_hits": [
+            "environmental matters"
+        ],
         "event_relevance": 90.0,
         "event_sentiment": 11.2379865646,
         "event_text": "[redacted]",
@@ -252,8 +282,10 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG00H3T9L81",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Russell 3000"
+        ],
         "entity_name": "The Simply Good Foods Company",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -264,9 +296,11 @@
         "entity_ticker": "SMPL",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expense\"]",
+        "event_hits": [
+            "administrative expense"
+        ],
         "event_relevance": 37.5,
         "event_sentiment": 12.1787366867,
         "event_text": "[redacted]",
@@ -292,8 +326,10 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG00H3T9L81",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Russell 3000"
+        ],
         "entity_name": "The Simply Good Foods Company",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -304,9 +340,12 @@
         "entity_ticker": "SMPL",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
-        "event_hits": "[\"maintain disclosure controls and procedures\",\"disclosure controls and procedures\"]",
+        "event_hits": [
+            "maintain disclosure controls and procedures",
+            "disclosure controls and procedures"
+        ],
         "event_relevance": 48.0,
         "event_sentiment": 13.5091090202,
         "event_text": "[redacted]",
@@ -332,8 +371,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000DCPNF4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "RPM International Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -344,9 +386,11 @@
         "entity_ticker": "RPM",
         "entity_type": "us_equity",
         "event": "Environment - Environmental Report",
-        "event_accern_id": 102172,
+        "event_accern_id": "102172",
         "event_group": "Environment",
-        "event_hits": "[\"environmental matters\"]",
+        "event_hits": [
+            "environmental matters"
+        ],
         "event_relevance": 6.6428,
         "event_sentiment": 9.9429035187,
         "event_text": "[redacted]",
@@ -372,8 +416,10 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG00H3T9L81",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Russell 3000"
+        ],
         "entity_name": "The Simply Good Foods Company",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -384,9 +430,13 @@
         "entity_ticker": "SMPL",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
-        "event_hits": "[\"internal control over financial reporting\",\"internal controls\",\"financial reporting\"]",
+        "event_hits": [
+            "internal control over financial reporting",
+            "internal controls",
+            "financial reporting"
+        ],
         "event_relevance": 42.0,
         "event_sentiment": 6.5654468536,
         "event_text": "[redacted]",

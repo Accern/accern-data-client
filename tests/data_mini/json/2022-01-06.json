@@ -12,8 +12,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BHYXT8",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Resources Connection, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -24,9 +27,11 @@
         "entity_ticker": "RECN",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
-        "event_hits": "[\"internal control over financial reporting\"]",
+        "event_hits": [
+            "internal control over financial reporting"
+        ],
         "event_relevance": 37.5,
         "event_sentiment": 15.4524393082,
         "event_text": "[redacted]",
@@ -52,8 +57,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BHYXT8",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Resources Connection, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -64,9 +72,11 @@
         "entity_ticker": "RECN",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
-        "event_hits": "[\"disclosure controls and procedures\"]",
+        "event_hits": [
+            "disclosure controls and procedures"
+        ],
         "event_relevance": 52.5,
         "event_sentiment": 19.7136154175,
         "event_text": "[redacted]",
@@ -92,8 +102,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BTL214",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "PriceSmart, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -104,9 +117,13 @@
         "entity_ticker": "PSMT",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
-        "event_hits": "[\"maintain disclosure controls and procedures\",\"disclosure controls and procedures\",\"maintain\"]",
+        "event_hits": [
+            "maintain disclosure controls and procedures",
+            "disclosure controls and procedures",
+            "maintain"
+        ],
         "event_relevance": 63.75,
         "event_sentiment": 24.5899353027,
         "event_text": "[redacted]",
@@ -132,8 +149,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BWP4Q2",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "WD-40 Company",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -144,9 +164,11 @@
         "entity_ticker": "WDFC",
         "entity_type": "us_equity",
         "event": "Social - Product Quality & Safety",
-        "event_accern_id": 95258,
+        "event_accern_id": "95258",
         "event_group": "Social",
-        "event_hits": "[\"quality control\"]",
+        "event_hits": [
+            "quality control"
+        ],
         "event_relevance": 11.0,
         "event_sentiment": 7.7201991081,
         "event_text": "[redacted]",
@@ -172,8 +194,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BHYXT8",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Resources Connection, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -184,9 +209,12 @@
         "entity_ticker": "RECN",
         "entity_type": "us_equity",
         "event": "Governance - Digitalization Strategy",
-        "event_accern_id": 111687,
+        "event_accern_id": "111687",
         "event_group": "Governance",
-        "event_hits": "[\"digital strategies\",\"digital transformation\"]",
+        "event_hits": [
+            "digital strategies",
+            "digital transformation"
+        ],
         "event_relevance": 21.8571,
         "event_sentiment": 62.0174570084,
         "event_text": "[redacted]",
@@ -212,8 +240,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BTL214",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "PriceSmart, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -224,9 +255,11 @@
         "entity_ticker": "PSMT",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
-        "event_hits": "[\"internal control over financial reporting\"]",
+        "event_hits": [
+            "internal control over financial reporting"
+        ],
         "event_relevance": 26.25,
         "event_sentiment": 18.6524219513,
         "event_text": "[redacted]",
@@ -252,8 +285,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BWP4Q2",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "WD-40 Company",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -264,9 +300,12 @@
         "entity_ticker": "WDFC",
         "entity_type": "us_equity",
         "event": "Social - Marketing Expenses",
-        "event_accern_id": 102069,
+        "event_accern_id": "102069",
         "event_group": "Social",
-        "event_hits": "[\"advertising\",\"expenses\"]",
+        "event_hits": [
+            "advertising",
+            "expenses"
+        ],
         "event_relevance": 23.5,
         "event_sentiment": 6.1968898773,
         "event_text": "[redacted]",
@@ -292,8 +331,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BWP4Q2",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "WD-40 Company",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -304,9 +346,11 @@
         "entity_ticker": "WDFC",
         "entity_type": "us_equity",
         "event": "Social - Product Quality & Safety",
-        "event_accern_id": 95258,
+        "event_accern_id": "95258",
         "event_group": "Social",
-        "event_hits": "[\"quality assurance\"]",
+        "event_hits": [
+            "quality assurance"
+        ],
         "event_relevance": 5.1428,
         "event_sentiment": 22.3928127289,
         "event_text": "[redacted]",
@@ -332,8 +376,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BHYXT8",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Resources Connection, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -344,9 +391,11 @@
         "entity_ticker": "RECN",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
-        "event_hits": "[\"to develop\"]",
+        "event_hits": [
+            "to develop"
+        ],
         "event_relevance": 15.2143,
         "event_sentiment": 70.2963867188,
         "event_text": "[redacted]",
@@ -372,8 +421,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BWP4Q2",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "WD-40 Company",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -384,9 +436,12 @@
         "entity_ticker": "WDFC",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
-        "event_hits": "[\"incentive compensation\",\"compensation expenses\"]",
+        "event_hits": [
+            "incentive compensation",
+            "compensation expenses"
+        ],
         "event_relevance": 10.2857,
         "event_sentiment": 5.9773015976,
         "event_text": "[redacted]",

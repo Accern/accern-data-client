@@ -110,8 +110,7 @@ def test_json_iterator() -> None:
     for obj in js_total["signals"]:
         for dt in ["crawled_at", "harvested_at", "published_at"]:
             obj[dt] = pd.to_datetime(obj[dt]).strftime(DATETIME_FORMAT)
-    assert sorted(jsons, key=lambda x: x["signal_id"]) == sorted(
-        js_total["signals"], key=lambda x: x["signal_id"])
+    assert jsons == js_total["signals"]
     beg = 0
     end = 0
     for cur_date in pd.date_range(start_date, end_date):
@@ -128,7 +127,5 @@ def test_json_iterator() -> None:
             end = idx
         for idx in range(beg, end+1):
             json_date.append(jsons[idx])
-        json_date.sort(key=lambda x: x["signal_id"])
-        js.sort(key=lambda x: x["signal_id"])
         assert js == json_date, f"Results for {date} not matching."
         beg = end + 1

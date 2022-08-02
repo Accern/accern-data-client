@@ -12,8 +12,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BG8NW7",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Commvault Systems, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -24,9 +27,13 @@
         "entity_ticker": "CVLT",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
-        "event_hits": "[\"internal control over financial reporting\",\"internal controls\",\"financial\"]",
+        "event_hits": [
+            "internal control over financial reporting",
+            "internal controls",
+            "financial"
+        ],
         "event_relevance": 48.75,
         "event_sentiment": 13.6703710556,
         "event_text": "[redacted]",
@@ -52,8 +59,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BG8NW7",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Commvault Systems, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -64,9 +74,12 @@
         "entity_ticker": "CVLT",
         "entity_type": "us_equity",
         "event": "Governance - Total IT Expenses",
-        "event_accern_id": 105910,
+        "event_accern_id": "105910",
         "event_group": "Governance",
-        "event_hits": "[\"software\",\"expenses\"]",
+        "event_hits": [
+            "software",
+            "expenses"
+        ],
         "event_relevance": 9.75,
         "event_sentiment": 49.4775714874,
         "event_text": "[redacted]",
@@ -92,8 +105,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BG8NW7",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Commvault Systems, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -104,9 +120,11 @@
         "entity_ticker": "CVLT",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expenses\"]",
+        "event_hits": [
+            "administrative expenses"
+        ],
         "event_relevance": 90.0,
         "event_sentiment": 3.1726841927,
         "event_text": "[redacted]",
@@ -132,8 +150,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000QSXRZ5",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "K12 Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -144,9 +165,11 @@
         "entity_ticker": "LRN",
         "entity_type": "us_equity",
         "event": "Social - Marketing Expenses",
-        "event_accern_id": 102069,
+        "event_accern_id": "102069",
         "event_group": "Social",
-        "event_hits": "[\"marketing expenses\"]",
+        "event_hits": [
+            "marketing expenses"
+        ],
         "event_relevance": 7.3051,
         "event_sentiment": -4.6713700294,
         "event_text": "[redacted]",
@@ -172,8 +195,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000QSXRZ5",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "K12 Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -184,9 +210,13 @@
         "entity_ticker": "LRN",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
-        "event_hits": "[\"internal control over financial reporting\",\"internal controls\",\"financial reporting\"]",
+        "event_hits": [
+            "internal control over financial reporting",
+            "internal controls",
+            "financial reporting"
+        ],
         "event_relevance": 42.0,
         "event_sentiment": 12.8602542877,
         "event_text": "[redacted]",
@@ -212,8 +242,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000QSXRZ5",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "K12 Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -224,9 +257,11 @@
         "entity_ticker": "LRN",
         "entity_type": "us_equity",
         "event": "General Business Actions - IT Costs",
-        "event_accern_id": 102064,
+        "event_accern_id": "102064",
         "event_group": "General Business Actions",
-        "event_hits": "[\"software development costs\"]",
+        "event_hits": [
+            "software development costs"
+        ],
         "event_relevance": 13.125,
         "event_sentiment": 9.3802976608,
         "event_text": "[redacted]",
@@ -252,8 +287,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000QSXRZ5",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "K12 Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -264,9 +302,11 @@
         "entity_ticker": "LRN",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expenses\"]",
+        "event_hits": [
+            "administrative expenses"
+        ],
         "event_relevance": 18.4821,
         "event_sentiment": 7.0924127102,
         "event_text": "[redacted]",
@@ -292,8 +332,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BG8NW7",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Commvault Systems, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -304,9 +347,13 @@
         "entity_ticker": "CVLT",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expenses\",\"administrative expenses increased\",\"administrative expense\"]",
+        "event_hits": [
+            "administrative expenses",
+            "administrative expenses increased",
+            "administrative expense"
+        ],
         "event_relevance": 16.5,
         "event_sentiment": 22.8275311788,
         "event_text": "[redacted]",
@@ -332,8 +379,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000QSXRZ5",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "K12 Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -344,9 +394,12 @@
         "entity_ticker": "LRN",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expenses\",\"increase\"]",
+        "event_hits": [
+            "administrative expenses",
+            "increase"
+        ],
         "event_relevance": 21.0389,
         "event_sentiment": -9.4347609282,
         "event_text": "[redacted]",
@@ -372,8 +425,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000QSXRZ5",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "K12 Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -384,9 +440,12 @@
         "entity_ticker": "LRN",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
-        "event_hits": "[\"disclosure controls and procedures\",\"maintain disclosure controls and procedures\"]",
+        "event_hits": [
+            "disclosure controls and procedures",
+            "maintain disclosure controls and procedures"
+        ],
         "event_relevance": 48.0,
         "event_sentiment": 16.2742152214,
         "event_text": "[redacted]",

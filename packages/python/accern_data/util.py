@@ -46,11 +46,12 @@ def is_test() -> int:
 
 
 def set_data_dir(path: str) -> None:
-    os.environ.setdefault("DATA_DIR", path)
+    global DATA_DIR
+    DATA_DIR = path
 
 
 def get_data_dir() -> str:
-    return os.environ.get("DATA_DIR", default=DATA_DIR)
+    return DATA_DIR
 
 
 def check_filters(
@@ -129,12 +130,12 @@ def generate_csv_object(
     df["harvested_at"] = pd.to_datetime(df["harvested_at"])
     df["published_at"] = pd.to_datetime(df["published_at"])
     start_dt, end_dt = create_start_end_date(date, params)
-    df = df.sort_values(by="harvested_at")
     valid_df: pd.DataFrame = df[
         (df[date_type] >= start_dt) &
         (df[date_type] <= end_dt) &
         (df["harvested_at"] > harvested_after)
     ]
+    valid_df = valid_df.sort_values(by=["harvested_at", "signal_id"])
     if valid_df.empty:
         filtered_df = valid_df
     else:
@@ -172,7 +173,7 @@ def generate_json_object(
                 ) and check_filters(record, filters):
             filtered_json["signals"].append(record)
     filtered_json["signals"].sort(
-        key=lambda x: pd.to_datetime(x["harvested_at"]))
+        key=lambda x: (pd.to_datetime(x["harvested_at"]), x["signal_id"]))
     obj = io.BytesIO(json.dumps(filtered_json).encode(encoding))
     return obj
 

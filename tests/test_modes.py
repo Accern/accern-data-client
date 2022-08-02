@@ -84,7 +84,6 @@ def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
         indicator="message")
 
     df_actual = pd.read_csv(f"{get_data_dir()}/data-2022.csv")
-    df_actual = df_actual.sort_values(by="signal_id").reset_index(drop=True)
     df_generated = pd.read_csv(f"{output_path}{output_pattern}.csv")
     df_generated = df_generated.sort_values(
         by="signal_id").reset_index(drop=True)

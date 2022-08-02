@@ -12,8 +12,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BCX7M4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Columbus McKinnon Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -24,9 +27,11 @@
         "entity_ticker": "CMCO",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
-        "event_hits": "[\"compensation expense\"]",
+        "event_hits": [
+            "compensation expense"
+        ],
         "event_relevance": 18.4285,
         "event_sentiment": 3.6994359493,
         "event_text": "[redacted]",
@@ -52,8 +57,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BBCHL8",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Rockwell Automation, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -64,9 +73,11 @@
         "entity_ticker": "ROK",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
-        "event_hits": "[\"disclosure controls and procedures\"]",
+        "event_hits": [
+            "disclosure controls and procedures"
+        ],
         "event_relevance": 52.5,
         "event_sentiment": 17.7285265923,
         "event_text": "[redacted]",
@@ -92,8 +103,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BMZ937",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Kansas City Southern",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -104,9 +119,11 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "Social - Training costs",
-        "event_accern_id": 102066,
+        "event_accern_id": "102066",
         "event_group": "Social",
-        "event_hits": "[\"training costs\"]",
+        "event_hits": [
+            "training costs"
+        ],
         "event_relevance": 10.5194,
         "event_sentiment": 9.4191322327,
         "event_text": "[redacted]",
@@ -132,8 +149,14 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BPHG07",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"DJIA\",\"S&P 500\",\"NASDAQ Computer\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "DJIA",
+            "S&P 500",
+            "NASDAQ Computer",
+            "Russell 3000"
+        ],
         "entity_name": "Microsoft Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -144,9 +167,11 @@
         "entity_ticker": "MSFT",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
-        "event_hits": "[\"internal control over financial reporting\"]",
+        "event_hits": [
+            "internal control over financial reporting"
+        ],
         "event_relevance": 37.5,
         "event_sentiment": 13.463508606,
         "event_text": "[redacted]",
@@ -172,8 +197,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000CL9LT2",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Synnex Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -184,9 +212,15 @@
         "entity_ticker": "SNX",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
-        "event_hits": "[\"compensation\",\"expenses\",\"expense\",\"compensation expense\",\"costs\"]",
+        "event_hits": [
+            "compensation",
+            "expenses",
+            "expense",
+            "compensation expense",
+            "costs"
+        ],
         "event_relevance": 20.491,
         "event_sentiment": 13.2460300128,
         "event_text": "[redacted]",

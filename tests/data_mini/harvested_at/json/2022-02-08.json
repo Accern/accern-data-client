@@ -12,8 +12,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BN5KN1",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Lennar Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -24,9 +28,13 @@
         "entity_ticker": "LEN",
         "entity_type": "us_equity",
         "event": "Social - Marketing and Sales Expenses",
-        "event_accern_id": 105913,
+        "event_accern_id": "105913",
         "event_group": "Social",
-        "event_hits": "[\"advertising costs\",\"expenses advertising costs\",\"sales and marketing expenses\"]",
+        "event_hits": [
+            "advertising costs",
+            "expenses advertising costs",
+            "sales and marketing expenses"
+        ],
         "event_relevance": 21.0,
         "event_sentiment": 16.0938415527,
         "event_text": "[redacted]",
@@ -52,8 +60,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BMLYS0",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 2000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 2000",
+            "Russell 3000"
+        ],
         "entity_name": "KB Home",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -64,9 +76,11 @@
         "entity_ticker": "KBH",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
-        "event_hits": "[\"to develop\"]",
+        "event_hits": [
+            "to develop"
+        ],
         "event_relevance": 4.7899,
         "event_sentiment": 3.5723555088,
         "event_text": "[redacted]",
@@ -92,8 +106,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BB5C19",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Adobe Systems Incorporated",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -104,9 +122,12 @@
         "entity_ticker": "ADBE",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
-        "event_hits": "[\"internal controls\",\"financial reporting\"]",
+        "event_hits": [
+            "internal controls",
+            "financial reporting"
+        ],
         "event_relevance": 10.6,
         "event_sentiment": -10.733297348,
         "event_text": "[redacted]",
@@ -132,8 +153,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BMZ937",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Kansas City Southern",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -144,9 +169,12 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "General Business Actions - IT Costs",
-        "event_accern_id": 102064,
+        "event_accern_id": "102064",
         "event_group": "General Business Actions",
-        "event_hits": "[\"software development costs\",\"expenses related\"]",
+        "event_hits": [
+            "software development costs",
+            "expenses related"
+        ],
         "event_relevance": 17.8246,
         "event_sentiment": -1.0946442336,
         "event_text": "[redacted]",

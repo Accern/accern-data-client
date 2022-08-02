@@ -12,8 +12,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BB5C19",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Adobe Systems Incorporated",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -24,9 +28,12 @@
         "entity_ticker": "ADBE",
         "entity_type": "us_equity",
         "event": "Social - Data Security",
-        "event_accern_id": 95246,
+        "event_accern_id": "95246",
         "event_group": "Social",
-        "event_hits": "[\"information security\",\"cyber attacks\"]",
+        "event_hits": [
+            "information security",
+            "cyber attacks"
+        ],
         "event_relevance": 17.1818,
         "event_sentiment": 14.6251940727,
         "event_text": "[redacted]",
@@ -52,8 +59,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BB5C19",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Adobe Systems Incorporated",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -64,9 +75,14 @@
         "entity_ticker": "ADBE",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
-        "event_hits": "[\"industry\",\"innovation\",\"to develop\",\"product development\"]",
+        "event_hits": [
+            "industry",
+            "innovation",
+            "to develop",
+            "product development"
+        ],
         "event_relevance": 28.3636,
         "event_sentiment": 26.5910761878,
         "event_text": "[redacted]",
@@ -92,8 +108,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BB5C19",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Adobe Systems Incorporated",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -104,9 +124,12 @@
         "entity_ticker": "ADBE",
         "entity_type": "us_equity",
         "event": "Social - Marketing Expenses",
-        "event_accern_id": 102069,
+        "event_accern_id": "102069",
         "event_group": "Social",
-        "event_hits": "[\"advertising expenses advertising costs\",\"advertising expenses\"]",
+        "event_hits": [
+            "advertising expenses advertising costs",
+            "advertising expenses"
+        ],
         "event_relevance": 13.8392,
         "event_sentiment": -0.0811491236,
         "event_text": "[redacted]",
@@ -132,8 +155,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BB5C19",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Adobe Systems Incorporated",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -144,9 +171,11 @@
         "entity_ticker": "ADBE",
         "entity_type": "us_equity",
         "event": "Governance - Executive Compensation",
-        "event_accern_id": 83,
+        "event_accern_id": "83",
         "event_group": "Governance",
-        "event_hits": "[\"director compensation\"]",
+        "event_hits": [
+            "director compensation"
+        ],
         "event_relevance": 90.0,
         "event_sentiment": 13.1606664658,
         "event_text": "[redacted]",
@@ -172,8 +201,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BMLYS0",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 2000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 2000",
+            "Russell 3000"
+        ],
         "entity_name": "KB Home",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -184,9 +217,16 @@
         "entity_ticker": "KBH",
         "entity_type": "us_equity",
         "event": "Environment - Climate Change Risk",
-        "event_accern_id": 111763,
+        "event_accern_id": "111763",
         "event_group": "Environment",
-        "event_hits": "[\"climate risk\",\"climate change\",\"impacts\",\"increasing\",\"wildfires\",\"climate change risks\"]",
+        "event_hits": [
+            "climate risk",
+            "climate change",
+            "impacts",
+            "increasing",
+            "wildfires",
+            "climate change risks"
+        ],
         "event_relevance": 26.5966,
         "event_sentiment": -15.5992304484,
         "event_text": "[redacted]",
@@ -212,8 +252,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BMLYS0",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 2000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 2000",
+            "Russell 3000"
+        ],
         "entity_name": "KB Home",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -224,9 +268,11 @@
         "entity_ticker": "KBH",
         "entity_type": "us_equity",
         "event": "Governance - Product Development, R&D and Innovation",
-        "event_accern_id": 105722,
+        "event_accern_id": "105722",
         "event_group": "Governance",
-        "event_hits": "[\"to develop\"]",
+        "event_hits": [
+            "to develop"
+        ],
         "event_relevance": 4.7899,
         "event_sentiment": 3.5723555088,
         "event_text": "[redacted]",
@@ -252,8 +298,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BB5C19",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Adobe Systems Incorporated",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -264,9 +314,12 @@
         "entity_ticker": "ADBE",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
-        "event_hits": "[\"internal controls\",\"financial reporting\"]",
+        "event_hits": [
+            "internal controls",
+            "financial reporting"
+        ],
         "event_relevance": 10.6,
         "event_sentiment": -10.733297348,
         "event_text": "[redacted]",

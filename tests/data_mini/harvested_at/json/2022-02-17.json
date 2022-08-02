@@ -12,8 +12,13 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BCSV38",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"DJIA\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "DJIA",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "The Boeing Company",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -24,9 +29,12 @@
         "entity_ticker": "BA",
         "entity_type": "us_equity",
         "event": "Social - Total Number Of Customers",
-        "event_accern_id": 111744,
+        "event_accern_id": "111744",
         "event_group": "Social",
-        "event_hits": "[\"number of\",\"customers\"]",
+        "event_hits": [
+            "number of",
+            "customers"
+        ],
         "event_relevance": 12.2941,
         "event_sentiment": 11.6647071838,
         "event_text": "[redacted]",
@@ -52,8 +60,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BMZ937",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Kansas City Southern",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -64,9 +76,11 @@
         "entity_ticker": "KSU",
         "entity_type": "us_equity",
         "event": "Governance - Process To Control Compliance With Environmental Standards By Regulators",
-        "event_accern_id": 111689,
+        "event_accern_id": "111689",
         "event_group": "Governance",
-        "event_hits": "[\"environmental regulations\"]",
+        "event_hits": [
+            "environmental regulations"
+        ],
         "event_relevance": 13.7337,
         "event_sentiment": 23.1033287048,
         "event_text": "[redacted]",

@@ -12,8 +12,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000HL7PG4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Worthington Industries, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -24,9 +27,12 @@
         "entity_ticker": "WOR",
         "entity_type": "us_equity",
         "event": "Social - Data Security",
-        "event_accern_id": 95246,
+        "event_accern_id": "95246",
         "event_group": "Social",
-        "event_hits": "[\"cyber security risks\",\"information security\"]",
+        "event_hits": [
+            "cyber security risks",
+            "information security"
+        ],
         "event_relevance": 30.0,
         "event_sentiment": 7.1164045334,
         "event_text": "[redacted]",
@@ -52,8 +58,14 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BR2WS4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"DJIA\",\"S&P 500\",\"NYSE US 100 INDEX\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "DJIA",
+            "S&P 500",
+            "NYSE US 100 INDEX",
+            "Russell 3000"
+        ],
         "entity_name": "Procter & Gamble Company",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -64,9 +76,11 @@
         "entity_ticker": "PG",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expense\"]",
+        "event_hits": [
+            "administrative expense"
+        ],
         "event_relevance": 18.2143,
         "event_sentiment": 61.577960968,
         "event_text": "[redacted]",

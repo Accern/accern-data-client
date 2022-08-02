@@ -12,8 +12,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BWP4Q2",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "WD-40 Company",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -24,9 +27,12 @@
         "entity_ticker": "WDFC",
         "entity_type": "us_equity",
         "event": "Social - Marketing Expenses",
-        "event_accern_id": 102069,
+        "event_accern_id": "102069",
         "event_group": "Social",
-        "event_hits": "[\"advertising\",\"expenses\"]",
+        "event_hits": [
+            "advertising",
+            "expenses"
+        ],
         "event_relevance": 23.5,
         "event_sentiment": 6.1968898773,
         "event_text": "[redacted]",
@@ -52,8 +58,10 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BWHB94",
-        "entity_hits": "[]",
-        "entity_indices": "[\"N/A\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "N/A"
+        ],
         "entity_name": "Schmitt Industries, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -64,9 +72,11 @@
         "entity_ticker": "SMIT",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative costs\"]",
+        "event_hits": [
+            "administrative costs"
+        ],
         "event_relevance": 37.5,
         "event_sentiment": 27.4230365753,
         "event_text": "[redacted]",
@@ -92,8 +102,10 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG00M8BB1H5",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Russell 3000"
+        ],
         "entity_name": "Concrete Pumping Holdings Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -104,9 +116,11 @@
         "entity_ticker": "BBCP",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expenses\"]",
+        "event_hits": [
+            "administrative expenses"
+        ],
         "event_relevance": 30.0,
         "event_sentiment": -19.001640439,
         "event_text": "[redacted]",
@@ -132,8 +146,10 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG00GLTQDG3",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Russell 3000"
+        ],
         "entity_name": "SMART Global Holdings, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -144,9 +160,11 @@
         "entity_ticker": "SGH",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
-        "event_hits": "[\"internal control over financial reporting\"]",
+        "event_hits": [
+            "internal control over financial reporting"
+        ],
         "event_relevance": 37.5,
         "event_sentiment": 14.8756904602,
         "event_text": "[redacted]",

@@ -12,8 +12,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000FKJVN4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Estee Lauder Companies Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -24,9 +28,11 @@
         "entity_ticker": "EL",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
-        "event_hits": "[\"disclosure controls and procedures\"]",
+        "event_hits": [
+            "disclosure controls and procedures"
+        ],
         "event_relevance": 52.5,
         "event_sentiment": 22.1359672546,
         "event_text": "[redacted]",
@@ -52,8 +58,10 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BJ7Q37",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000"
+        ],
         "entity_name": "Suburban Propane Partners, L.P.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -64,9 +72,12 @@
         "entity_ticker": "SPH",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expenses\",\"increase increase\"]",
+        "event_hits": [
+            "administrative expenses",
+            "increase increase"
+        ],
         "event_relevance": 24.0,
         "event_sentiment": -23.2087898254,
         "event_text": "[redacted]",
@@ -92,8 +103,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BCGK26",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "8x8 Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -104,9 +118,11 @@
         "entity_ticker": "EGHT",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expenses\"]",
+        "event_hits": [
+            "administrative expenses"
+        ],
         "event_relevance": 15.75,
         "event_sentiment": 7.6974005699,
         "event_text": "[redacted]",
@@ -132,8 +148,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000QM0V85",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Prestige Brand Holdings, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -144,9 +163,13 @@
         "entity_ticker": "PBH",
         "entity_type": "us_equity",
         "event": "Social - Marketing Expenses",
-        "event_accern_id": 102069,
+        "event_accern_id": "102069",
         "event_group": "Social",
-        "event_hits": "[\"advertising\",\"marketing expenses\",\"marketing costs\"]",
+        "event_hits": [
+            "advertising",
+            "marketing expenses",
+            "marketing costs"
+        ],
         "event_relevance": 16.3846,
         "event_sentiment": 11.1832151711,
         "event_text": "[redacted]",
@@ -172,8 +195,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BCGK26",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "8x8 Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -184,9 +210,14 @@
         "entity_ticker": "EGHT",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
-        "event_hits": "[\"compensation expense\",\"compensation\",\"cost\",\"salary\"]",
+        "event_hits": [
+            "compensation expense",
+            "compensation",
+            "cost",
+            "salary"
+        ],
         "event_relevance": 40.5,
         "event_sentiment": 10.1439429919,
         "event_text": "[redacted]",
@@ -212,8 +243,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000FKJVN4",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Estee Lauder Companies Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -224,9 +259,12 @@
         "entity_ticker": "EL",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expenses\",\"administrative expense\"]",
+        "event_hits": [
+            "administrative expenses",
+            "administrative expense"
+        ],
         "event_relevance": 20.1818,
         "event_sentiment": 33.0284690857,
         "event_text": "[redacted]",
@@ -252,8 +290,10 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BJ7Q37",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000"
+        ],
         "entity_name": "Suburban Propane Partners, L.P.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -264,9 +304,11 @@
         "entity_ticker": "SPH",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Reviewing And Guiding Corporate Strategy",
-        "event_accern_id": 111703,
+        "event_accern_id": "111703",
         "event_group": "Governance",
-        "event_hits": "[\"risk management policy\"]",
+        "event_hits": [
+            "risk management policy"
+        ],
         "event_relevance": 90.0,
         "event_sentiment": 16.1821098328,
         "event_text": "[redacted]",
@@ -292,8 +334,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UW",
         "entity_figi": "BBG000BCGK26",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "8x8 Inc",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -304,9 +349,11 @@
         "entity_ticker": "EGHT",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expenses\"]",
+        "event_hits": [
+            "administrative expenses"
+        ],
         "event_relevance": 10.125,
         "event_sentiment": 9.4663305283,
         "event_text": "[redacted]",
@@ -332,8 +379,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BC5YJ0",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Maximus, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -344,9 +394,11 @@
         "entity_ticker": "MMS",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
-        "event_hits": "[\"compensation expense\"]",
+        "event_hits": [
+            "compensation expense"
+        ],
         "event_relevance": 24.75,
         "event_sentiment": 9.4090099335,
         "event_text": "[redacted]",
@@ -372,8 +424,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000QM0V85",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Prestige Brand Holdings, Inc.",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -384,9 +439,11 @@
         "entity_ticker": "PBH",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expense\"]",
+        "event_hits": [
+            "administrative expense"
+        ],
         "event_relevance": 12.4615,
         "event_sentiment": 41.7196121216,
         "event_text": "[redacted]",

@@ -12,8 +12,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000CL9LT2",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Synnex Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -24,9 +27,11 @@
         "entity_ticker": "SNX",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Overseeing The Process Of Disclosure And Communications",
-        "event_accern_id": 111710,
+        "event_accern_id": "111710",
         "event_group": "Governance",
-        "event_hits": "[\"disclosure controls and procedures\"]",
+        "event_hits": [
+            "disclosure controls and procedures"
+        ],
         "event_relevance": 52.5,
         "event_sentiment": 18.1461753845,
         "event_text": "[redacted]",
@@ -52,8 +57,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000KKVG84",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Russell 1000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Russell 1000",
+            "Russell 3000"
+        ],
         "entity_name": "Lennar Corporation Class B",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -64,9 +72,13 @@
         "entity_ticker": "LEN/B",
         "entity_type": "us_equity",
         "event": "Social - Marketing and Sales Expenses",
-        "event_accern_id": 105913,
+        "event_accern_id": "105913",
         "event_group": "Social",
-        "event_hits": "[\"advertising costs\",\"expenses advertising costs\",\"sales and marketing expenses\"]",
+        "event_hits": [
+            "advertising costs",
+            "expenses advertising costs",
+            "sales and marketing expenses"
+        ],
         "event_relevance": 21.0,
         "event_sentiment": 16.0938415527,
         "event_text": "[redacted]",
@@ -92,8 +104,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000CL9LT2",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Synnex Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -104,9 +119,12 @@
         "entity_ticker": "SNX",
         "entity_type": "us_equity",
         "event": "Governance - Code Of Ethics, Conduct For Employees",
-        "event_accern_id": 111674,
+        "event_accern_id": "111674",
         "event_group": "Governance",
-        "event_hits": "[\"adopted\",\"code of ethics\"]",
+        "event_hits": [
+            "adopted",
+            "code of ethics"
+        ],
         "event_relevance": 90.0,
         "event_sentiment": 11.0248126984,
         "event_text": "[redacted]",
@@ -132,8 +150,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000CL9LT2",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Synnex Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -144,9 +165,15 @@
         "entity_ticker": "SNX",
         "entity_type": "us_equity",
         "event": "Social - Cost of Employee Salaries and Benefits",
-        "event_accern_id": 105912,
+        "event_accern_id": "105912",
         "event_group": "Social",
-        "event_hits": "[\"compensation\",\"expenses\",\"expense\",\"compensation expense\",\"costs\"]",
+        "event_hits": [
+            "compensation",
+            "expenses",
+            "expense",
+            "compensation expense",
+            "costs"
+        ],
         "event_relevance": 20.491,
         "event_sentiment": 13.2460300128,
         "event_text": "[redacted]",
@@ -172,8 +199,12 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000BN5KN1",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"S&P 500\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "S&P 500",
+            "Russell 3000"
+        ],
         "entity_name": "Lennar Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -184,9 +215,13 @@
         "entity_ticker": "LEN",
         "entity_type": "us_equity",
         "event": "Social - Marketing and Sales Expenses",
-        "event_accern_id": 105913,
+        "event_accern_id": "105913",
         "event_group": "Social",
-        "event_hits": "[\"advertising costs\",\"expenses advertising costs\",\"sales and marketing expenses\"]",
+        "event_hits": [
+            "advertising costs",
+            "expenses advertising costs",
+            "sales and marketing expenses"
+        ],
         "event_relevance": 21.0,
         "event_sentiment": 16.0938415527,
         "event_text": "[redacted]",
@@ -212,8 +247,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000CL9LT2",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Synnex Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -224,9 +262,11 @@
         "entity_ticker": "SNX",
         "entity_type": "us_equity",
         "event": "Governance - Board Related Matters: Integrity Of The Accounting And Financial Reporting Systems",
-        "event_accern_id": 111709,
+        "event_accern_id": "111709",
         "event_group": "Governance",
-        "event_hits": "[\"internal control over financial reporting\"]",
+        "event_hits": [
+            "internal control over financial reporting"
+        ],
         "event_relevance": 37.5,
         "event_sentiment": 16.7368659973,
         "event_text": "[redacted]",
@@ -252,8 +292,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000CL9LT2",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Synnex Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -264,9 +307,12 @@
         "entity_ticker": "SNX",
         "entity_type": "us_equity",
         "event": "Social - Data Security",
-        "event_accern_id": 95246,
+        "event_accern_id": "95246",
         "event_group": "Social",
-        "event_hits": "[\"cybersecurity\",\"data protection regulation\"]",
+        "event_hits": [
+            "cybersecurity",
+            "data protection regulation"
+        ],
         "event_relevance": 15.6428,
         "event_sentiment": -10.2265887409,
         "event_text": "[redacted]",
@@ -292,8 +338,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000CL9LT2",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Synnex Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -304,9 +353,11 @@
         "entity_ticker": "SNX",
         "entity_type": "us_equity",
         "event": "Governance - Administrative Expenses",
-        "event_accern_id": 105914,
+        "event_accern_id": "105914",
         "event_group": "Governance",
-        "event_hits": "[\"administrative expenses\"]",
+        "event_hits": [
+            "administrative expenses"
+        ],
         "event_relevance": 13.5268,
         "event_sentiment": 10.9461342096,
         "event_text": "[redacted]",
@@ -332,8 +383,11 @@
         "entity_country": "United States",
         "entity_exchcode": "UN",
         "entity_figi": "BBG000CL9LT2",
-        "entity_hits": "[]",
-        "entity_indices": "[\"Wilshire 5000\",\"Russell 3000\"]",
+        "entity_hits": [],
+        "entity_indices": [
+            "Wilshire 5000",
+            "Russell 3000"
+        ],
         "entity_name": "Synnex Corporation",
         "entity_region": "Americas",
         "entity_relevance": 100,
@@ -344,9 +398,11 @@
         "entity_ticker": "SNX",
         "entity_type": "us_equity",
         "event": "Governance - Stakeholder Related Matters: Mechanisms For Employee Participation",
-        "event_accern_id": 111733,
+        "event_accern_id": "111733",
         "event_group": "Governance",
-        "event_hits": "[\"employee engagement\"]",
+        "event_hits": [
+            "employee engagement"
+        ],
         "event_relevance": 14.625,
         "event_sentiment": 29.0001544952,
         "event_text": "[redacted]",
