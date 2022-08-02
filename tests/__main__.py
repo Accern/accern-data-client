@@ -11,7 +11,6 @@ def parse_args_split_tests(parser: argparse.ArgumentParser) -> None:
         help=(
             "The location for timings of all test cases. "
             "Must be an xml file."))
-
     parser.add_argument(
         "--total-nodes",
         type=int,
