@@ -4,13 +4,7 @@ import pandas as pd
 import pandas.testing as pd_test
 import pytest
 from accern_data import create_data_client, DATE_FORMAT, DATETIME_FORMAT
-from accern_data.util import (
-    EXAMPLE_URL,
-    get_data_dir,
-    load_json,
-    set_data_dir,
-    write_json,
-)
+from accern_data.util import EXAMPLE_URL, get_data_dir, load_json, set_data_dir
 
 DEFAULT_CHUNK_SIZE_LIST = [
     5, 1, 10, 1, 69, 1, 99, 99, 2, 1, 99, 60, 1, 99, 1, 22, 1, 14, 1, 7, 1, 17,

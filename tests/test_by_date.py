@@ -73,7 +73,7 @@ def test_by_date_json(by_date: ByDate) -> None:
     start_date = "2022-01-03"
     end_date = "2022-03-04"
     output_path = OUTPUT_PATH
-    output_pattern = None
+    output_pattern = f"test_by_date_json_{by_date}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
 
     client.download_range(
