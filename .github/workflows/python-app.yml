@@ -120,7 +120,7 @@ jobs:
         set -e
         mkdir -p test-results
         rm -r test-results/parts || echo "no files to delete"
-        OUT=$(python -c "from tests.utils import split_tests; split_tests('test-results/results.xml', ${{ matrix.ci_node_total }}, ${{ matrix.ci_node_index }})")
+        OUT=$(python -m tests --filepath test-results/results.xml --total-nodes ${{ matrix.ci_node_total }} --node-id ${{ matrix.ci_node_index }})
         IFS=',' read -a FILE_INFO <<< "$OUT"
         FILES=("${FILE_INFO[@]:1}")
         echo "Selected Files are: " ${FILES[@]}
