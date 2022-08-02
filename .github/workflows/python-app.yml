@@ -93,9 +93,9 @@ jobs:
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  v1-test-results-cache-${{ matrix.python }}  # meant to be wrong so that restore-keys can find it
+        key:  v1-test-results-${{ matrix.python }}  # meant to be wrong so that restore-keys can find it
         restore-keys: |
-          test-results-cache-${{ matrix.python }}-
+          test-results-${{ matrix.python }}-
 
     - name: Cache python modules
       uses: actions/cache@v2
@@ -183,7 +183,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: test-results/*
-        key:  test-results-cache-${{ matrix.python }}-${{ hashFiles('test-results/results.xml') }}
+        key:  test-results-${{ matrix.python }}-${{ hashFiles('test-results/results.xml') }}
 
     - name: Download all coverage reports
       uses: actions/download-artifact@v2
