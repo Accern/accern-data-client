@@ -121,8 +121,10 @@ jobs:
         mkdir -p test-results
         rm -r test-results/parts || echo "no files to delete"
         OUT=$(python -c "from tests.utils import split_tests; split_tests('test-results/results.xml', ${{ matrix.ci_node_total }}, ${{ matrix.ci_node_index }})")
-        IFS=',' read -a FILES <<< "$OUT"
+        IFS=',' read -a FILE_INFO <<< "$OUT"
+        FILES=("${FILE_INFO[@]:1}")
         echo "Selected Files are: " ${FILES[@]}
+        echo "Previous timings are: ${FILE_INFO[0]}"
         ./coverage/coverage.sh results-${{ matrix.python }}-${{ matrix.ci_node_index }}.xml ${FILES[@]}
 
     - name: Upload Artifact(results)
