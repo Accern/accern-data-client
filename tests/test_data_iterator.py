@@ -42,9 +42,6 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
     for dt in ["crawled_at", "harvested_at", "published_at"]:
         concat_df[dt] = concat_df[dt].astype("str")
 
-    dataframe = dataframe.sort_values(by="signal_id").reset_index(drop=True)
-    concat_df = concat_df.sort_values(by="signal_id").reset_index(drop=True)
-
     pd_test.assert_frame_equal(
         dataframe[sorted(dataframe.columns)],
         concat_df[sorted(concat_df.columns)])

@@ -96,6 +96,4 @@ def test_json_csv_date_consistency(sheet_mode: ModeType) -> None:
         csv_obj["entity_sector"].fillna("N/A", inplace=True)
         csv_obj.fillna("", inplace=True)
         csv_json = csv_obj.to_dict("records")
-        csv_json.sort(key=lambda x: x["signal_id"])
-        json_obj.sort(key=lambda x: x["signal_id"])
         assert csv_json == json_obj, f"Results for {date} are different."

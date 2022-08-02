@@ -85,8 +85,6 @@ def test_csv_full(sheet_mode: ModeType, method_used: str) -> None:
 
     df_actual = pd.read_csv(f"{get_data_dir()}/data-2022.csv")
     df_generated = pd.read_csv(f"{output_path}{output_pattern}.csv")
-    df_generated = df_generated.sort_values(
-        by="signal_id").reset_index(drop=True)
 
     pd_test.assert_frame_equal(
         df_actual[sorted(df_actual.columns)],
