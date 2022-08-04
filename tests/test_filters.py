@@ -1,24 +1,31 @@
 import pandas as pd
 import pytest
 from accern_data import create_data_client, DATE_FORMAT, FiltersType, ModeType
-from accern_data.util import EXAMPLE_URL, field_transformation, load_json
+from accern_data.util import (
+    EXAMPLE_URL,
+    field_transformation,
+    load_json,
+    set_data_dir,
+)
 
 FILTERS: FiltersType = {
     "provider_id": 5,
     "entity_name": "Hurco Companies, Inc.",
-    "event": "Governance - Product Development, R&D and Innovation",
     "entity_ticker": "HURC",
     "entity_accern_id": "BBG000BLLFK1",
 }
+DATA_PATH = "tests/data_mini"
+OUTPUT_PATH = "tests/outputs/"
 
 
 @pytest.mark.parametrize("sheet_mode", ["csv", "df"])
 @pytest.mark.parametrize("uses_filter_method", [True, False])
 def test_filters_csv_full(
         sheet_mode: ModeType, uses_filter_method: bool) -> None:
+    set_data_dir(DATA_PATH)
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "tests/outputs/"
+    output_path = OUTPUT_PATH
     output_pattern = f"test_filters_csv_full_{sheet_mode}_{uses_filter_method}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=False)
@@ -46,9 +53,10 @@ def test_filters_csv_full(
 @pytest.mark.parametrize("uses_filter_method", [True, False])
 def test_filters_csv_date(
         sheet_mode: ModeType, uses_filter_method: bool) -> None:
+    set_data_dir(DATA_PATH)
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "tests/outputs/"
+    output_path = OUTPUT_PATH
     output_pattern = f"test_filters_csv_date_{sheet_mode}_{uses_filter_method}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode(sheet_mode, split_dates=True)
@@ -80,9 +88,10 @@ def test_filters_csv_date(
 
 @pytest.mark.parametrize("uses_filter_method", [True, False])
 def test_filters_json(uses_filter_method: bool) -> None:
+    set_data_dir(DATA_PATH)
     start_date = "2022-01-03"
     end_date = "2022-03-04"
-    output_path = "tests/outputs/"
+    output_path = OUTPUT_PATH
     output_pattern = f"test_filters_json_{uses_filter_method}"
     client = create_data_client(EXAMPLE_URL, "SomeRandomToken")
     client.set_mode("json", split_dates=True)

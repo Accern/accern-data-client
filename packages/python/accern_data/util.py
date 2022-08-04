@@ -17,10 +17,12 @@ if TYPE_CHECKING:
 EXAMPLE_URL = "https://api.example.com/"
 IS_JUPYTER: Optional[bool] = None
 IS_TEST: Optional[bool] = None
+HAS_IPROGRESS: Optional[bool] = None
 L_BAR = """{desc}: |"""
 R_BAR = """| {percentage:3.0f}% [{n}/{total}]"""
 BAR_FMT = f"{L_BAR}{{bar}}{R_BAR}"
 DEFAULT_CHUNK_SIZE = 100
+DATA_DIR = "tests/data"
 
 
 def is_example_url(url: str) -> bool:
@@ -46,6 +48,15 @@ def is_test() -> int:
     return IS_TEST
 
 
+def set_data_dir(path: str) -> None:
+    global DATA_DIR
+    DATA_DIR = path
+
+
+def get_data_dir() -> str:
+    return DATA_DIR
+
+
 def check_filters(
         record: Dict[str, Any], filters: Dict[str, 'FilterValue']) -> bool:
     for key, value in filters.items():
@@ -66,14 +77,27 @@ def field_transformation(value: Any) -> Union[str, List[str]]:
     return f"{value}"
 
 
+def get_date_type(obj: Dict[str, str]) -> Tuple[str, str]:
+    for date_type in ["date", "harvested_at"]:
+        try:
+            date_val = obj[date_type]
+            break
+        except KeyError:
+            pass
+    if date_type == "date":
+        date_type = "published_at"
+    return date_type, date_val
+
+
 def get_overall_total_from_dummy(
         params: Dict[str, str],
         filters: Dict[str, 'FilterValue'],
         encoding: str = "utf-8") -> Response:
     response_obj = Response()
-    start_dt, end_dt = create_start_end_date(params["date"], params)
+    date_type, date_val = get_date_type(params)
+    start_dt, end_dt = create_start_end_date(date_val, params)
     if is_test():
-        path = "tests/data/data-2022.json"
+        path = f"{get_data_dir()}/data-2022.json"
     else:
         path = get_master_file("json")
     json_obj = load_json(path)
@@ -86,9 +110,8 @@ def get_overall_total_from_dummy(
     overall_total = 0
     for record in json_obj["signals"]:
         if (
-                pd.to_datetime(record["published_at"]) >= start_dt
-                and
-                pd.to_datetime(record["published_at"]) <= end_dt
+                pd.to_datetime(record[date_type]) >= start_dt
+                and pd.to_datetime(record[date_type]) <= end_dt
                 and check_filters(record, filters)):
             overall_total += 1
     filtered["overall_total"] = overall_total
@@ -124,13 +147,14 @@ def generate_csv_object(
     df = pd.read_csv(path)
     df["harvested_at"] = pd.to_datetime(df["harvested_at"])
     df["published_at"] = pd.to_datetime(df["published_at"])
-    start_dt, end_dt = create_start_end_date(params["date"], params)
-
+    date_type, date_val = get_date_type(params)
+    start_dt, end_dt = create_start_end_date(date_val, params)
     valid_df: pd.DataFrame = df[
-        (df["published_at"] >= start_dt) &
-        (df["published_at"] <= end_dt) &
+        (df[date_type] >= start_dt) &
+        (df[date_type] <= end_dt) &
         (df["harvested_at"] > harvested_after)
     ]
+    valid_df = valid_df.sort_values(by=["harvested_at", "signal_id"])
     if valid_df.empty:
         filtered_df = valid_df
     else:
@@ -154,22 +178,23 @@ def generate_json_object(
         filters: Dict[str, 'FilterValue'],
         encoding: str) -> io.BytesIO:
     json_obj = load_json(path)
+    date_type, date_val = get_date_type(params)
     filtered_json = {
         key: val
         for key, val in json_obj.items()
         if key != "signals"
     }
-    start_dt, end_dt = create_start_end_date(params["date"], params)
+    start_dt, end_dt = create_start_end_date(date_val, params)
     filtered_json["signals"] = []
     for record in json_obj["signals"]:
         if (
-                pd.to_datetime(record["published_at"]) >= start_dt
-                and
-                pd.to_datetime(record["published_at"]) <= end_dt
-                and
-                pd.to_datetime(record["harvested_at"]) > harvested_after
+                pd.to_datetime(record[date_type]) >= start_dt
+                and pd.to_datetime(record[date_type]) <= end_dt
+                and pd.to_datetime(record["harvested_at"]) > harvested_after
                 ) and check_filters(record, filters):
             filtered_json["signals"].append(record)
+    filtered_json["signals"].sort(
+        key=lambda x: (pd.to_datetime(x["harvested_at"]), x["signal_id"]))
     obj = io.BytesIO(json.dumps(filtered_json).encode(encoding))
     return obj
 
@@ -183,7 +208,7 @@ def generate_file_response(
     harvested_after_dt = pd.to_datetime(params["harvested_after"], utc=True)
 
     if is_test():
-        path = f"tests/data/data-2022.{mode}"
+        path = f"{get_data_dir()}/data-2022.{mode}"
     else:
         path = get_master_file(mode)
 
@@ -324,3 +349,14 @@ class SilentIndicator(ProgressIndicator):
     def close(self) -> None:
         # not required in silent logging.
         pass
+
+
+def has_iprogress() -> bool:
+    global HAS_IPROGRESS
+
+    if HAS_IPROGRESS is not None:
+        return HAS_IPROGRESS
+
+    from tqdm import notebook
+    HAS_IPROGRESS = notebook.IProgress is not None  # type: ignore
+    return HAS_IPROGRESS
