@@ -466,12 +466,11 @@ class DataClient:
     @staticmethod
     def _parse_filters(
             filters: Dict[str, FilterValue]) -> Dict[str, FilterValue]:
-        proper_filters: Dict[str, FilterValue] = {}
         for key in filters.keys():
             assert key not in EXCLUDED_FILTER_FIELD, (
                 "filters should not be containing any of "
                 f"{EXCLUDED_FILTER_FIELD}")
-        return proper_filters
+        return filters
 
     def set_indicator(
             self, indicator: Union[Indicators, ProgressIndicator]) -> None:
@@ -561,7 +560,6 @@ class DataClient:
                     resp = get_overall_total_from_dummy(params, filters)
                 else:
                     req_params = {
-                        "token": self._token,
                         **params,
                         "format": "json",
                         "size": "1",
@@ -569,8 +567,8 @@ class DataClient:
                     }
                     resp = requests.post(
                         self._base_url,
-                        params=req_params,
-                        json=filters,
+                        headers={"authorization": self._token},
+                        json={**req_params, **filters},
                         **rkwargs)
                 if not str(resp.text).strip():  # if nothing is fetched
                     return 0
@@ -603,14 +601,13 @@ class DataClient:
                         params, mode.get_format(), filters=filters)
                 else:
                     req_params = {
-                        "token": self._token,
                         **{**url_params, **params},
                         **{"format": mode.get_format()}
                     }
                     resp = requests.post(
                         self._base_url,
-                        params=req_params,
-                        json=filters,
+                        headers={"authorization": self._token},
+                        json={**req_params, **filters},
                         **rkwargs)
                 if not str(resp.text).strip():
                     return []
