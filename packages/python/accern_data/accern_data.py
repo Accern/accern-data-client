@@ -562,7 +562,7 @@ class DataClient:
                     req_params = {
                         **params,
                         "format": "json",
-                        "size": "1",
+                        "size": 1,
                         "exclude": "*",
                     }
                     resp = requests.post(
