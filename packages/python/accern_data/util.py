@@ -160,10 +160,12 @@ def generate_csv_object(
     else:
         result = pd.Series(True, index=valid_df.index)
         for key, val in filters.items():
+            transformed_val = field_transformation(val)
+            transformed_col = valid_df[key].apply(field_transformation)
             if isinstance(val, list):
-                result &= valid_df[key].apply(field_transformation).isin(val)
+                result &= transformed_col.isin(transformed_val)
             else:
-                result &= (valid_df[key].apply(field_transformation) == val)
+                result &= (transformed_col == transformed_val)
         filtered_df = valid_df[result]
     obj = io.BytesIO()
     filtered_df.iloc[:DEFAULT_CHUNK_SIZE, :].to_csv(
