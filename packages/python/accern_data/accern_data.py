@@ -116,6 +116,7 @@ FiltersType = TypedDict(
     },
     total=False)
 FilterValue = Optional[Union[bool, int, str, List[bool], List[int], List[str]]]
+ErrorTuple = Tuple[Optional[Dict[str, Union[str, int]]], str]
 
 ModeType = Literal["csv", "df", "json"]
 Indicators = Literal["pbar", "silent", "message"]
@@ -445,8 +446,7 @@ class DataClient:
             self.set_indicator(indicator)
         else:
             self._indicator_obj = self._parse_indicator("pbar")
-        self._error_list: Deque[
-            Tuple[Optional[Dict[str, str]], str]] = deque(maxlen=n_errors)
+        self._error_list: Deque[ErrorTuple] = deque(maxlen=n_errors)
 
     def reset_error_list(self) -> None:
         self._error_list.clear()
@@ -543,7 +543,7 @@ class DataClient:
         return self._mode.get_instance()
 
     def get_last_silenced_errors(
-            self) -> List[Tuple[Optional[Dict[str, str]], str]]:
+            self) -> List[ErrorTuple]:
         return list(self._error_list)
 
     def _read_total(
@@ -555,7 +555,7 @@ class DataClient:
         rkwargs = {} if request_kwargs is None else request_kwargs
         while True:
             try:
-                req_params = None
+                req_params: Optional[Dict[str, Union[str, int]]] = None
                 if is_example_url(self._base_url):
                     resp = get_overall_total_from_dummy(params, filters)
                 else:
