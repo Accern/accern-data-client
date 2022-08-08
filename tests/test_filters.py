@@ -45,7 +45,9 @@ def test_filters_csv_full(
 
     df = pd.read_csv(f"{output_path}{output_pattern}.csv")
     for key, value in client.get_filters().items():
-        assert (df[key].apply(field_transformation) == value).all(), \
+        transformed_val = field_transformation(value)
+        transformed_col = df[key].apply(field_transformation)
+        assert (transformed_col == transformed_val).all(), \
             f"Column {key} of dataframe does not match with the value: {value}"
 
 
@@ -81,7 +83,9 @@ def test_filters_csv_date(
         except FileNotFoundError:
             continue
         for key, value in client.get_filters().items():
-            assert (df[key].apply(field_transformation) == value).all(), (
+            transformed_val = field_transformation(value)
+            transformed_col = df[key].apply(field_transformation)
+            assert (transformed_col == transformed_val).all(), (
                 f"Column {key} of dataframe does not match with the value: "
                 f"{value}")
 
@@ -118,5 +122,5 @@ def test_filters_json(uses_filter_method: bool) -> None:
 
         for rec in json_obj:
             for key, value in client.get_filters().items():
-                assert field_transformation(rec[key]) == value, \
-                    f"expected {value} for {key}, but got {rec[key]}"
+                assert field_transformation(rec[key]) == field_transformation(
+                    value), f"expected {value} for {key}, but got {rec[key]}"
