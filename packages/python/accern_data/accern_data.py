@@ -590,24 +590,27 @@ class DataClient:
             filters: Dict[str, FilterValue],
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]],
+            json_params: Optional[Dict[str, Any]],
             request_kwargs: Optional[Dict[Any, Any]]) -> List[T]:
         while True:
             req_params = None
             url_params = url_params if url_params is not None else {}
+            json_params = json_params if json_params is not None else {}
             rkwargs = {} if request_kwargs is None else request_kwargs
             try:
                 if is_example_url(self._base_url):
                     resp = generate_file_response(
                         params, mode.get_format(), filters=filters)
                 else:
-                    req_params = {
-                        **{**url_params, **params},
-                        **{"format": mode.get_format()}
-                    }
                     resp = requests.post(
                         self._base_url,
                         headers={"authorization": self._token},
-                        json={**req_params, **filters},
+                        params=url_params,
+                        json={
+                            **params,
+                            **filters,
+                            **{"format": mode.get_format()}
+                        },
                         **rkwargs)
                 if not str(resp.text).strip():
                     return []
@@ -630,11 +633,18 @@ class DataClient:
             filters: Dict[str, FilterValue],
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]] = None,
+            json_params: Optional[Dict[str, Any]] = None,
             request_kwargs: Optional[Dict[Any, Any]] = None,
                 ) -> Iterator[List[T]]:
         params["harvested_after"] = harvested_after
         batch = self._read_date(
-            mode, params, filters, indicator, url_params, request_kwargs)
+            mode,
+            params,
+            filters,
+            indicator,
+            url_params,
+            json_params,
+            request_kwargs)
         prev_start = harvested_after
         while mode.size(batch) > 0:
             try:
@@ -647,6 +657,7 @@ class DataClient:
                     filters,
                     indicator,
                     url_params,
+                    json_params,
                     request_kwargs)
                 if harvested_after == prev_start:
                     # NOTE: redundant check?
@@ -752,6 +763,7 @@ class DataClient:
             indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
             by_date: ByDate = "published_at",
             url_params: Optional[Dict[str, str]] = None,
+            json_params: Optional[Dict[str, Any]] = None,
             request_kwargs: Optional[Dict[Any, Any]] = None) -> None:
         opath = "." if output_path is None else output_path
         os.makedirs(opath, exist_ok=True)
@@ -788,6 +800,7 @@ class DataClient:
                 set_active_mode=set_active_mode,
                 by_date=by_date,
                 url_params=url_params,
+                json_params=json_params,
                 request_kwargs=request_kwargs):
             assert valid_mode is not None
             valid_mode.add_result(res)
@@ -815,6 +828,7 @@ class DataClient:
                     [Mode[T], pd.Timestamp, ProgressIndicator], None]] = None,
             by_date: ByDate = "published_at",
             url_params: Optional[Dict[str, str]] = None,
+            json_params: Optional[Dict[str, Any]] = None,
             request_kwargs: Optional[Dict[Any, Any]] = None) -> Iterator[T]:
         valid_mode = self._get_valid_mode(mode)
         valid_filters = self._get_valid_filters(filters)
@@ -879,6 +893,7 @@ class DataClient:
                     valid_filters,
                     indicator=indicator_obj,
                     url_params=url_params,
+                    json_params=json_params,
                     request_kwargs=request_kwargs):
                 yield from valid_mode.iterate_data(
                     data, indicator=indicator_obj)
