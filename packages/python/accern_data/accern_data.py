@@ -180,7 +180,10 @@ class Mode(Generic[T]):
     def add_result(self, signal: T) -> None:
         raise NotImplementedError()
 
-    def finish_day(self, indicator: ProgressIndicator) -> None:
+    def finish_day(
+            self,
+            indicator: ProgressIndicator,
+            force_finish: bool = False) -> None:
         raise NotImplementedError()
 
     def iterate_data(
@@ -273,18 +276,56 @@ class CSVMode(Mode[pd.DataFrame]):
         fname = self.get_path(self._is_by_day)
         indicator.log(f"current file is {fname}")
 
+    def _write_cols(self) -> None:
+        fname = self.get_path(is_by_day=self._is_by_day)
+        if self._cols:
+            with open(f"{fname}.columns", "w") as fout:
+                fout.write(",".join(self._cols))
+
     def add_result(self, signal: pd.DataFrame) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
+        tmp_fname = f"{fname}.tmp"
         if self._cols is None:
-            signal.to_csv(fname, index=False, header=True, mode="w")
-            self._cols = signal.columns
+            self._cols = signal.columns.to_list()
+            signal.to_csv(tmp_fname, index=False, header=True, mode="w")
         else:
+            if len(signal.columns) <= len(self._cols):
+                for col in set(self._cols).difference(signal.columns):
+                    signal[col] = None
+            else:
+                new_cols = set(signal.columns).difference(self._cols)
+                self._cols += new_cols
             signal[self._cols].to_csv(
-                fname, index=False, header=False, mode="a")
+                tmp_fname, index=False, header=False, mode="a")
 
-    def finish_day(self, indicator: ProgressIndicator) -> None:
+    def finish_day(
+            self,
+            indicator: ProgressIndicator,
+            force_finish: bool = False) -> None:
         # csv files are saved by add_result
-        if self._is_by_day:
+        fname = self.get_path(is_by_day=self._is_by_day)
+        tmp_fname = f"{fname}.tmp"
+
+        if self._is_by_day or force_finish:
+            with open(fname, "w") as file:
+                assert self._cols is not None
+                file.writelines(f"{','.join(self._cols)}\n")
+                skip = 1
+                while True:
+                    try:
+                        row = pd.read_csv(
+                            tmp_fname, nrows=1, skiprows=skip, header=None)
+                        obj = io.BytesIO()
+                        row.to_csv(
+                            obj, index=False, encoding="utf-8", header=False)
+                        obj.seek(0)
+                        file.write(
+                            f"{obj.read().decode('utf-8')[:-1]}"
+                            f"{',' * (len(self._cur_date) - row.shape[1])}\n")
+                    except pd.errors.EmptyDataError:
+                        os.remove(tmp_fname)
+                        break
+                    skip += 1
             self._cols = None
 
     def split(
@@ -391,7 +432,10 @@ class JSONMode(Mode[Dict[str, Any]]):
     def add_result(self, signal: Dict[str, Any]) -> None:
         self._res.append(signal)
 
-    def finish_day(self, indicator: ProgressIndicator) -> None:
+    def finish_day(
+            self,
+            indicator: ProgressIndicator,
+            force_finish: bool = False) -> None:
         fname = self.get_path(is_by_day=True)
         indicator.log(f"writing results to {fname}")
 
@@ -809,7 +853,7 @@ class DataClient:
         if prev_date is not None:
             assert valid_mode is not None
             assert indicator_obj is not None
-            valid_mode.finish_day(indicator_obj)
+            valid_mode.finish_day(indicator_obj, force_finish=True)
 
     def iterate_range(
             self,
