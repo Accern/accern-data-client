@@ -306,9 +306,8 @@ class CSVMode(Mode[pd.DataFrame]):
         fname = self.get_path(is_by_day=self._is_by_day)
         tmp_fname = f"{fname}.tmp"
 
-        if self._is_by_day or force_finish:
+        if (self._is_by_day or force_finish) and self._cols:
             with open(fname, "w") as file:
-                assert self._cols is not None
                 file.writelines(f"{','.join(self._cols)}\n")
                 skip = 1
                 while True:
