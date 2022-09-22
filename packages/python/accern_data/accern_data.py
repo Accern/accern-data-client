@@ -1,3 +1,4 @@
+import csv
 import io
 import os
 import time
@@ -279,12 +280,15 @@ class CSVMode(Mode[pd.DataFrame]):
     def _write_cols(self) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
         if self._cols:
-            with open(f"{fname}.columns", "w") as fout:
+            with open(f"{fname}~.columns", "w") as fout:
                 fout.write(",".join(self._cols))
+
+    def get_tmp_file_name(self, fname: str) -> str:
+        return f"{fname}.~tmp"
 
     def add_result(self, signal: pd.DataFrame) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
-        tmp_fname = f"{fname}.tmp"
+        tmp_fname = self.get_tmp_file_name(fname)
         if self._cols is None:
             self._cols = signal.columns.to_list()
             signal.to_csv(tmp_fname, index=False, header=True, mode="w")
@@ -304,27 +308,18 @@ class CSVMode(Mode[pd.DataFrame]):
             force_finish: bool = False) -> None:
         # csv files are saved by add_result
         fname = self.get_path(is_by_day=self._is_by_day)
-        tmp_fname = f"{fname}.tmp"
+        tmp_fname = self.get_tmp_file_name(fname)
 
         if (self._is_by_day or force_finish) and self._cols:
-            with open(fname, "w") as file:
-                file.writelines(f"{','.join(self._cols)}\n")
-                skip = 1
-                while True:
-                    try:
-                        row = pd.read_csv(
-                            tmp_fname, nrows=1, skiprows=skip, header=None)
-                        obj = io.BytesIO()
-                        row.to_csv(
-                            obj, index=False, encoding="utf-8", header=False)
-                        obj.seek(0)
-                        file.write(
-                            f"{obj.read().decode('utf-8')[:-1]}"
-                            f"{',' * (len(self._cur_date) - row.shape[1])}\n")
-                    except pd.errors.EmptyDataError:
-                        os.remove(tmp_fname)
-                        break
-                    skip += 1
+            with open(fname, "w") as file, open(tmp_fname, "r") as tmp_csv:
+                csv_reader = csv.reader(tmp_csv)
+                csv_writer = csv.writer(file)
+                next(csv_reader)  # skip header
+                csv_writer.writerow(self._cols)
+                for row in csv_reader:
+                    csv_writer.writerow(
+                        row + [None] * (len(self._cur_date) - len(row)))
+                os.remove(fname)
             self._cols = None
 
     def split(
