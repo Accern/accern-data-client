@@ -318,8 +318,8 @@ class CSVMode(Mode[pd.DataFrame]):
                 csv_writer.writerow(self._cols)
                 for row in csv_reader:
                     csv_writer.writerow(
-                        row + [None] * (len(self._cur_date) - len(row)))
-                os.remove(fname)
+                        row + [None] * (len(self._cols) - len(row)))
+                os.remove(tmp_fname)
             self._cols = None
 
     def split(
