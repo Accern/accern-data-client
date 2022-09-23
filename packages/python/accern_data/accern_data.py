@@ -291,7 +291,7 @@ class CSVMode(Mode[pd.DataFrame]):
         tmp_fname = self.get_tmp_file_name(fname)
         if self._cols is None:
             self._cols = signal.columns.to_list()
-            signal.to_csv(tmp_fname, index=False, header=True, mode="w")
+            signal.to_csv(tmp_fname, index=False, header=False, mode="w")
         else:
             if len(signal.columns) <= len(self._cols):
                 for col in set(self._cols).difference(signal.columns):
@@ -314,7 +314,6 @@ class CSVMode(Mode[pd.DataFrame]):
             with open(fname, "w") as file, open(tmp_fname, "r") as tmp_csv:
                 csv_reader = csv.reader(tmp_csv)
                 csv_writer = csv.writer(file)
-                next(csv_reader)  # skip header
                 csv_writer.writerow(self._cols)
                 for row in csv_reader:
                     csv_writer.writerow(
