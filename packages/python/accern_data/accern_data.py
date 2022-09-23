@@ -279,18 +279,21 @@ class CSVMode(Mode[pd.DataFrame]):
 
     def _write_cols(self) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
-        if self._cols:
-            with open(f"{fname}~.columns", "w") as fout:
-                fout.write(",".join(self._cols))
+        header = pd.DataFrame(columns=self._cols)
+        header.to_csv(self.get_header_file_name(fname), index=False)
 
     def get_tmp_file_name(self, fname: str) -> str:
         return f"{fname}.~tmp"
+
+    def get_header_file_name(self, fname: str) -> str:
+        return f"{fname}.~columns"
 
     def add_result(self, signal: pd.DataFrame) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
         tmp_fname = self.get_tmp_file_name(fname)
         if self._cols is None:
             self._cols = signal.columns.to_list()
+            self._write_cols()
             signal.to_csv(tmp_fname, index=False, header=False, mode="w")
         else:
             if len(signal.columns) <= len(self._cols):
@@ -298,7 +301,8 @@ class CSVMode(Mode[pd.DataFrame]):
                     signal[col] = None
             else:
                 new_cols = set(signal.columns).difference(self._cols)
-                self._cols += new_cols
+                self._cols += sorted(new_cols)
+                self._write_cols()
             signal[self._cols].to_csv(
                 tmp_fname, index=False, header=False, mode="a")
 
@@ -309,16 +313,18 @@ class CSVMode(Mode[pd.DataFrame]):
         # csv files are saved by add_result
         fname = self.get_path(is_by_day=self._is_by_day)
         tmp_fname = self.get_tmp_file_name(fname)
+        col_fname = self.get_header_file_name(fname)
 
         if (self._is_by_day or force_finish) and self._cols:
             with open(fname, "w") as file, open(tmp_fname, "r") as tmp_csv:
                 csv_reader = csv.reader(tmp_csv)
                 csv_writer = csv.writer(file)
-                csv_writer.writerow(self._cols)
+                csv_writer.writerow(pd.read_csv(col_fname).columns.to_list())
                 for row in csv_reader:
                     csv_writer.writerow(
                         row + [None] * (len(self._cols) - len(row)))
                 os.remove(tmp_fname)
+                os.remove(col_fname)
             self._cols = None
 
     def split(
