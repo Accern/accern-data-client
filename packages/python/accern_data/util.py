@@ -252,6 +252,14 @@ def is_jupyter() -> bool:
     return IS_JUPYTER
 
 
+def get_tmp_file_name(fname: str) -> str:
+    return f"{fname}.~tmp"
+
+
+def get_header_file_name(fname: str) -> str:
+    return f"{fname}.~columns"
+
+
 class ProgressIndicator:
     def log(self, msg: str) -> None:
         raise NotImplementedError()

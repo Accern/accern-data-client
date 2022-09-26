@@ -28,7 +28,9 @@ from typing_extensions import get_args, Literal, TypedDict
 from .util import (
     BarIndicator,
     generate_file_response,
+    get_header_file_name,
     get_overall_total_from_dummy,
+    get_tmp_file_name,
     has_iprogress,
     is_example_url,
     MessageIndicator,
@@ -280,17 +282,11 @@ class CSVMode(Mode[pd.DataFrame]):
     def _write_cols(self) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
         header = pd.DataFrame(columns=self._cols)
-        header.to_csv(self.get_header_file_name(fname), index=False)
-
-    def get_tmp_file_name(self, fname: str) -> str:
-        return f"{fname}.~tmp"
-
-    def get_header_file_name(self, fname: str) -> str:
-        return f"{fname}.~columns"
+        header.to_csv(get_header_file_name(fname), index=False)
 
     def add_result(self, signal: pd.DataFrame) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
-        tmp_fname = self.get_tmp_file_name(fname)
+        tmp_fname = get_tmp_file_name(fname)
         if self._cols is None:
             self._cols = signal.columns.to_list()
             self._write_cols()
@@ -312,19 +308,8 @@ class CSVMode(Mode[pd.DataFrame]):
             force_finish: bool = False) -> None:
         # csv files are saved by add_result
         fname = self.get_path(is_by_day=self._is_by_day)
-        tmp_fname = self.get_tmp_file_name(fname)
-        col_fname = self.get_header_file_name(fname)
-
         if (self._is_by_day or force_finish) and self._cols:
-            with open(fname, "w") as file, open(tmp_fname, "r") as tmp_csv:
-                csv_reader = csv.reader(tmp_csv)
-                csv_writer = csv.writer(file)
-                csv_writer.writerow(pd.read_csv(col_fname).columns.to_list())
-                for row in csv_reader:
-                    csv_writer.writerow(
-                        row + [None] * (len(self._cols) - len(row)))
-                os.remove(tmp_fname)
-                os.remove(col_fname)
+            merge_csv_file(fname, total_cols=len(self._cols))
             self._cols = None
 
     def split(
@@ -958,3 +943,17 @@ def create_data_client(
         indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
         ) -> DataClient:
     return DataClient(url, token, n_errors, indicator)
+
+
+def merge_csv_file(fname: str, total_cols: int) -> None:
+    tmp_fname = get_tmp_file_name(fname)
+    col_fname = get_header_file_name(fname)
+    with open(fname, "w") as file, open(tmp_fname, "r") as tmp_csv:
+        csv_reader = csv.reader(tmp_csv)
+        csv_writer = csv.writer(file)
+        csv_writer.writerow(pd.read_csv(col_fname).columns.to_list())
+        for row in csv_reader:
+            csv_writer.writerow(
+                row + [''] * (total_cols - len(row)))
+        os.remove(tmp_fname)
+        os.remove(col_fname)
