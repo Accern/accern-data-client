@@ -628,7 +628,9 @@ class DataClient:
             try:
                 if is_example_url(self._base_url):
                     resp = generate_file_response(
-                        params, mode.get_format(), filters=filters)
+                        {**params, **url_params},
+                        mode.get_format(),
+                        filters=filters)
                 else:
                     resp = requests.post(
                         self._base_url,

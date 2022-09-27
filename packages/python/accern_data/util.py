@@ -168,7 +168,14 @@ def generate_csv_object(
                 result &= (transformed_col == transformed_val)
         filtered_df = valid_df[result]
     obj = io.BytesIO()
-    filtered_df.iloc[:DEFAULT_CHUNK_SIZE, :].to_csv(
+    for col in filtered_df.columns:
+        if filtered_df.loc[:, col].isna().all():
+            filtered_df = filtered_df.drop(col, axis=1)
+    if "size" in params.keys():
+        size = int(params["size"])
+    else:
+        size = DEFAULT_CHUNK_SIZE
+    filtered_df.iloc[:size, :].to_csv(
         obj, index=False, encoding=encoding)
     return obj
 
