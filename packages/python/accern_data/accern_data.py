@@ -299,8 +299,9 @@ class CSVMode(Mode[pd.DataFrame]):
             extra_cols = sig_cols_set.difference(cur_cols_set)
             for col in missing_cols:
                 signal[col] = None
-            self._cols += sorted(extra_cols)
-            self._write_cols()
+            if extra_cols:
+                self._cols += sorted(extra_cols)
+                self._write_cols()
             signal[self._cols].to_csv(
                 tmp_fname, index=False, header=False, mode="a")
 
@@ -952,12 +953,14 @@ def create_data_client(
 def merge_csv_file(fname: str, total_cols: int) -> None:
     tmp_fname = get_tmp_file_name(fname)
     col_fname = get_header_file_name(fname)
-    with open(fname, "w") as file, open(tmp_fname, "r") as tmp_csv:
+    with open(
+            fname, "w", encoding="utf-8") as file, open(
+                tmp_fname, "r", encoding="utf-8") as tmp_csv:
         csv_reader = csv.reader(tmp_csv)
         csv_writer = csv.writer(file)
         csv_writer.writerow(pd.read_csv(col_fname).columns.to_list())
         for row in csv_reader:
             csv_writer.writerow(
-                row + [''] * (total_cols - len(row)))
+                row + [""] * (total_cols - len(row)))
         os.remove(tmp_fname)
         os.remove(col_fname)

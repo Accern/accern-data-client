@@ -72,6 +72,7 @@
         "import-outside-toplevel",
         "invalid-unary-operand-type",
         "missing-docstring",
+        "missing-timeout",
         "not-an-iterable",
         "not-callable",
         "protected-access",
