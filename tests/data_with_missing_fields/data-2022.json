@@ -43,7 +43,7 @@
             "signal_tag": "tag-BBG000BDJMS9-105912",
             "primary_signal": true,
             "doc_sentiment": 11.269,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -83,7 +83,7 @@
             "signal_tag": "tag-BBG000BDJMS9-111709",
             "primary_signal": false,
             "doc_sentiment": 7.718,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -123,7 +123,7 @@
             "signal_tag": "tag-BBG000BDJMS9-105912",
             "primary_signal": true,
             "doc_sentiment": 4.1657,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -163,7 +163,7 @@
             "signal_tag": "tag-BBG00GLTQDG3-105722",
             "primary_signal": false,
             "doc_sentiment": 6.7737,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -203,7 +203,7 @@
             "signal_tag": "tag-BBG00GLTQDG3-105913",
             "primary_signal": false,
             "doc_sentiment": 6.7737,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -243,7 +243,7 @@
             "signal_tag": "tag-BBG00GLTQDG3-111710",
             "primary_signal": true,
             "doc_sentiment": 8.2183,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -283,7 +283,7 @@
             "signal_tag": "tag-BBG00GLTQDG3-111709",
             "primary_signal": false,
             "doc_sentiment": 8.2183,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -323,7 +323,7 @@
             "signal_tag": "tag-BBG00H3T9L81-102069",
             "primary_signal": true,
             "doc_sentiment": 3.2816,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -363,7 +363,7 @@
             "signal_tag": "tag-BBG000DCPNF4-111709",
             "primary_signal": true,
             "doc_sentiment": 9.4971,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -403,7 +403,7 @@
             "signal_tag": "tag-BBG000DCPNF4-105912",
             "primary_signal": false,
             "doc_sentiment": 4.5091,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -443,7 +443,7 @@
             "signal_tag": "tag-BBG000Q6S5V1-95272",
             "primary_signal": true,
             "doc_sentiment": 8.1696,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -483,7 +483,7 @@
             "signal_tag": "tag-BBG000Q6S5V1-111710",
             "primary_signal": true,
             "doc_sentiment": 9.1272,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -523,7 +523,7 @@
             "signal_tag": "tag-BBG000DCPNF4-102172",
             "primary_signal": true,
             "doc_sentiment": 5.619,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -563,7 +563,7 @@
             "signal_tag": "tag-BBG00H3T9L81-105914",
             "primary_signal": false,
             "doc_sentiment": 5.6774,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -603,7 +603,7 @@
             "signal_tag": "tag-BBG00H3T9L81-111710",
             "primary_signal": true,
             "doc_sentiment": 5.1344,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -643,7 +643,7 @@
             "signal_tag": "tag-BBG000DCPNF4-102172",
             "primary_signal": false,
             "doc_sentiment": 4.5091,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -683,7 +683,7 @@
             "signal_tag": "tag-BBG00H3T9L81-111709",
             "primary_signal": false,
             "doc_sentiment": 5.1344,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -723,7 +723,7 @@
             "signal_tag": "tag-BBG000BHYXT8-111709",
             "primary_signal": false,
             "doc_sentiment": 8.9691,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -763,7 +763,7 @@
             "signal_tag": "tag-BBG000BHYXT8-111710",
             "primary_signal": true,
             "doc_sentiment": 8.9691,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -803,7 +803,7 @@
             "signal_tag": "tag-BBG000BTL214-111710",
             "primary_signal": true,
             "doc_sentiment": 11.4291,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -843,7 +843,7 @@
             "signal_tag": "tag-BBG000BWP4Q2-95258",
             "primary_signal": false,
             "doc_sentiment": 3.3945,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -883,7 +883,7 @@
             "signal_tag": "tag-BBG000BHYXT8-111687",
             "primary_signal": false,
             "doc_sentiment": 17.2329,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -923,7 +923,7 @@
             "signal_tag": "tag-BBG000BTL214-111709",
             "primary_signal": false,
             "doc_sentiment": 11.4291,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -963,7 +963,7 @@
             "signal_tag": "tag-BBG000BWP4Q2-102069",
             "primary_signal": false,
             "doc_sentiment": 3.3945,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -1003,7 +1003,7 @@
             "signal_tag": "tag-BBG000BWP4Q2-95258",
             "primary_signal": false,
             "doc_sentiment": 4.2672,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -1043,7 +1043,7 @@
             "signal_tag": "tag-BBG000BHYXT8-105722",
             "primary_signal": false,
             "doc_sentiment": 17.2329,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -1083,7 +1083,7 @@
             "signal_tag": "tag-BBG000BWP4Q2-105912",
             "primary_signal": false,
             "doc_sentiment": 4.2672,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -1123,7 +1123,7 @@
             "signal_tag": "tag-BBG000G1H723-111709",
             "primary_signal": false,
             "doc_sentiment": 9.6021,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -1163,7 +1163,7 @@
             "signal_tag": "tag-BBG000BLLFK1-105910",
             "primary_signal": false,
             "doc_sentiment": -0.1762,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -1203,7 +1203,7 @@
             "signal_tag": "tag-BBG000BLLFK1-111681",
             "primary_signal": false,
             "doc_sentiment": 5.1763,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -1243,7 +1243,7 @@
             "signal_tag": "tag-BBG000G1H723-105912",
             "primary_signal": false,
             "doc_sentiment": 3.9043,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -1283,7 +1283,7 @@
             "signal_tag": "tag-BBG000BLLFK1-105914",
             "primary_signal": false,
             "doc_sentiment": -0.1762,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -1323,7 +1323,7 @@
             "signal_tag": "tag-BBG000BLLFK1-111709",
             "primary_signal": false,
             "doc_sentiment": 5.1763,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -1363,7 +1363,7 @@
             "signal_tag": "tag-BBG000G1H723-111710",
             "primary_signal": true,
             "doc_sentiment": 9.6021,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -1403,7 +1403,7 @@
             "signal_tag": "tag-BBG000BLLFK1-95272",
             "primary_signal": false,
             "doc_sentiment": 7.7226,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -1443,7 +1443,7 @@
             "signal_tag": "tag-BBG000G1H723-105913",
             "primary_signal": true,
             "doc_sentiment": 3.9043,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -2443,8 +2443,8 @@
             "signal_tag": "tag-BBG000D3SQP3-105914",
             "primary_signal": true,
             "doc_sentiment": 2.611,
-            "entity_region": "Americas",
-            "event_group": "Governance"
+            "entity_region": null,
+            "event_group": null
         },
         {
             "entity_hits": "[]",
@@ -2483,8 +2483,8 @@
             "signal_tag": "tag-BBG000D3SQP3-105912",
             "primary_signal": true,
             "doc_sentiment": 7.3003,
-            "entity_region": "Americas",
-            "event_group": "Social"
+            "entity_region": null,
+            "event_group": null
         },
         {
             "entity_hits": "[]",
@@ -2523,8 +2523,8 @@
             "signal_tag": "tag-BBG000BWHB94-105914",
             "primary_signal": false,
             "doc_sentiment": 7.3972,
-            "entity_region": "Americas",
-            "event_group": "Governance"
+            "entity_region": null,
+            "event_group": null
         },
         {
             "entity_hits": "[]",
@@ -2563,8 +2563,8 @@
             "signal_tag": "tag-BBG000BWHB94-105912",
             "primary_signal": false,
             "doc_sentiment": 4.6973,
-            "entity_region": "Americas",
-            "event_group": "Social"
+            "entity_region": null,
+            "event_group": null
         },
         {
             "entity_hits": "[]",
@@ -2603,8 +2603,8 @@
             "signal_tag": "tag-BBG000N23Z17-111710",
             "primary_signal": true,
             "doc_sentiment": 7.7677,
-            "entity_region": "Americas",
-            "event_group": "Governance"
+            "entity_region": null,
+            "event_group": null
         },
         {
             "entity_hits": "[]",
@@ -2643,8 +2643,8 @@
             "signal_tag": "tag-BBG000BR2WS4-111710",
             "primary_signal": true,
             "doc_sentiment": 8.0674,
-            "entity_region": "Americas",
-            "event_group": "Governance"
+            "entity_region": null,
+            "event_group": null
         },
         {
             "entity_hits": "[]",
@@ -2683,8 +2683,8 @@
             "signal_tag": "tag-BBG000BR2WS4-105914",
             "primary_signal": false,
             "doc_sentiment": 1.4204,
-            "entity_region": "Americas",
-            "event_group": "Governance"
+            "entity_region": null,
+            "event_group": null
         },
         {
             "entity_hits": "[]",
@@ -2723,8 +2723,8 @@
             "signal_tag": "tag-BBG000BR2WS4-105914",
             "primary_signal": false,
             "doc_sentiment": 6.185,
-            "entity_region": "Americas",
-            "event_group": "Governance"
+            "entity_region": null,
+            "event_group": null
         },
         {
             "entity_hits": "[]",
@@ -2763,8 +2763,8 @@
             "signal_tag": "tag-BBG000N23Z17-105722",
             "primary_signal": false,
             "doc_sentiment": -17.0043,
-            "entity_region": "Americas",
-            "event_group": "Governance"
+            "entity_region": null,
+            "event_group": null
         },
         {
             "entity_hits": "[]",
@@ -2803,8 +2803,8 @@
             "signal_tag": "tag-BBG000BR2WS4-105913",
             "primary_signal": true,
             "doc_sentiment": 1.4204,
-            "entity_region": "Americas",
-            "event_group": "Social"
+            "entity_region": null,
+            "event_group": null
         },
         {
             "entity_hits": "[]",
@@ -2843,8 +2843,8 @@
             "signal_tag": "tag-BBG000N23Z17-111709",
             "primary_signal": false,
             "doc_sentiment": 7.7677,
-            "entity_region": "Americas",
-            "event_group": "Governance"
+            "entity_region": null,
+            "event_group": null
         },
         {
             "entity_hits": "[]",
@@ -2883,8 +2883,8 @@
             "signal_tag": "tag-BBG000BR2WS4-111709",
             "primary_signal": false,
             "doc_sentiment": 8.0674,
-            "entity_region": "Americas",
-            "event_group": "Governance"
+            "entity_region": null,
+            "event_group": null
         },
         {
             "entity_hits": "[]",
@@ -2923,7 +2923,7 @@
             "signal_tag": "tag-BBG000BR2WS4-105912",
             "primary_signal": true,
             "doc_sentiment": 6.185,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Social"
         },
         {
@@ -2963,7 +2963,7 @@
             "signal_tag": "tag-BBG000N23Z17-105914",
             "primary_signal": true,
             "doc_sentiment": -17.0043,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -3003,7 +3003,7 @@
             "signal_tag": "tag-BBG000BB5C19-95246",
             "primary_signal": false,
             "doc_sentiment": 15.2946,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Social"
         },
         {
@@ -3043,7 +3043,7 @@
             "signal_tag": "tag-BBG000BB5C19-105722",
             "primary_signal": true,
             "doc_sentiment": 15.2946,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -3083,7 +3083,7 @@
             "signal_tag": "tag-BBG000BB5C19-102069",
             "primary_signal": false,
             "doc_sentiment": 2.3677,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Social"
         },
         {
@@ -3123,7 +3123,7 @@
             "signal_tag": "tag-BBG000BB5C19-83",
             "primary_signal": true,
             "doc_sentiment": 6.5803,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -3163,7 +3163,7 @@
             "signal_tag": "tag-BBG000BMLYS0-111763",
             "primary_signal": true,
             "doc_sentiment": 0.4056,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Environment"
         },
         {
@@ -3203,7 +3203,7 @@
             "signal_tag": "tag-BBG000BMLYS0-105722",
             "primary_signal": false,
             "doc_sentiment": 0.4056,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -3243,7 +3243,7 @@
             "signal_tag": "tag-BBG000BB5C19-111709",
             "primary_signal": false,
             "doc_sentiment": -5.3669,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -3283,7 +3283,7 @@
             "signal_tag": "tag-BBG006G06421-111710",
             "primary_signal": true,
             "doc_sentiment": 9.1519,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -3323,7 +3323,7 @@
             "signal_tag": "tag-BBG006G06421-111744",
             "primary_signal": true,
             "doc_sentiment": 5.139,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Social"
         },
         {
@@ -3363,7 +3363,7 @@
             "signal_tag": "tag-BBG006G06421-111709",
             "primary_signal": false,
             "doc_sentiment": 9.1519,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -3403,7 +3403,7 @@
             "signal_tag": "tag-BBG006G06421-95258",
             "primary_signal": false,
             "doc_sentiment": 8.8058,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Social"
         },
         {
@@ -3443,7 +3443,7 @@
             "signal_tag": "tag-BBG006G06421-95246",
             "primary_signal": true,
             "doc_sentiment": -5.2917,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Social"
         },
         {
@@ -3483,7 +3483,7 @@
             "signal_tag": "tag-BBG006G06421-111709",
             "primary_signal": false,
             "doc_sentiment": 5.3847,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -3523,7 +3523,7 @@
             "signal_tag": "tag-BBG006G06421-105722",
             "primary_signal": true,
             "doc_sentiment": 8.8058,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -3563,7 +3563,7 @@
             "signal_tag": "tag-BBG006G06421-95272",
             "primary_signal": false,
             "doc_sentiment": -5.2917,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -3603,7 +3603,7 @@
             "signal_tag": "tag-BBG006G06421-105757",
             "primary_signal": true,
             "doc_sentiment": 6.6681,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Social"
         },
         {
@@ -3643,7 +3643,7 @@
             "signal_tag": "tag-BBG000BJZBK0-102172",
             "primary_signal": true,
             "doc_sentiment": 8.1929,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Environment"
         },
         {
@@ -3683,7 +3683,7 @@
             "signal_tag": "tag-BBG000BPHG07-95258",
             "primary_signal": false,
             "doc_sentiment": -0.1534,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Social"
         },
         {
@@ -3723,7 +3723,7 @@
             "signal_tag": "tag-BBG000BJZBK0-95246",
             "primary_signal": false,
             "doc_sentiment": 8.1929,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Social"
         },
         {
@@ -3763,7 +3763,7 @@
             "signal_tag": "tag-BBG000BJZBK0-102172",
             "primary_signal": false,
             "doc_sentiment": 1.6168,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Environment"
         },
         {
@@ -3803,7 +3803,7 @@
             "signal_tag": "tag-BBG000BPHG07-105912",
             "primary_signal": true,
             "doc_sentiment": 5.2374,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Social"
         },
         {
@@ -3843,7 +3843,7 @@
             "signal_tag": "tag-BBG000BPHG07-111709",
             "primary_signal": false,
             "doc_sentiment": 7.2341,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -3883,7 +3883,7 @@
             "signal_tag": "tag-BBG000BPHG07-105914",
             "primary_signal": false,
             "doc_sentiment": 10.455,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -3923,7 +3923,7 @@
             "signal_tag": "tag-BBG000BPHG07-111710",
             "primary_signal": true,
             "doc_sentiment": 7.2341,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -3963,7 +3963,7 @@
             "signal_tag": "tag-BBG000BPHG07-95272",
             "primary_signal": false,
             "doc_sentiment": -0.1534,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -4003,7 +4003,7 @@
             "signal_tag": "tag-BBG000BJZBK0-105722",
             "primary_signal": true,
             "doc_sentiment": 1.6168,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -4043,7 +4043,7 @@
             "signal_tag": "tag-BBG000BG8NW7-111709",
             "primary_signal": true,
             "doc_sentiment": 7.6194,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -4083,7 +4083,7 @@
             "signal_tag": "tag-BBG000BG8NW7-105910",
             "primary_signal": false,
             "doc_sentiment": 18.3626,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -4123,7 +4123,7 @@
             "signal_tag": "tag-BBG000BG8NW7-105914",
             "primary_signal": true,
             "doc_sentiment": 1.5863,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -4163,7 +4163,7 @@
             "signal_tag": "tag-BBG000QSXRZ5-102069",
             "primary_signal": false,
             "doc_sentiment": 2.4171,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Social"
         },
         {
@@ -4203,7 +4203,7 @@
             "signal_tag": "tag-BBG000QSXRZ5-111709",
             "primary_signal": false,
             "doc_sentiment": 7.3405,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -4243,7 +4243,7 @@
             "signal_tag": "tag-BBG000QSXRZ5-102064",
             "primary_signal": false,
             "doc_sentiment": 2.1671,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "General Business Actions"
         },
         {
@@ -4283,7 +4283,7 @@
             "signal_tag": "tag-BBG000QSXRZ5-105914",
             "primary_signal": false,
             "doc_sentiment": 2.1671,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -4323,7 +4323,7 @@
             "signal_tag": "tag-BBG000BG8NW7-105914",
             "primary_signal": true,
             "doc_sentiment": 18.3626,
-            "entity_region": "Americas",
+            "entity_region": null,
             "event_group": "Governance"
         },
         {
@@ -4843,8 +4843,8 @@
             "signal_tag": "tag-BBG000CL9LT2-111710",
             "primary_signal": true,
             "doc_sentiment": 8.7795,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Governance"
         },
         {
             "entity_hits": "[]",
@@ -4883,8 +4883,8 @@
             "signal_tag": "tag-BBG000KKVG84-105913",
             "primary_signal": true,
             "doc_sentiment": 7.6795,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Social"
         },
         {
             "entity_hits": "[]",
@@ -4923,8 +4923,8 @@
             "signal_tag": "tag-BBG000CL9LT2-111674",
             "primary_signal": true,
             "doc_sentiment": 5.5124,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Governance"
         },
         {
             "entity_hits": "[]",
@@ -4963,8 +4963,8 @@
             "signal_tag": "tag-BBG000CL9LT2-105912",
             "primary_signal": true,
             "doc_sentiment": 5.1315,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Social"
         },
         {
             "entity_hits": "[]",
@@ -5003,8 +5003,8 @@
             "signal_tag": "tag-BBG000BN5KN1-105913",
             "primary_signal": true,
             "doc_sentiment": 7.6795,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Social"
         },
         {
             "entity_hits": "[]",
@@ -5043,8 +5043,8 @@
             "signal_tag": "tag-BBG000CL9LT2-111709",
             "primary_signal": false,
             "doc_sentiment": 8.7795,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Governance"
         },
         {
             "entity_hits": "[]",
@@ -5083,8 +5083,8 @@
             "signal_tag": "tag-BBG000CL9LT2-95246",
             "primary_signal": false,
             "doc_sentiment": -1.0703,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Social"
         },
         {
             "entity_hits": "[]",
@@ -5123,8 +5123,8 @@
             "signal_tag": "tag-BBG000CL9LT2-105914",
             "primary_signal": false,
             "doc_sentiment": 5.1315,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Governance"
         },
         {
             "entity_hits": "[]",
@@ -5163,8 +5163,8 @@
             "signal_tag": "tag-BBG000CL9LT2-111733",
             "primary_signal": false,
             "doc_sentiment": 10.0681,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Governance"
         },
         {
             "entity_hits": "[]",
@@ -5203,8 +5203,8 @@
             "signal_tag": "tag-BBG000BCSV38-95246",
             "primary_signal": true,
             "doc_sentiment": 1.3485,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Social"
         },
         {
             "entity_hits": "[]",
@@ -5243,8 +5243,8 @@
             "signal_tag": "tag-BBG000BCSV38-111744",
             "primary_signal": false,
             "doc_sentiment": -4.3182,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Social"
         },
         {
             "entity_hits": "[]",
@@ -5283,8 +5283,8 @@
             "signal_tag": "tag-BBG000BC3621-105722",
             "primary_signal": true,
             "doc_sentiment": 5.2388,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Governance"
         },
         {
             "entity_hits": "[]",
@@ -5323,8 +5323,8 @@
             "signal_tag": "tag-BBG000BC3621-111674",
             "primary_signal": true,
             "doc_sentiment": 9.6825,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Governance"
         },
         {
             "entity_hits": "[]",
@@ -5363,8 +5363,8 @@
             "signal_tag": "tag-BBG000BCSV38-105913",
             "primary_signal": false,
             "doc_sentiment": -4.3182,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Social"
         },
         {
             "entity_hits": "[]",
@@ -5403,8 +5403,8 @@
             "signal_tag": "tag-BBG000BC3621-111763",
             "primary_signal": true,
             "doc_sentiment": 15.2976,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Environment"
         },
         {
             "entity_hits": "[]",
@@ -5443,8 +5443,8 @@
             "signal_tag": "tag-BBG000BC3621-102067",
             "primary_signal": false,
             "doc_sentiment": 15.2976,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Governance"
         },
         {
             "entity_hits": "[]",
@@ -5483,8 +5483,8 @@
             "signal_tag": "tag-BBG000BCSV38-111744",
             "primary_signal": false,
             "doc_sentiment": 1.3485,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Social"
         },
         {
             "entity_hits": "[]",
@@ -5523,8 +5523,8 @@
             "signal_tag": "tag-BBG000BC3621-111689",
             "primary_signal": true,
             "doc_sentiment": 5.2388,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Governance"
         },
         {
             "entity_hits": "[]",
@@ -5563,8 +5563,8 @@
             "signal_tag": "tag-BBG000BC3621-111674",
             "primary_signal": true,
             "doc_sentiment": 5.3135,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Governance"
         },
         {
             "entity_hits": "[]",
@@ -5603,8 +5603,8 @@
             "signal_tag": "tag-BBG000BMZ937-111710",
             "primary_signal": false,
             "doc_sentiment": 8.9756,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Governance"
         },
         {
             "entity_hits": "[]",
@@ -5643,8 +5643,8 @@
             "signal_tag": "tag-BBG000BMZ937-102066",
             "primary_signal": false,
             "doc_sentiment": 4.0776,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Social"
         },
         {
             "entity_hits": "[]",
@@ -5683,8 +5683,8 @@
             "signal_tag": "tag-BBG000BMZ937-102064",
             "primary_signal": false,
             "doc_sentiment": 4.0776,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "General Business Actions"
         },
         {
             "entity_hits": "[]",
@@ -5723,8 +5723,8 @@
             "signal_tag": "tag-BBG000BMZ937-105910",
             "primary_signal": false,
             "doc_sentiment": 2.4319,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Governance"
         },
         {
             "entity_hits": "[]",
@@ -5763,8 +5763,8 @@
             "signal_tag": "tag-BBG000BMZ937-102067",
             "primary_signal": false,
             "doc_sentiment": 2.4319,
-            "entity_region": null,
-            "event_group": null
+            "entity_region": "Americas",
+            "event_group": "Governance"
         },
         {
             "entity_hits": "[]",
@@ -5803,7 +5803,7 @@
             "signal_tag": "tag-BBG000BMZ937-95263",
             "primary_signal": false,
             "doc_sentiment": -2.3414,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -5843,7 +5843,7 @@
             "signal_tag": "tag-BBG000BMZ937-95246",
             "primary_signal": false,
             "doc_sentiment": 15.0794,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -5883,7 +5883,7 @@
             "signal_tag": "tag-BBG000BMZ937-105722",
             "primary_signal": false,
             "doc_sentiment": -2.3414,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -5923,7 +5923,7 @@
             "signal_tag": "tag-BBG000BMZ937-111689",
             "primary_signal": false,
             "doc_sentiment": 15.0794,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -5963,7 +5963,7 @@
             "signal_tag": "tag-BBG000BMZ937-111709",
             "primary_signal": true,
             "doc_sentiment": 8.9756,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6003,7 +6003,7 @@
             "signal_tag": "tag-BBG000PHVDS1-105757",
             "primary_signal": false,
             "doc_sentiment": 5.005,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6043,7 +6043,7 @@
             "signal_tag": "tag-BBG000C48VG3-105912",
             "primary_signal": false,
             "doc_sentiment": 9.931,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6083,7 +6083,7 @@
             "signal_tag": "tag-BBG000C48VG3-111709",
             "primary_signal": false,
             "doc_sentiment": 10.0568,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6123,7 +6123,7 @@
             "signal_tag": "tag-BBG000C48VG3-102172",
             "primary_signal": false,
             "doc_sentiment": 5.9789,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6163,7 +6163,7 @@
             "signal_tag": "tag-BBG000BW94W3-105912",
             "primary_signal": true,
             "doc_sentiment": 6.7044,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6203,7 +6203,7 @@
             "signal_tag": "tag-BBG000PHVDS1-105912",
             "primary_signal": false,
             "doc_sentiment": 5.005,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6243,7 +6243,7 @@
             "signal_tag": "tag-BBG000C48VG3-111710",
             "primary_signal": true,
             "doc_sentiment": 10.0568,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6283,7 +6283,7 @@
             "signal_tag": "tag-BBG000BW94W3-111710",
             "primary_signal": true,
             "doc_sentiment": 7.9845,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6323,7 +6323,7 @@
             "signal_tag": "tag-BBG000BW94W3-105722",
             "primary_signal": false,
             "doc_sentiment": 10.7252,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6363,7 +6363,7 @@
             "signal_tag": "tag-BBG000BW94W3-111709",
             "primary_signal": false,
             "doc_sentiment": 7.9845,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6403,7 +6403,7 @@
             "signal_tag": "tag-BBG000FKJVN4-111710",
             "primary_signal": true,
             "doc_sentiment": 10.8632,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6443,7 +6443,7 @@
             "signal_tag": "tag-BBG000BJ7Q37-105914",
             "primary_signal": false,
             "doc_sentiment": 4.5447,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6483,7 +6483,7 @@
             "signal_tag": "tag-BBG000BCGK26-105914",
             "primary_signal": false,
             "doc_sentiment": 3.1299,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6523,7 +6523,7 @@
             "signal_tag": "tag-BBG000QM0V85-102069",
             "primary_signal": false,
             "doc_sentiment": 7.9805,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6563,7 +6563,7 @@
             "signal_tag": "tag-BBG000BCGK26-105912",
             "primary_signal": true,
             "doc_sentiment": 4.4773,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6603,7 +6603,7 @@
             "signal_tag": "tag-BBG000FKJVN4-105914",
             "primary_signal": false,
             "doc_sentiment": 7.9507,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6643,7 +6643,7 @@
             "signal_tag": "tag-BBG000BJ7Q37-111703",
             "primary_signal": true,
             "doc_sentiment": 8.0911,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6683,7 +6683,7 @@
             "signal_tag": "tag-BBG000BCGK26-105914",
             "primary_signal": false,
             "doc_sentiment": 4.4773,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6723,7 +6723,7 @@
             "signal_tag": "tag-BBG000BC5YJ0-105912",
             "primary_signal": false,
             "doc_sentiment": 10.6769,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6763,7 +6763,7 @@
             "signal_tag": "tag-BBG000QM0V85-105914",
             "primary_signal": false,
             "doc_sentiment": 7.9805,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6803,7 +6803,7 @@
             "signal_tag": "tag-BBG000BLDXM9-102067",
             "primary_signal": false,
             "doc_sentiment": 11.162,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6843,7 +6843,7 @@
             "signal_tag": "tag-BBG000BJSQB5-105757",
             "primary_signal": false,
             "doc_sentiment": 19.7718,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6883,7 +6883,7 @@
             "signal_tag": "tag-BBG000DGLWP8-105912",
             "primary_signal": true,
             "doc_sentiment": 7.0469,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6923,7 +6923,7 @@
             "signal_tag": "tag-BBG000BJSQB5-105722",
             "primary_signal": false,
             "doc_sentiment": 19.7718,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -6963,7 +6963,7 @@
             "signal_tag": "tag-BBG000BJSQB5-111710",
             "primary_signal": false,
             "doc_sentiment": 8.8,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -7003,7 +7003,7 @@
             "signal_tag": "tag-BBG000BLDXM9-105910",
             "primary_signal": true,
             "doc_sentiment": 11.162,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -7043,7 +7043,7 @@
             "signal_tag": "tag-BBG000BJSQB5-111709",
             "primary_signal": true,
             "doc_sentiment": 8.8,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -7083,7 +7083,7 @@
             "signal_tag": "tag-BBG000DGLWP8-111710",
             "primary_signal": true,
             "doc_sentiment": 8.5143,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -7123,7 +7123,7 @@
             "signal_tag": "tag-BBG000DGLWP8-111678",
             "primary_signal": false,
             "doc_sentiment": -2.7529,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         },
         {
@@ -7163,7 +7163,7 @@
             "signal_tag": "tag-BBG000DGLWP8-95272",
             "primary_signal": false,
             "doc_sentiment": -2.7529,
-            "entity_region": null,
+            "entity_region": "Americas",
             "event_group": null
         }
     ]

@@ -223,7 +223,7 @@ class CSVMode(Mode[pd.DataFrame]):
     def __init__(
             self, is_by_day: bool, chunk_size: Optional[int] = None) -> None:
         super().__init__()
-        self._cols = None
+        self._cols: Optional[List[str]] = None
         self._is_by_day = is_by_day
         self._chunk_size = chunk_size
         self._buffer: List[pd.DataFrame] = []
@@ -288,17 +288,19 @@ class CSVMode(Mode[pd.DataFrame]):
         fname = self.get_path(is_by_day=self._is_by_day)
         tmp_fname = get_tmp_file_name(fname)
         if self._cols is None:
-            self._cols = signal.columns.to_list()
+            self._cols = sorted(signal.columns.to_list())
             self._write_cols()
-            signal.to_csv(tmp_fname, index=False, header=False, mode="w")
+            signal[self._cols].to_csv(
+                tmp_fname, index=False, header=False, mode="w")
         else:
-            if len(signal.columns) <= len(self._cols):
-                for col in set(self._cols).difference(signal.columns):
-                    signal[col] = None
-            else:
-                new_cols = set(signal.columns).difference(self._cols)
-                self._cols += sorted(new_cols)
-                self._write_cols()
+            cur_cols_set = set(self._cols)
+            sig_cols_set = set(signal.columns)
+            missing_cols = cur_cols_set.difference(sig_cols_set)
+            extra_cols = sig_cols_set.difference(cur_cols_set)
+            for col in missing_cols:
+                signal[col] = None
+            self._cols += sorted(extra_cols)
+            self._write_cols()
             signal[self._cols].to_csv(
                 tmp_fname, index=False, header=False, mode="a")
 

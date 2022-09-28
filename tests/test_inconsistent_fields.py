@@ -23,7 +23,7 @@ def test_inconsistent_fields_csv_full() -> None:
         end_date=end_date,
         indicator="message",
         url_params={
-            "size": 60
+            "size": 36
         })
 
     df_gen = pd.read_csv(f"{output_path}{output_pattern}.csv")
