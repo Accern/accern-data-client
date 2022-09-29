@@ -961,5 +961,5 @@ def merge_csv_file(fname: str, total_cols: int) -> None:
         for row in csv_reader:
             csv_writer.writerow(
                 row + [""] * (total_cols - len(row)))
-        os.remove(tmp_fname)
-        os.remove(col_fname)
+    os.remove(tmp_fname)
+    os.remove(col_fname)
