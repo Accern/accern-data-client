@@ -1,3 +1,4 @@
+import csv
 import io
 import os
 import time
@@ -27,7 +28,9 @@ from typing_extensions import get_args, Literal, TypedDict
 from .util import (
     BarIndicator,
     generate_file_response,
+    get_header_file_name,
     get_overall_total_from_dummy,
+    get_tmp_file_name,
     has_iprogress,
     is_example_url,
     MessageIndicator,
@@ -180,7 +183,10 @@ class Mode(Generic[T]):
     def add_result(self, signal: T) -> None:
         raise NotImplementedError()
 
-    def finish_day(self, indicator: ProgressIndicator) -> None:
+    def finish_day(
+            self,
+            indicator: ProgressIndicator,
+            force_finish: bool = False) -> None:
         raise NotImplementedError()
 
     def iterate_data(
@@ -217,7 +223,7 @@ class CSVMode(Mode[pd.DataFrame]):
     def __init__(
             self, is_by_day: bool, chunk_size: Optional[int] = None) -> None:
         super().__init__()
-        self._cols = None
+        self._cols: Optional[List[str]] = None
         self._is_by_day = is_by_day
         self._chunk_size = chunk_size
         self._buffer: List[pd.DataFrame] = []
@@ -273,18 +279,40 @@ class CSVMode(Mode[pd.DataFrame]):
         fname = self.get_path(self._is_by_day)
         indicator.log(f"current file is {fname}")
 
+    def _write_cols(self) -> None:
+        fname = self.get_path(is_by_day=self._is_by_day)
+        header = pd.DataFrame(columns=self._cols)
+        header.to_csv(get_header_file_name(fname), index=False)
+
     def add_result(self, signal: pd.DataFrame) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
+        tmp_fname = get_tmp_file_name(fname)
         if self._cols is None:
-            signal.to_csv(fname, index=False, header=True, mode="w")
-            self._cols = signal.columns
-        else:
+            self._cols = sorted(signal.columns.to_list())
+            self._write_cols()
             signal[self._cols].to_csv(
-                fname, index=False, header=False, mode="a")
+                tmp_fname, index=False, header=False, mode="w")
+        else:
+            cur_cols_set = set(self._cols)
+            sig_cols_set = set(signal.columns)
+            missing_cols = cur_cols_set.difference(sig_cols_set)
+            extra_cols = sig_cols_set.difference(cur_cols_set)
+            for col in missing_cols:
+                signal[col] = None
+            if extra_cols:
+                self._cols += sorted(extra_cols)
+                self._write_cols()
+            signal[self._cols].to_csv(
+                tmp_fname, index=False, header=False, mode="a")
 
-    def finish_day(self, indicator: ProgressIndicator) -> None:
+    def finish_day(
+            self,
+            indicator: ProgressIndicator,
+            force_finish: bool = False) -> None:
         # csv files are saved by add_result
-        if self._is_by_day:
+        fname = self.get_path(is_by_day=self._is_by_day)
+        if (self._is_by_day or force_finish) and self._cols:
+            merge_csv_file(fname)
             self._cols = None
 
     def split(
@@ -391,7 +419,10 @@ class JSONMode(Mode[Dict[str, Any]]):
     def add_result(self, signal: Dict[str, Any]) -> None:
         self._res.append(signal)
 
-    def finish_day(self, indicator: ProgressIndicator) -> None:
+    def finish_day(
+            self,
+            indicator: ProgressIndicator,
+            force_finish: bool = False) -> None:
         fname = self.get_path(is_by_day=True)
         indicator.log(f"writing results to {fname}")
 
@@ -600,7 +631,9 @@ class DataClient:
             try:
                 if is_example_url(self._base_url):
                     resp = generate_file_response(
-                        params, mode.get_format(), filters=filters)
+                        {**params, **url_params},
+                        mode.get_format(),
+                        filters=filters)
                 else:
                     resp = requests.post(
                         self._base_url,
@@ -809,7 +842,7 @@ class DataClient:
         if prev_date is not None:
             assert valid_mode is not None
             assert indicator_obj is not None
-            valid_mode.finish_day(indicator_obj)
+            valid_mode.finish_day(indicator_obj, force_finish=True)
 
     def iterate_range(
             self,
@@ -915,3 +948,20 @@ def create_data_client(
         indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
         ) -> DataClient:
     return DataClient(url, token, n_errors, indicator)
+
+
+def merge_csv_file(fname: str) -> None:
+    tmp_fname = get_tmp_file_name(fname)
+    col_fname = get_header_file_name(fname)
+    cols = pd.read_csv(col_fname).columns.to_list()
+    total_cols = len(cols)
+    with open(fname, "w", encoding="utf-8") as file, \
+            open(tmp_fname, "r", encoding="utf-8") as tmp_csv:
+        csv_reader = csv.reader(tmp_csv)
+        csv_writer = csv.writer(file)
+        csv_writer.writerow(cols)
+        for row in csv_reader:
+            csv_writer.writerow(
+                row + [""] * (total_cols - len(row)))
+    os.remove(tmp_fname)
+    os.remove(col_fname)
