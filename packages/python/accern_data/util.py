@@ -171,7 +171,7 @@ def generate_csv_object(
     for col in filtered_df.columns:
         if filtered_df.loc[:, col].isna().all():
             filtered_df = filtered_df.drop(col, axis=1)
-    if "size" in params.keys():
+    if "size" in params:
         size = int(params["size"])
     else:
         size = DEFAULT_CHUNK_SIZE
