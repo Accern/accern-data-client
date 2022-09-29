@@ -953,9 +953,8 @@ def create_data_client(
 def merge_csv_file(fname: str, total_cols: int) -> None:
     tmp_fname = get_tmp_file_name(fname)
     col_fname = get_header_file_name(fname)
-    with open(
-            fname, "w", encoding="utf-8") as file, open(
-                tmp_fname, "r", encoding="utf-8") as tmp_csv:
+    with open(fname, "w", encoding="utf-8") as file, \
+            open(tmp_fname, "r", encoding="utf-8") as tmp_csv:
         csv_reader = csv.reader(tmp_csv)
         csv_writer = csv.writer(file)
         csv_writer.writerow(pd.read_csv(col_fname).columns.to_list())
