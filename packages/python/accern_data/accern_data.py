@@ -312,7 +312,7 @@ class CSVMode(Mode[pd.DataFrame]):
         # csv files are saved by add_result
         fname = self.get_path(is_by_day=self._is_by_day)
         if (self._is_by_day or force_finish) and self._cols:
-            merge_csv_file(fname, total_cols=len(self._cols))
+            merge_csv_file(fname)
             self._cols = None
 
     def split(
@@ -950,14 +950,16 @@ def create_data_client(
     return DataClient(url, token, n_errors, indicator)
 
 
-def merge_csv_file(fname: str, total_cols: int) -> None:
+def merge_csv_file(fname: str) -> None:
     tmp_fname = get_tmp_file_name(fname)
     col_fname = get_header_file_name(fname)
+    cols = pd.read_csv(col_fname).columns.to_list()
+    total_cols = len(cols)
     with open(fname, "w", encoding="utf-8") as file, \
             open(tmp_fname, "r", encoding="utf-8") as tmp_csv:
         csv_reader = csv.reader(tmp_csv)
         csv_writer = csv.writer(file)
-        csv_writer.writerow(pd.read_csv(col_fname).columns.to_list())
+        csv_writer.writerow(cols)
         for row in csv_reader:
             csv_writer.writerow(
                 row + [""] * (total_cols - len(row)))
