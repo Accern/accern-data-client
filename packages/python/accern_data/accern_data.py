@@ -34,6 +34,7 @@ from .util import (
     has_iprogress,
     is_example_url,
     MessageIndicator,
+    mirco_to_millisecond,
     ProgressIndicator,
     SilentIndicator,
     write_json,
@@ -428,13 +429,14 @@ class JSONMode(Mode[Dict[str, Any]]):
 
         def stringify_dates(obj: Dict[str, Any]) -> Dict[str, Any]:
             if "harvested_at" in obj:
-                obj["harvested_at"] = obj["harvested_at"].strftime(
-                    DATETIME_FORMAT)
+                obj["harvested_at"] = mirco_to_millisecond(
+                    obj["harvested_at"].strftime(DATETIME_FORMAT))
             if "published_at" in obj:
-                obj["published_at"] = obj["published_at"].strftime(
-                    DATETIME_FORMAT)
+                obj["published_at"] = mirco_to_millisecond(
+                    obj["published_at"].strftime(DATETIME_FORMAT))
             if "crawled_at" in obj:
-                obj["crawled_at"] = obj["crawled_at"].strftime(DATETIME_FORMAT)
+                obj["crawled_at"] = mirco_to_millisecond(
+                    obj["crawled_at"].strftime(DATETIME_FORMAT))
             return obj
 
         obj = [stringify_dates(cur) for cur in self._res]
