@@ -196,6 +196,9 @@ class Mode(Generic[T]):
             indicator: ProgressIndicator) -> Iterator[T]:
         raise NotImplementedError()
 
+    def stringify_dates(self, obj: T) -> T:
+        raise NotImplementedError()
+
     def split(self, batch: List[T], value: pd.Timestamp) -> List[T]:
         raise NotImplementedError()
 
@@ -288,6 +291,13 @@ class CSVMode(Mode[pd.DataFrame]):
     def add_result(self, signal: pd.DataFrame) -> None:
         fname = self.get_path(is_by_day=self._is_by_day)
         tmp_fname = get_tmp_file_name(fname)
+
+        def micro_to_milli(timestamp: pd.Timestamp) -> str:
+            return mirco_to_millisecond(
+                pd.to_datetime(timestamp).strftime(DATETIME_FORMAT))
+
+        for col in ["harvested_at", "crawled_at", "published_at"]:
+            signal.loc[:, col] = signal.loc[:, col].apply(micro_to_milli)
         if self._cols is None:
             self._cols = sorted(signal.columns.to_list())
             self._write_cols()
@@ -316,12 +326,22 @@ class CSVMode(Mode[pd.DataFrame]):
             merge_csv_file(fname)
             self._cols = None
 
+    def stringify_dates(self, obj: pd.DataFrame) -> pd.DataFrame:
+
+        def micro_to_milli(timestamp: pd.Timestamp) -> str:
+            return mirco_to_millisecond(
+                    pd.to_datetime(timestamp).strftime(DATETIME_FORMAT))
+
+        for col in ["harvested_at", "crawled_at", "published_at"]:
+            obj.loc[:, col] = obj.loc[:, col].apply(micro_to_milli)
+        return obj
+
     def split(
             self,
             batch: List[pd.DataFrame],
             value: pd.Timestamp) -> List[pd.DataFrame]:
         df = batch[0]
-        return [df[df["harvested_at"] <= value]]
+        return [self.stringify_dates(df[df["harvested_at"] <= value])]
 
     def iterate_data(
             self,
@@ -426,22 +446,20 @@ class JSONMode(Mode[Dict[str, Any]]):
             force_finish: bool = False) -> None:
         fname = self.get_path(is_by_day=True)
         indicator.log(f"writing results to {fname}")
+        if len(self._res) > 0:
+            write_json(self._res, fname, sort_keys=True)
 
-        def stringify_dates(obj: Dict[str, Any]) -> Dict[str, Any]:
-            if "harvested_at" in obj:
-                obj["harvested_at"] = mirco_to_millisecond(
-                    obj["harvested_at"].strftime(DATETIME_FORMAT))
-            if "published_at" in obj:
-                obj["published_at"] = mirco_to_millisecond(
-                    obj["published_at"].strftime(DATETIME_FORMAT))
-            if "crawled_at" in obj:
-                obj["crawled_at"] = mirco_to_millisecond(
-                    obj["crawled_at"].strftime(DATETIME_FORMAT))
-            return obj
-
-        obj = [stringify_dates(cur) for cur in self._res]
-        if len(obj) > 0:
-            write_json(obj, fname, sort_keys=True)
+    def stringify_dates(self, obj: Dict[str, Any]) -> Dict[str, Any]:
+        if "harvested_at" in obj:
+            obj["harvested_at"] = mirco_to_millisecond(
+                obj["harvested_at"].strftime(DATETIME_FORMAT))
+        if "published_at" in obj:
+            obj["published_at"] = mirco_to_millisecond(
+                obj["published_at"].strftime(DATETIME_FORMAT))
+        if "crawled_at" in obj:
+            obj["crawled_at"] = mirco_to_millisecond(
+                obj["crawled_at"].strftime(DATETIME_FORMAT))
+        return obj
 
     def split(
             self,
@@ -450,7 +468,7 @@ class JSONMode(Mode[Dict[str, Any]]):
         result = []
         for record in batch:
             if record["harvested_at"] <= value:
-                result.append(record)
+                result.append(self.stringify_dates(record))
         return result
 
     def iterate_data(

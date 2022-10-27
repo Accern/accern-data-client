@@ -101,6 +101,7 @@
         "ignore::DeprecationWarning",
         "ignore::RuntimeWarning",
         "ignore::ImportWarning",
+        "ignore::pandas.core.common.SettingWithCopyWarning"
     ]
     markers = [
         "local: marks tests as local only (deselect with '-m \"not local\"')",
