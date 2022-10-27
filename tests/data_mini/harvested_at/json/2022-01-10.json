@@ -1,6 +1,6 @@
 [
     {
-        "crawled_at": "2022-01-10T23:18:37.614000Z",
+        "crawled_at": "2022-01-10T23:18:37.614Z",
         "doc_cluster_id": "fe7b6eeb0144f435d653b72a872de64b",
         "doc_id": "6f14b3b067694345276633c583d2aa9b",
         "doc_sentiment": 6.7737,
@@ -34,10 +34,10 @@
         "event_relevance": 18.75,
         "event_sentiment": 25.2318572998,
         "event_text": "[redacted]",
-        "harvested_at": "2022-01-10T23:18:37.614000Z",
+        "harvested_at": "2022-01-10T23:18:37.614Z",
         "primary_signal": false,
         "provider_id": 5,
-        "published_at": "2022-01-04T23:18:37.614000Z",
+        "published_at": "2022-01-04T23:18:37.614Z",
         "signal_id": "2ea73796c962af29cce2b48e0102fb2a",
         "signal_relevance": 59.375,
         "signal_sentiment": 25.2318572998,
