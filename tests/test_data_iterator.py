@@ -96,12 +96,6 @@ def test_json_iterator() -> None:
     jsons: List[Dict[str, Any]] = list(
         client.iterate_range(start_date=start_date, end_date=end_date))
     js_total = load_json(f"{get_data_dir()}/data-2022.json")
-    for obj in jsons:
-        for dt in ["crawled_at", "harvested_at", "published_at"]:
-            obj[dt] = obj[dt].strftime(DATETIME_FORMAT)
-    for obj in js_total["signals"]:
-        for dt in ["crawled_at", "harvested_at", "published_at"]:
-            obj[dt] = pd.to_datetime(obj[dt]).strftime(DATETIME_FORMAT)
     assert jsons == js_total["signals"]
     beg = 0
     end = 0
