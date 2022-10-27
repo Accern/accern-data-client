@@ -39,8 +39,6 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
         for idx, df in enumerate(dfs):
             assert df.shape[0] == DEFAULT_CHUNK_SIZE_LIST[idx]
     assert dataframe.shape[0] == sum(df_lengths)
-    for dt in ["crawled_at", "harvested_at", "published_at"]:
-        concat_df[dt] = concat_df[dt].astype("str")
     pd_test.assert_frame_equal(
         dataframe[sorted(dataframe.columns)],
         concat_df[sorted(concat_df.columns)])
@@ -84,8 +82,6 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
                 assert dfs[idx].shape[0] == DEFAULT_CHUNK_SIZE_LIST[idx]
         df_date = [dfs[idx] for idx in range(beg, end+1)]
         concat_df: pd.DataFrame = pd.concat(df_date).reset_index(drop=True)
-        for dt in ["crawled_at", "harvested_at", "published_at"]:
-            concat_df[dt] = concat_df[dt].astype("str")
         pd_test.assert_frame_equal(
             df[sorted(df.columns)], concat_df[sorted(concat_df.columns)])
         beg = end + 1
