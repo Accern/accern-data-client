@@ -292,12 +292,6 @@ class CSVMode(Mode[pd.DataFrame]):
         fname = self.get_path(is_by_day=self._is_by_day)
         tmp_fname = get_tmp_file_name(fname)
 
-        def micro_to_milli(timestamp: pd.Timestamp) -> str:
-            return micro_to_millisecond(
-                pd.to_datetime(timestamp).strftime(DATETIME_FORMAT))
-
-        for col in ["harvested_at", "crawled_at", "published_at"]:
-            signal.loc[:, col] = signal.loc[:, col].apply(micro_to_milli)
         if self._cols is None:
             self._cols = sorted(signal.columns.to_list())
             self._write_cols()
@@ -330,7 +324,7 @@ class CSVMode(Mode[pd.DataFrame]):
 
         def micro_to_milli(timestamp: pd.Timestamp) -> str:
             return micro_to_millisecond(
-                    pd.to_datetime(timestamp).strftime(DATETIME_FORMAT))
+                pd.to_datetime(timestamp).strftime(DATETIME_FORMAT))
         new_obj = obj.copy()
         for col in ["harvested_at", "crawled_at", "published_at"]:
             new_obj.loc[:, col] = obj[col].apply(micro_to_milli)
