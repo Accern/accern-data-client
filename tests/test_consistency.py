@@ -83,9 +83,6 @@ def test_json_csv_date_consistency(sheet_mode: ModeType) -> None:
         except FileNotFoundError:
             continue
         csv_obj["event_accern_id"] = csv_obj["event_accern_id"].astype("str")
-        for col in {"harvested_at", "crawled_at", "published_at"}:
-            csv_obj[col] = csv_obj[col].apply(
-                lambda x: pd.to_datetime(x).strftime(DATETIME_FORMAT))
         jsonified_cols = {
             "event_hits",
             "entity_hits",
