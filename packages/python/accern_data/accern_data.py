@@ -34,7 +34,7 @@ from .util import (
     has_iprogress,
     is_example_url,
     MessageIndicator,
-    mirco_to_millisecond,
+    micro_to_millisecond,
     ProgressIndicator,
     SilentIndicator,
     write_json,
@@ -293,7 +293,7 @@ class CSVMode(Mode[pd.DataFrame]):
         tmp_fname = get_tmp_file_name(fname)
 
         def micro_to_milli(timestamp: pd.Timestamp) -> str:
-            return mirco_to_millisecond(
+            return micro_to_millisecond(
                 pd.to_datetime(timestamp).strftime(DATETIME_FORMAT))
 
         for col in ["harvested_at", "crawled_at", "published_at"]:
@@ -329,7 +329,7 @@ class CSVMode(Mode[pd.DataFrame]):
     def stringify_dates(self, obj: pd.DataFrame) -> pd.DataFrame:
 
         def micro_to_milli(timestamp: pd.Timestamp) -> str:
-            return mirco_to_millisecond(
+            return micro_to_millisecond(
                     pd.to_datetime(timestamp).strftime(DATETIME_FORMAT))
 
         for col in ["harvested_at", "crawled_at", "published_at"]:
@@ -451,13 +451,13 @@ class JSONMode(Mode[Dict[str, Any]]):
 
     def stringify_dates(self, obj: Dict[str, Any]) -> Dict[str, Any]:
         if "harvested_at" in obj:
-            obj["harvested_at"] = mirco_to_millisecond(
+            obj["harvested_at"] = micro_to_millisecond(
                 obj["harvested_at"].strftime(DATETIME_FORMAT))
         if "published_at" in obj:
-            obj["published_at"] = mirco_to_millisecond(
+            obj["published_at"] = micro_to_millisecond(
                 obj["published_at"].strftime(DATETIME_FORMAT))
         if "crawled_at" in obj:
-            obj["crawled_at"] = mirco_to_millisecond(
+            obj["crawled_at"] = micro_to_millisecond(
                 obj["crawled_at"].strftime(DATETIME_FORMAT))
         return obj
 

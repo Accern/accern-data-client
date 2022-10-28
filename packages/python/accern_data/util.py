@@ -264,7 +264,7 @@ def get_header_file_name(fname: str) -> str:
     return f"{fname}.~columns"
 
 
-def mirco_to_millisecond(timestamp: str) -> str:
+def micro_to_millisecond(timestamp: str) -> str:
     return f"{timestamp[:-4]}Z"
 
 
