@@ -331,10 +331,10 @@ class CSVMode(Mode[pd.DataFrame]):
         def micro_to_milli(timestamp: pd.Timestamp) -> str:
             return micro_to_millisecond(
                     pd.to_datetime(timestamp).strftime(DATETIME_FORMAT))
-
+        new_obj = obj.copy()
         for col in ["harvested_at", "crawled_at", "published_at"]:
-            obj.loc[:, col] = obj.loc[:, col].apply(micro_to_milli)
-        return obj
+            new_obj.loc[:, col] = obj[col].apply(micro_to_milli)
+        return new_obj
 
     def split(
             self,
