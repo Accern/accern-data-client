@@ -184,10 +184,7 @@ class Mode(Generic[T]):
     def add_result(self, signal: T) -> None:
         raise NotImplementedError()
 
-    def finish_day(
-            self,
-            indicator: ProgressIndicator,
-            force_finish: bool = False) -> None:
+    def finish_day(self, force_finish: bool = False) -> None:
         raise NotImplementedError()
 
     def iterate_data(
@@ -310,10 +307,7 @@ class CSVMode(Mode[pd.DataFrame]):
             signal[self._cols].to_csv(
                 tmp_fname, index=False, header=False, mode="a")
 
-    def finish_day(
-            self,
-            indicator: ProgressIndicator,
-            force_finish: bool = False) -> None:
+    def finish_day(self, force_finish: bool = False) -> None:
         # csv files are saved by add_result
         fname = self.get_path(is_by_day=self._is_by_day)
         if (self._is_by_day or force_finish) and self._cols:
@@ -434,12 +428,8 @@ class JSONMode(Mode[Dict[str, Any]]):
     def add_result(self, signal: Dict[str, Any]) -> None:
         self._res.append(signal)
 
-    def finish_day(
-            self,
-            indicator: ProgressIndicator,
-            force_finish: bool = False) -> None:
+    def finish_day(self, force_finish: bool = False) -> None:
         fname = self.get_path(is_by_day=True)
-        indicator.log(f"writing results to {fname}")
         if len(self._res) > 0:
             write_json(self._res, fname, sort_keys=True)
 
@@ -831,7 +821,7 @@ class DataClient:
 
             if cur_date != prev_date:
                 if prev_date is not None:
-                    valid_mode.finish_day(indicator_obj)
+                    valid_mode.finish_day()
                 valid_mode.init_day(
                     cur_date.strftime(DATE_FORMAT),
                     opath,
@@ -856,7 +846,7 @@ class DataClient:
         if prev_date is not None:
             assert valid_mode is not None
             assert indicator_obj is not None
-            valid_mode.finish_day(indicator_obj, force_finish=True)
+            valid_mode.finish_day(force_finish=True)
 
     def iterate_range(
             self,
