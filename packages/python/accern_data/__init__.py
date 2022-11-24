@@ -1,2 +1,2 @@
-__version__ = "0.1.0rc3"
+__version__ = "0.1.0"
 from accern_data.accern_data import *
