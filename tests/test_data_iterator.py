@@ -3,14 +3,13 @@ from typing import Any, Dict, List, Optional
 import pandas as pd
 import pandas.testing as pd_test
 import pytest
-from accern_data import create_data_client, DATE_FORMAT, DATETIME_FORMAT
+from accern_data import create_data_client, DATE_FORMAT
 from accern_data.util import EXAMPLE_URL, get_data_dir, load_json, set_data_dir
 
 DEFAULT_CHUNK_SIZE_LIST = [
-    5, 1, 10, 1, 69, 1, 99, 99, 2, 1, 99, 60, 1, 99, 1, 22, 1, 14, 1, 7, 1, 17,
-    1, 68, 1, 72, 1, 83, 1, 99, 59, 1, 99, 99, 99, 6, 1, 98, 98, 99, 5, 1, 99,
-    39, 1, 98, 99, 38, 1, 99, 99, 7, 1, 98, 99, 99, 36, 1, 99, 40, 2
-]
+    1, 5, 8, 3, 57, 13, 88, 86, 18, 9, 91, 68, 1, 99, 1, 22, 1, 12, 3, 8, 16,
+    2, 68, 1, 71, 2, 81, 3, 89, 69, 1, 96, 94, 96, 12, 6, 99, 99, 93, 10, 90,
+    48, 1, 99, 98, 32, 7, 95, 96, 14, 1, 98, 98, 98, 34, 5, 98, 40, 3]
 
 
 @pytest.mark.parametrize("chunk_size", [1, 5, 1000, None])

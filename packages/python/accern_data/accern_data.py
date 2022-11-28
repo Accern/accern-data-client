@@ -28,6 +28,7 @@ from typing_extensions import get_args, Literal, TypedDict
 from .util import (
     BarIndicator,
     generate_file_response,
+    get_by_date_after,
     get_header_file_name,
     get_overall_total_from_dummy,
     get_tmp_file_name,
@@ -168,7 +169,7 @@ class Mode(Generic[T]):
     def size(self, batch: List[T]) -> int:
         raise NotImplementedError()
 
-    def max_date(self, batch: List[T]) -> str:
+    def max_date(self, batch: List[T], by_date: str) -> str:
         raise NotImplementedError()
 
     def init_day(
@@ -200,7 +201,11 @@ class Mode(Generic[T]):
     def stringify_dates(self, obj: T) -> T:
         raise NotImplementedError()
 
-    def split(self, batch: List[T], value: pd.Timestamp) -> List[T]:
+    def split(
+            self,
+            batch: List[T],
+            value: pd.Timestamp,
+            by_date: str) -> List[T]:
         raise NotImplementedError()
 
     def get_path(self, is_by_day: bool) -> str:
@@ -262,18 +267,19 @@ class CSVMode(Mode[pd.DataFrame]):
             res["published_at"] = pd.to_datetime(res["published_at"])
         if "crawled_at" in res:
             res["crawled_at"] = pd.to_datetime(res["crawled_at"])
+        print(res.shape)
         return [res]
 
     def size(self, batch: List[pd.DataFrame]) -> int:
         return sum(cur.shape[0] for cur in batch)
 
-    def max_date(self, batch: List[pd.DataFrame]) -> str:
+    def max_date(self, batch: List[pd.DataFrame], by_date: str) -> str:
         temp = set()
         for cur in batch:
-            harvested_at_list = cur["harvested_at"].to_list()
-            for harvested_at in harvested_at_list:
-                assert isinstance(harvested_at, pd.Timestamp)
-                temp.add(harvested_at)
+            date_at_list = cur[by_date].to_list()
+            for date_at in date_at_list:
+                assert isinstance(date_at, pd.Timestamp)
+                temp.add(date_at)
         dates: List[pd.Timestamp] = sorted(temp)
         if len(dates) <= 1:
             return dates[0].strftime(DATETIME_FORMAT)
@@ -331,9 +337,10 @@ class CSVMode(Mode[pd.DataFrame]):
     def split(
             self,
             batch: List[pd.DataFrame],
-            value: pd.Timestamp) -> List[pd.DataFrame]:
+            value: pd.Timestamp,
+            by_date: str) -> List[pd.DataFrame]:
         df = batch[0]
-        return [self.stringify_dates(df[df["harvested_at"] <= value])]
+        return [self.stringify_dates(df[df[by_date] <= value])]
 
     def iterate_data(
             self,
@@ -415,12 +422,12 @@ class JSONMode(Mode[Dict[str, Any]]):
     def size(self, batch: List[Dict[str, Any]]) -> int:
         return len(batch)
 
-    def max_date(self, batch: List[Dict[str, Any]]) -> str:
+    def max_date(self, batch: List[Dict[str, Any]], by_date: str) -> str:
         temp = set()
         for cur in batch:
-            harvested_at = cur["harvested_at"]
-            assert isinstance(harvested_at, pd.Timestamp)
-            temp.add(harvested_at)
+            date_at = cur[by_date]
+            assert isinstance(date_at, pd.Timestamp)
+            temp.add(date_at)
         dates: List[pd.Timestamp] = sorted(temp)
         if len(dates) <= 1:
             return dates[0].strftime(DATETIME_FORMAT)
@@ -452,10 +459,11 @@ class JSONMode(Mode[Dict[str, Any]]):
     def split(
             self,
             batch: List[Dict[str, Any]],
-            value: pd.Timestamp) -> List[Dict[str, Any]]:
+            value: pd.Timestamp,
+            by_date: str) -> List[Dict[str, Any]]:
         result = []
         for record in batch:
-            if record["harvested_at"] <= value:
+            if record[by_date] <= value:
                 result.append(self.stringify_dates(record))
         return result
 
@@ -627,6 +635,7 @@ class DataClient:
             mode: Mode[T],
             params: Dict[str, str],
             filters: Dict[str, FilterValue],
+            by_date: str,
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]],
             json_params: Optional[Dict[str, Any]],
@@ -641,7 +650,8 @@ class DataClient:
                     resp = generate_file_response(
                         {**params, **url_params},
                         mode.get_format(),
-                        filters=filters)
+                        filters=filters,
+                        by_date=by_date)
                 else:
                     resp = requests.post(
                         self._base_url,
@@ -668,43 +678,44 @@ class DataClient:
 
     def _scroll(
             self,
-            harvested_after: str,
             mode: Mode[T],
             params: Dict[str, str],
             filters: Dict[str, FilterValue],
+            by_date: str,
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]] = None,
             json_params: Optional[Dict[str, Any]] = None,
             request_kwargs: Optional[Dict[Any, Any]] = None,
                 ) -> Iterator[List[T]]:
-        params["harvested_after"] = harvested_after
         batch = self._read_date(
             mode,
             params,
             filters,
+            by_date,
             indicator,
             url_params,
             json_params,
             request_kwargs)
-        prev_start = harvested_after
+        prev_start = params[get_by_date_after(by_date)]
         while mode.size(batch) > 0:
             try:
-                harvested_after = mode.max_date(batch)
-                yield mode.split(batch, pd.to_datetime(harvested_after))
-                params["harvested_after"] = harvested_after
+                date_after = mode.max_date(batch, by_date)
+                yield mode.split(batch, pd.to_datetime(date_after), by_date)
+                params[get_by_date_after(by_date)] = date_after
                 batch = self._read_date(
                     mode,
                     params,
                     filters,
+                    by_date,
                     indicator,
                     url_params,
                     json_params,
                     request_kwargs)
-                if harvested_after == prev_start:
+                if date_after == prev_start:
                     # NOTE: redundant check?
                     # batch_size becomes 0, loop gets terminated.
                     break
-                prev_start = harvested_after
+                prev_start = date_after
             except pd.errors.EmptyDataError:
                 break
 
@@ -718,12 +729,13 @@ class DataClient:
             "versions.",
             DeprecationWarning,
             stacklevel=2)
+        params["harvested_after"] = harvested_after
         return self._scroll(
-            harvested_after=harvested_after,
             params=params,
             mode=self.get_mode(),
             indicator=self.get_indicator(),
             filters={},
+            by_date="harvested_at",
             url_params=url_params)
 
     def read_total(
@@ -927,11 +939,12 @@ class DataClient:
             date = cur_date.strftime(DATE_FORMAT)
             indicator_obj.set_description(f"Downloading signals for {date}")
             params = {**get_by_date_param(by_date, date), **parse_time(date)}
+            params[get_by_date_after(by_date)] = "1900-01-01"
             for data in self._scroll(
-                    "1900-01-01",
                     valid_mode,
                     params,
                     valid_filters,
+                    by_date,
                     indicator=indicator_obj,
                     url_params=url_params,
                     json_params=json_params,

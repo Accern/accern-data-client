@@ -141,8 +141,9 @@ def create_start_end_date(
 def generate_csv_object(
         path: str,
         params: Dict[str, str],
-        harvested_after: pd.Timestamp,
+        date_after: pd.Timestamp,
         filters: Dict[str, 'FilterValue'],
+        by_date: str,
         encoding: str) -> io.BytesIO:
     df = pd.read_csv(path)
     df["harvested_at"] = pd.to_datetime(df["harvested_at"])
@@ -152,9 +153,10 @@ def generate_csv_object(
     valid_df: pd.DataFrame = df[
         (df[date_type] >= start_dt) &
         (df[date_type] <= end_dt) &
-        (df["harvested_at"] > harvested_after)
+        (df[by_date] > date_after)
     ]
-    valid_df = valid_df.sort_values(by=["harvested_at", "signal_id"])
+    print(start_dt, end_dt, date_after, date_type, valid_df.shape)
+    valid_df = valid_df.sort_values(by=[by_date, "signal_id"])
     if valid_df.empty:
         filtered_df = valid_df
     else:
@@ -180,8 +182,9 @@ def generate_csv_object(
 def generate_json_object(
         path: str,
         params: Dict[str, str],
-        harvested_after: pd.Timestamp,
+        date_after: pd.Timestamp,
         filters: Dict[str, 'FilterValue'],
+        by_date: str,
         encoding: str) -> io.BytesIO:
     json_obj = load_json(path)
     date_type, date_val = get_date_type(params)
@@ -196,11 +199,11 @@ def generate_json_object(
         if (
                 pd.to_datetime(record[date_type]) >= start_dt
                 and pd.to_datetime(record[date_type]) <= end_dt
-                and pd.to_datetime(record["harvested_at"]) > harvested_after
+                and pd.to_datetime(record[by_date]) > date_after
                 ) and check_filters(record, filters):
             filtered_json["signals"].append(record)
     filtered_json["signals"].sort(
-        key=lambda x: (pd.to_datetime(x["harvested_at"]), x["signal_id"]))
+        key=lambda x: (pd.to_datetime(x[by_date]), x["signal_id"]))
     obj = io.BytesIO(json.dumps(filtered_json).encode(encoding))
     return obj
 
@@ -209,9 +212,11 @@ def generate_file_response(
         params: Dict[str, str],
         mode: str,
         filters: Dict[str, 'FilterValue'],
+        by_date: str,
         encoding: str = "utf-8") -> Response:
     response_obj = Response()
-    harvested_after_dt = pd.to_datetime(params["harvested_after"], utc=True)
+    date_after_dt = pd.to_datetime(
+        params[get_by_date_after(by_date)], utc=True)
 
     if is_test():
         path = f"{get_data_dir()}/data-2022.{mode}"
@@ -220,10 +225,10 @@ def generate_file_response(
 
     if mode == "csv":
         obj = generate_csv_object(
-            path, params, harvested_after_dt, filters, encoding)
+            path, params, date_after_dt, filters, by_date, encoding)
     else:
         obj = generate_json_object(
-            path, params, harvested_after_dt, filters, encoding)
+            path, params, date_after_dt, filters, by_date, encoding)
     obj.seek(0)
     response_obj._content = obj.read()
     response_obj.encoding = encoding
@@ -266,6 +271,10 @@ def get_header_file_name(fname: str) -> str:
 
 def micro_to_millisecond(timestamp: str) -> str:
     return f"{timestamp[:-4]}Z"
+
+
+def get_by_date_after(by_date: str) -> str:
+    return f"{by_date[:-3]}_after"
 
 
 class ProgressIndicator:
