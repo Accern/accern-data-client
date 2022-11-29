@@ -27,6 +27,8 @@ from typing_extensions import get_args, Literal, TypedDict
 
 from .util import (
     BarIndicator,
+    DATE_FORMAT,
+    DATETIME_FORMAT,
     generate_file_response,
     get_by_date_after,
     get_header_file_name,
@@ -38,6 +40,7 @@ from .util import (
     micro_to_millisecond,
     ProgressIndicator,
     SilentIndicator,
+    TIME_FORMAT,
     write_json,
 )
 
@@ -135,9 +138,6 @@ INDICATORS = get_args(Indicators)
 FILTER_FIELD = get_args(FilterField)
 EXCLUDED_FILTER_FIELD = get_args(ExcludedFilterField)
 ALL_MODES: Set[ModeType] = {"csv", "df", "json"}
-DATETIME_FORMAT = r"%Y-%m-%dT%H:%M:%S.%fZ"
-DATE_FORMAT = r"%Y-%m-%d"
-TIME_FORMAT = r"%H:%M:%S.000Z"
 
 T = TypeVar('T')
 

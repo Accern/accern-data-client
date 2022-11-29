@@ -23,7 +23,9 @@ R_BAR = """| {percentage:3.0f}% [{n}/{total}]"""
 BAR_FMT = f"{L_BAR}{{bar}}{R_BAR}"
 DEFAULT_CHUNK_SIZE = 100
 DATA_DIR = "tests/data"
-
+DATETIME_FORMAT = r"%Y-%m-%dT%H:%M:%S.%fZ"
+DATE_FORMAT = r"%Y-%m-%d"
+TIME_FORMAT = r"%H:%M:%S.000Z"
 
 def is_example_url(url: str) -> bool:
     return url.startswith(EXAMPLE_URL)
