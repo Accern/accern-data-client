@@ -79,16 +79,10 @@ def field_transformation(value: Any) -> Union[str, List[str]]:
     return f"{value}"
 
 
-def get_date_type(obj: Dict[str, str]) -> Tuple[str, str]:
-    for date_type in ["date", "harvested_at"]:
-        try:
-            date_val = obj[date_type]
-            break
-        except KeyError:
-            pass
-    if date_type == "date":
-        date_type = "published_at"
-    return date_type, date_val
+def get_date_type(obj: Dict[str, str]) -> str:
+    if "min_published_at" in obj.keys():
+        return "published_at"
+    return "harvested_at"
 
 
 def get_overall_total_from_dummy(
@@ -96,8 +90,8 @@ def get_overall_total_from_dummy(
         filters: Dict[str, 'FilterValue'],
         encoding: str = "utf-8") -> Response:
     response_obj = Response()
-    date_type, date_val = get_date_type(params)
-    start_dt, end_dt = create_start_end_date(date_val, params)
+    date_type = get_date_type(params)
+    start_dt, end_dt = get_min_max_dates(params, date_type)
     if is_test():
         path = f"{get_data_dir()}/data-2022.json"
     else:
@@ -126,17 +120,11 @@ def get_overall_total_from_dummy(
     return response_obj
 
 
-def create_start_end_date(
-        date: str,
-        params: Dict[str, str]) -> Tuple[pd.Timestamp, pd.Timestamp]:
-    if "start_time" in params.keys():
-        start_dt = pd.to_datetime(f"{date}T{params['start_time']}", utc=True)
-    else:
-        start_dt = pd.to_datetime(date, utc=True)
-    if "end_time" in params.keys():
-        end_dt = pd.to_datetime(f"{date}T{params['end_time']}", utc=True)
-    else:
-        end_dt = pd.to_datetime(f"{date}T23:59:59.999Z", utc=True)
+def get_min_max_dates(
+        params: Dict[str, str],
+        by_date: str) -> Tuple[pd.Timestamp, pd.Timestamp]:
+    start_dt = pd.to_datetime(params[f"min_{by_date}"], utc=True)
+    end_dt = pd.to_datetime(params[f"max_{by_date}"], utc=True)
     return (start_dt, end_dt)
 
 
@@ -150,8 +138,9 @@ def generate_csv_object(
     df = pd.read_csv(path)
     df["harvested_at"] = pd.to_datetime(df["harvested_at"])
     df["published_at"] = pd.to_datetime(df["published_at"])
-    date_type, date_val = get_date_type(params)
-    start_dt, end_dt = create_start_end_date(date_val, params)
+    date_type = get_date_type(params)
+    start_dt, end_dt = get_min_max_dates(params, date_type)
+    print(df.shape, start_dt, end_dt, date_after)
     valid_df: pd.DataFrame = df[
         (df[date_type] >= start_dt) &
         (df[date_type] <= end_dt) &
@@ -189,13 +178,13 @@ def generate_json_object(
         by_date: str,
         encoding: str) -> io.BytesIO:
     json_obj = load_json(path)
-    date_type, date_val = get_date_type(params)
+    date_type = get_date_type(params)
     filtered_json = {
         key: val
         for key, val in json_obj.items()
         if key != "signals"
     }
-    start_dt, end_dt = create_start_end_date(date_val, params)
+    start_dt, end_dt = get_min_max_dates(params, date_type)
     filtered_json["signals"] = []
     for record in json_obj["signals"]:
         if (
@@ -277,6 +266,10 @@ def micro_to_millisecond(timestamp: str) -> str:
 
 def get_by_date_after(by_date: str) -> str:
     return f"{by_date[:-3]}_after"
+
+
+def convert_to_date(date: str) -> str:
+    return pd.to_datetime(date).strftime(DATE_FORMAT)
 
 
 class ProgressIndicator:
