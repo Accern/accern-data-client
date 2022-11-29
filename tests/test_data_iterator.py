@@ -6,10 +6,13 @@ import pytest
 from accern_data import create_data_client, DATE_FORMAT
 from accern_data.util import EXAMPLE_URL, get_data_dir, load_json, set_data_dir
 
-DEFAULT_CHUNK_SIZE_LIST = [
-    1, 5, 8, 3, 57, 13, 88, 86, 18, 9, 91, 68, 1, 99, 1, 22, 1, 12, 3, 8, 16,
-    2, 68, 1, 71, 2, 81, 3, 89, 69, 1, 96, 94, 96, 12, 6, 99, 99, 93, 10, 90,
-    48, 1, 99, 98, 32, 7, 95, 96, 14, 1, 98, 98, 98, 34, 5, 98, 40, 3]
+DEFAULT_CSV_FULL_CHUNK_SIZE_LIST = [
+    99, 88, 92, 97, 94, 93, 93, 98, 98, 95, 87, 98, 95, 95, 94, 86, 90, 98, 92,
+    99, 96, 95, 96, 93, 94, 97, 90, 92, 20, 3]
+DEFAULT_CSV_DATE_CHUNK_SIZE_LIST = [
+    6, 11, 70, 12, 88, 92, 9, 88, 72, 22, 78, 15, 8, 15, 8, 18, 44, 25, 73, 84,
+    14, 95, 50, 37, 98, 95, 74, 21, 94, 86, 90, 10, 88, 51, 41, 99, 96, 95, 96,
+    15, 78, 94, 97, 64, 26, 92, 20, 3]
 
 
 @pytest.mark.parametrize("chunk_size", [1, 5, 1000, None])
@@ -36,7 +39,7 @@ def test_csv_full_iterator(chunk_size: Optional[int]) -> None:
             assert df_lengths[-1] == dataframe.shape[0] % chunk_size
     else:
         for idx, df in enumerate(dfs):
-            assert df.shape[0] == DEFAULT_CHUNK_SIZE_LIST[idx]
+            assert df.shape[0] == DEFAULT_CSV_FULL_CHUNK_SIZE_LIST[idx]
     assert dataframe.shape[0] == sum(df_lengths)
     pd_test.assert_frame_equal(
         dataframe[sorted(dataframe.columns)],
@@ -78,7 +81,7 @@ def test_csv_date_iterator(chunk_size: Optional[int]) -> None:
                 assert dfs[end].shape[0] == df.shape[0] % chunk_size
         else:
             for idx in range(beg, end+1):
-                assert dfs[idx].shape[0] == DEFAULT_CHUNK_SIZE_LIST[idx]
+                assert dfs[idx].shape[0] == DEFAULT_CSV_DATE_CHUNK_SIZE_LIST[idx]
         df_date = [dfs[idx] for idx in range(beg, end+1)]
         concat_df: pd.DataFrame = pd.concat(df_date).reset_index(drop=True)
         pd_test.assert_frame_equal(
