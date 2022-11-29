@@ -26,6 +26,9 @@ DATA_DIR = "tests/data"
 DATETIME_FORMAT = r"%Y-%m-%dT%H:%M:%S.%fZ"
 DATE_FORMAT = r"%Y-%m-%d"
 TIME_FORMAT = r"%H:%M:%S.000Z"
+START_TIME = "00:00:00.000Z"
+END_TIME = "23:59:59.999Z"
+
 
 def is_example_url(url: str) -> bool:
     return url.startswith(EXAMPLE_URL)
@@ -140,13 +143,11 @@ def generate_csv_object(
     df["published_at"] = pd.to_datetime(df["published_at"])
     date_type = get_date_type(params)
     start_dt, end_dt = get_min_max_dates(params, date_type)
-    print(df.shape, start_dt, end_dt, date_after)
     valid_df: pd.DataFrame = df[
         (df[date_type] >= start_dt) &
         (df[date_type] <= end_dt) &
         (df[by_date] > date_after)
     ]
-    print(start_dt, end_dt, date_after, date_type, valid_df.shape)
     valid_df = valid_df.sort_values(by=[by_date, "signal_id"])
     if valid_df.empty:
         filtered_df = valid_df
