@@ -27,8 +27,10 @@ from typing_extensions import get_args, Literal, TypedDict
 
 from .util import (
     BarIndicator,
+    convert_to_date,
     DATE_FORMAT,
     DATETIME_FORMAT,
+    END_TIME,
     generate_file_response,
     get_by_date_after,
     get_header_file_name,
@@ -40,7 +42,7 @@ from .util import (
     micro_to_millisecond,
     ProgressIndicator,
     SilentIndicator,
-    TIME_FORMAT,
+    START_TIME,
     write_json,
 )
 
@@ -195,7 +197,9 @@ class Mode(Generic[T]):
     def iterate_data(
             self,
             data: Optional[List[T]],
-            indicator: ProgressIndicator) -> Iterator[T]:
+            by_date: str,
+            indicator: ProgressIndicator,
+            helper: Callable[[str], None]) -> Iterator[T]:
         raise NotImplementedError()
 
     def stringify_dates(self, obj: T) -> T:
@@ -206,6 +210,10 @@ class Mode(Generic[T]):
             batch: List[T],
             value: pd.Timestamp,
             by_date: str) -> List[T]:
+        raise NotImplementedError()
+
+    def get_current_date(
+            self, obj: T, by_date: str) -> Optional[str]:
         raise NotImplementedError()
 
     def get_path(self, is_by_day: bool) -> str:
@@ -267,7 +275,6 @@ class CSVMode(Mode[pd.DataFrame]):
             res["published_at"] = pd.to_datetime(res["published_at"])
         if "crawled_at" in res:
             res["crawled_at"] = pd.to_datetime(res["crawled_at"])
-        print(res.shape)
         return [res]
 
     def size(self, batch: List[pd.DataFrame]) -> int:
@@ -342,25 +349,55 @@ class CSVMode(Mode[pd.DataFrame]):
         df = batch[0]
         return [self.stringify_dates(df[df[by_date] <= value])]
 
+    def get_current_date(
+            self, obj: pd.DataFrame, by_date: str) -> Optional[str]:
+        if obj.empty:
+            return None
+        # NOTE: check date format
+        return convert_to_date(obj.loc[0, by_date])
+
     def iterate_data(
             self,
             data: Optional[List[pd.DataFrame]],
-            indicator: ProgressIndicator) -> Iterator[pd.DataFrame]:
+            by_date: str,
+            indicator: ProgressIndicator,
+            helper: Callable[[str], None]) -> Iterator[pd.DataFrame]:
         assert self._chunk_size is None or self._chunk_size > 0
         if self._chunk_size is None:
             if data is not None:
                 df = data[0]
                 indicator.update(df.shape[0])
                 if not df.empty:
-                    yield df
+                    if self.split_dates():
+                        while not df.empty:
+                            cur_date = self.get_current_date(df, by_date)
+                            assert cur_date is not None
+                            helper(cur_date)
+                            idx = df[df[by_date].apply(
+                                convert_to_date) == cur_date].index[-1]
+                            result = df.iloc[:idx + 1]
+                            df = df.iloc[idx + 1:].reset_index(drop=True)
+                            yield result
+                    else:
+                        yield df
         else:
             if data is not None:
                 self._buffer.append(data[0])
                 self._buffer_size += data[0].shape[0]
             while self._buffer_size >= self._chunk_size:
-                res_df = pd.concat(self._buffer)
-                result: pd.DataFrame = res_df.iloc[:self._chunk_size]
-                remainder: pd.DataFrame = res_df.iloc[self._chunk_size:]
+                res_df = pd.concat(self._buffer, ignore_index=True)
+                cur_date = self.get_current_date(res_df, by_date)
+                assert cur_date is not None
+                helper(cur_date)
+                idx = res_df[res_df[by_date].apply(
+                        convert_to_date) == cur_date].index[-1]
+
+                if self.split_dates() and idx < self._chunk_size:
+                    result = res_df.iloc[:idx + 1]
+                    remainder: pd.DataFrame = res_df.iloc[idx + 1:]
+                else:
+                    result = res_df.iloc[:self._chunk_size]
+                    remainder = res_df.iloc[self._chunk_size:]
                 if remainder.empty:
                     self._buffer = []
                 else:
@@ -368,15 +405,6 @@ class CSVMode(Mode[pd.DataFrame]):
                 self._buffer_size = remainder.shape[0]
                 indicator.update(result.shape[0])
                 yield result.reset_index(drop=True)
-
-            if self.split_dates() and data is None:
-                if len(self._buffer) > 0:
-                    buffer = pd.concat(self._buffer)
-                    if not buffer.empty:
-                        indicator.update(buffer.shape[0])
-                        yield buffer.reset_index(drop=True)
-                self._buffer = []
-                self._buffer_size = 0
 
 
 class JSONMode(Mode[Dict[str, Any]]):
@@ -467,12 +495,22 @@ class JSONMode(Mode[Dict[str, Any]]):
                 result.append(self.stringify_dates(record))
         return result
 
+    def get_current_date(
+            self, obj: Dict[str, Any], by_date: str) -> Optional[str]:
+        # NOTE: check date format
+        return convert_to_date(obj[by_date])
+
     def iterate_data(
             self,
             data: Optional[List[Dict[str, Any]]],
-            indicator: ProgressIndicator) -> Iterator[Dict[str, Any]]:
+            by_date: str,
+            indicator: ProgressIndicator,
+            helper: Callable[[str], None]) -> Iterator[Dict[str, Any]]:
         if data is not None:
             for rec in data:
+                cur_date = self.get_current_date(rec, by_date)
+                assert cur_date is not None
+                helper(cur_date)
                 indicator.update(1)
                 yield rec
 
@@ -892,66 +930,61 @@ class DataClient:
         indicator_obj.generate_bar(
             total=len(pd.date_range(start_date, end_date)))
         indicator_obj.set_description(desc="Fetching info")
-        total = 0
-        expected_records: List[int] = []
+        overall_total = 0
 
-        start_date_dt = pd.to_datetime(start_date)
-        end_date_dt = pd.to_datetime(end_date)
-        start_date_only = start_date_dt.strftime(DATE_FORMAT)
-        end_date_only = end_date_dt.strftime(DATE_FORMAT)
-        start_date_only_dt = pd.to_datetime(start_date_only)
-        end_date_only_dt = pd.to_datetime(end_date_only)
-
-        def get_by_date_param(by_date: str, date: str) -> Dict[str, str]:
+        def get_min_max_date_param(
+                start_date: str,
+                end_date: str,
+                by_date: str) -> Dict[str, str]:
             if by_date not in BY_DATE:
                 raise ValueError(
                     f"Incorrect value {by_date} for by_date. "
                     f"Must be one of {BY_DATE}")
-            if by_date == "published_at":
-                return {"date": date}
-            return {by_date: date}
+            if convert_to_date(start_date) == start_date:
+                start_date = f"{start_date}T{START_TIME}"
+            if convert_to_date(end_date) == end_date:
+                end_date = f"{end_date}T{END_TIME}"
+            return {f"min_{by_date}": start_date, f"max_{by_date}": end_date}
 
-        def parse_time(date: str) -> Dict[str, str]:
-            times: Dict[str, str] = {}
-            if date == start_date_only and start_date_only_dt != start_date_dt:
-                times["start_time"] = start_date_dt.strftime(TIME_FORMAT)
-            if date == end_date_only and end_date_only_dt != end_date_dt:
-                times["end_time"] = end_date_dt.strftime(TIME_FORMAT)
-            return times
+        overall_total = self._read_total(
+            get_min_max_date_param(start_date, end_date, by_date),
+            filters=valid_filters,
+            indicator=indicator_obj,
+            request_kwargs=request_kwargs)
 
-        for cur_date in pd.date_range(start_date_only, end_date_only):
-            date = cur_date.strftime(DATE_FORMAT)
-            expected_records.append(
-                self._read_total(
-                    {**get_by_date_param(by_date, date), **parse_time(date)},
-                    filters=valid_filters,
-                    indicator=indicator_obj,
-                    request_kwargs=request_kwargs))
-            indicator_obj.update(1)
-        total = sum(expected_records)
-        indicator_obj.set_total(total=total)
+        indicator_obj.set_total(total=overall_total)
         indicator_obj.set_description(desc="Downloading signals")
-        for idx, cur_date in enumerate(
-                pd.date_range(start_date_only, end_date_only)):
-            indicator_obj.log(f"Expected {expected_records[idx]} signals.")
+        indicator_obj.log(f"Expected {overall_total} signals.")
+
+        params = get_min_max_date_param(start_date, end_date, by_date)
+        params[get_by_date_after(by_date)] = "1900-01-01"
+        prev_cur_date = None
+
+        def helper(cur_date: str) -> None:
+            nonlocal prev_cur_date, set_active_mode
             if set_active_mode is not None:
-                set_active_mode(valid_mode, cur_date, indicator_obj)
-            date = cur_date.strftime(DATE_FORMAT)
-            indicator_obj.set_description(f"Downloading signals for {date}")
-            params = {**get_by_date_param(by_date, date), **parse_time(date)}
-            params[get_by_date_after(by_date)] = "1900-01-01"
-            for data in self._scroll(
-                    valid_mode,
-                    params,
-                    valid_filters,
-                    by_date,
-                    indicator=indicator_obj,
-                    url_params=url_params,
-                    json_params=json_params,
-                    request_kwargs=request_kwargs):
-                yield from valid_mode.iterate_data(
-                    data, indicator=indicator_obj)
-            yield from valid_mode.iterate_data(None, indicator=indicator_obj)
+                set_active_mode(
+                    valid_mode, pd.to_datetime(cur_date), indicator_obj)
+            if prev_cur_date != cur_date:
+                indicator_obj.set_description(
+                    f"Downloading signals for {cur_date}")
+                prev_cur_date = cur_date
+
+        for data in self._scroll(
+                valid_mode,
+                params,
+                valid_filters,
+                by_date,
+                indicator=indicator_obj,
+                url_params=url_params,
+                json_params=json_params,
+                request_kwargs=request_kwargs):
+            cur_date = valid_mode.get_current_date(data[0], by_date)
+            assert cur_date is not None
+            helper(cur_date)
+            yield from valid_mode.iterate_data(
+                data, by_date, indicator=indicator_obj, helper=helper)
+
         # For remaining fragment of data in csv mode only.
         # here buffer.shape < chunk_size
         buffer = valid_mode.get_buffer()
