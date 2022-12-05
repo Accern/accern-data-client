@@ -1,5 +1,5 @@
+# Version should match the following pattern: v<MAJOR_VERSION>.<MINOR_VERSION>.<PATCH_VERSION>rc<RC_VERSION>
 
-REGEX="^v(0|[1-9][0-9]*)$$"
 CUR_VERSION=$(git describe --tags --abbrev=0)
 
 # SAMPLES
