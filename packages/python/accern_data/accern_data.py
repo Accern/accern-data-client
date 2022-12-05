@@ -921,6 +921,15 @@ class DataClient:
             url_params: Optional[Dict[str, str]] = None,
             json_params: Optional[Dict[str, Any]] = None,
             request_kwargs: Optional[Dict[Any, Any]] = None) -> Iterator[T]:
+        # NOTE: Deprecate this.
+        if by_date == "date":
+            warnings.warn(
+                "\"date\" is deprecated and will be removed in later "
+                "versions. Use \"published_at\" instead.",
+                DeprecationWarning,
+                stacklevel=2)
+            by_date = "published_at"
+
         valid_mode = self._get_valid_mode(mode)
         valid_filters = self._get_valid_filters(filters)
         valid_mode.clean_buffer()
