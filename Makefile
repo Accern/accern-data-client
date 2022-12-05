@@ -36,6 +36,9 @@ git-check:
 	@test -z `git ls-files --other --exclude-standard --directory` || (echo "there are untracked files" && exit 1)
 	@test `git rev-parse --abbrev-ref HEAD` = "main" || (grep -q -E "a|b|rc" <<< "$(VERSION)") || (echo "not on main" && exit 1)
 
+next-version:
+	./version.sh
+
 install:
 	python -m pip install --upgrade pip
 	python -m pip install --progress-bar off --upgrade -r requirements.lint.txt
