@@ -27,7 +27,12 @@ from typing_extensions import get_args, Literal, TypedDict
 
 from .util import (
     BarIndicator,
+    convert_to_date,
+    DATE_FORMAT,
+    DATETIME_FORMAT,
+    END_TIME,
     generate_file_response,
+    get_by_date_after,
     get_header_file_name,
     get_overall_total_from_dummy,
     get_tmp_file_name,
@@ -37,6 +42,7 @@ from .util import (
     micro_to_millisecond,
     ProgressIndicator,
     SilentIndicator,
+    START_TIME,
     write_json,
 )
 
@@ -48,6 +54,10 @@ ExcludedFilterField = Literal[
     "format",
     "harvested_at",
     "include",
+    "max_harvested_at",
+    "max_published_at",
+    "min_harvested_at",
+    "min_published_at",
     "published_at",
     "size",
     "start_time",
@@ -130,9 +140,6 @@ INDICATORS = get_args(Indicators)
 FILTER_FIELD = get_args(FilterField)
 EXCLUDED_FILTER_FIELD = get_args(ExcludedFilterField)
 ALL_MODES: Set[ModeType] = {"csv", "df", "json"}
-DATETIME_FORMAT = r"%Y-%m-%dT%H:%M:%S.%fZ"
-DATE_FORMAT = r"%Y-%m-%d"
-TIME_FORMAT = r"%H:%M:%S.000Z"
 
 T = TypeVar('T')
 
@@ -164,7 +171,7 @@ class Mode(Generic[T]):
     def size(self, batch: List[T]) -> int:
         raise NotImplementedError()
 
-    def max_date(self, batch: List[T]) -> str:
+    def max_date(self, batch: List[T], by_date: str) -> str:
         raise NotImplementedError()
 
     def init_day(
@@ -190,13 +197,23 @@ class Mode(Generic[T]):
     def iterate_data(
             self,
             data: Optional[List[T]],
-            indicator: ProgressIndicator) -> Iterator[T]:
+            by_date: str,
+            indicator: ProgressIndicator,
+            helper: Callable[[str], None]) -> Iterator[T]:
         raise NotImplementedError()
 
     def stringify_dates(self, obj: T) -> T:
         raise NotImplementedError()
 
-    def split(self, batch: List[T], value: pd.Timestamp) -> List[T]:
+    def split(
+            self,
+            batch: List[T],
+            value: pd.Timestamp,
+            by_date: str) -> List[T]:
+        raise NotImplementedError()
+
+    def get_current_date(
+            self, obj: T, by_date: str) -> Optional[str]:
         raise NotImplementedError()
 
     def get_path(self, is_by_day: bool) -> str:
@@ -263,13 +280,13 @@ class CSVMode(Mode[pd.DataFrame]):
     def size(self, batch: List[pd.DataFrame]) -> int:
         return sum(cur.shape[0] for cur in batch)
 
-    def max_date(self, batch: List[pd.DataFrame]) -> str:
+    def max_date(self, batch: List[pd.DataFrame], by_date: str) -> str:
         temp = set()
         for cur in batch:
-            harvested_at_list = cur["harvested_at"].to_list()
-            for harvested_at in harvested_at_list:
-                assert isinstance(harvested_at, pd.Timestamp)
-                temp.add(harvested_at)
+            date_at_list = cur[by_date].to_list()
+            for date_at in date_at_list:
+                assert isinstance(date_at, pd.Timestamp)
+                temp.add(date_at)
         dates: List[pd.Timestamp] = sorted(temp)
         if len(dates) <= 1:
             return dates[0].strftime(DATETIME_FORMAT)
@@ -327,29 +344,60 @@ class CSVMode(Mode[pd.DataFrame]):
     def split(
             self,
             batch: List[pd.DataFrame],
-            value: pd.Timestamp) -> List[pd.DataFrame]:
+            value: pd.Timestamp,
+            by_date: str) -> List[pd.DataFrame]:
         df = batch[0]
-        return [self.stringify_dates(df[df["harvested_at"] <= value])]
+        return [self.stringify_dates(df[df[by_date] <= value])]
+
+    def get_current_date(
+            self, obj: pd.DataFrame, by_date: str) -> Optional[str]:
+        if obj.empty:
+            return None
+        # NOTE: check date format
+        return convert_to_date(obj.loc[0, by_date])
 
     def iterate_data(
             self,
             data: Optional[List[pd.DataFrame]],
-            indicator: ProgressIndicator) -> Iterator[pd.DataFrame]:
+            by_date: str,
+            indicator: ProgressIndicator,
+            helper: Callable[[str], None]) -> Iterator[pd.DataFrame]:
         assert self._chunk_size is None or self._chunk_size > 0
         if self._chunk_size is None:
             if data is not None:
                 df = data[0]
                 indicator.update(df.shape[0])
                 if not df.empty:
-                    yield df
+                    if self.split_dates():
+                        while not df.empty:
+                            cur_date = self.get_current_date(df, by_date)
+                            assert cur_date is not None
+                            helper(cur_date)
+                            idx = df[df[by_date].apply(
+                                convert_to_date) == cur_date].index[-1]
+                            result = df.iloc[:idx + 1]
+                            df = df.iloc[idx + 1:].reset_index(drop=True)
+                            yield result
+                    else:
+                        yield df
         else:
             if data is not None:
                 self._buffer.append(data[0])
                 self._buffer_size += data[0].shape[0]
             while self._buffer_size >= self._chunk_size:
-                res_df = pd.concat(self._buffer)
-                result: pd.DataFrame = res_df.iloc[:self._chunk_size]
-                remainder: pd.DataFrame = res_df.iloc[self._chunk_size:]
+                res_df = pd.concat(self._buffer, ignore_index=True)
+                cur_date = self.get_current_date(res_df, by_date)
+                assert cur_date is not None
+                helper(cur_date)
+                idx = res_df[res_df[by_date].apply(
+                        convert_to_date) == cur_date].index[-1]
+
+                if self.split_dates() and idx < self._chunk_size:
+                    result = res_df.iloc[:idx + 1]
+                    remainder: pd.DataFrame = res_df.iloc[idx + 1:]
+                else:
+                    result = res_df.iloc[:self._chunk_size]
+                    remainder = res_df.iloc[self._chunk_size:]
                 if remainder.empty:
                     self._buffer = []
                 else:
@@ -357,15 +405,6 @@ class CSVMode(Mode[pd.DataFrame]):
                 self._buffer_size = remainder.shape[0]
                 indicator.update(result.shape[0])
                 yield result.reset_index(drop=True)
-
-            if self.split_dates() and data is None:
-                if len(self._buffer) > 0:
-                    buffer = pd.concat(self._buffer)
-                    if not buffer.empty:
-                        indicator.update(buffer.shape[0])
-                        yield buffer.reset_index(drop=True)
-                self._buffer = []
-                self._buffer_size = 0
 
 
 class JSONMode(Mode[Dict[str, Any]]):
@@ -411,12 +450,12 @@ class JSONMode(Mode[Dict[str, Any]]):
     def size(self, batch: List[Dict[str, Any]]) -> int:
         return len(batch)
 
-    def max_date(self, batch: List[Dict[str, Any]]) -> str:
+    def max_date(self, batch: List[Dict[str, Any]], by_date: str) -> str:
         temp = set()
         for cur in batch:
-            harvested_at = cur["harvested_at"]
-            assert isinstance(harvested_at, pd.Timestamp)
-            temp.add(harvested_at)
+            date_at = cur[by_date]
+            assert isinstance(date_at, pd.Timestamp)
+            temp.add(date_at)
         dates: List[pd.Timestamp] = sorted(temp)
         if len(dates) <= 1:
             return dates[0].strftime(DATETIME_FORMAT)
@@ -448,19 +487,30 @@ class JSONMode(Mode[Dict[str, Any]]):
     def split(
             self,
             batch: List[Dict[str, Any]],
-            value: pd.Timestamp) -> List[Dict[str, Any]]:
+            value: pd.Timestamp,
+            by_date: str) -> List[Dict[str, Any]]:
         result = []
         for record in batch:
-            if record["harvested_at"] <= value:
+            if record[by_date] <= value:
                 result.append(self.stringify_dates(record))
         return result
+
+    def get_current_date(
+            self, obj: Dict[str, Any], by_date: str) -> Optional[str]:
+        # NOTE: check date format
+        return convert_to_date(obj[by_date])
 
     def iterate_data(
             self,
             data: Optional[List[Dict[str, Any]]],
-            indicator: ProgressIndicator) -> Iterator[Dict[str, Any]]:
+            by_date: str,
+            indicator: ProgressIndicator,
+            helper: Callable[[str], None]) -> Iterator[Dict[str, Any]]:
         if data is not None:
             for rec in data:
+                cur_date = self.get_current_date(rec, by_date)
+                assert cur_date is not None
+                helper(cur_date)
                 indicator.update(1)
                 yield rec
 
@@ -623,6 +673,7 @@ class DataClient:
             mode: Mode[T],
             params: Dict[str, str],
             filters: Dict[str, FilterValue],
+            by_date: str,
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]],
             json_params: Optional[Dict[str, Any]],
@@ -637,7 +688,8 @@ class DataClient:
                     resp = generate_file_response(
                         {**params, **url_params},
                         mode.get_format(),
-                        filters=filters)
+                        filters=filters,
+                        by_date=by_date)
                 else:
                     resp = requests.post(
                         self._base_url,
@@ -664,43 +716,44 @@ class DataClient:
 
     def _scroll(
             self,
-            harvested_after: str,
             mode: Mode[T],
             params: Dict[str, str],
             filters: Dict[str, FilterValue],
+            by_date: str,
             indicator: ProgressIndicator,
             url_params: Optional[Dict[str, str]] = None,
             json_params: Optional[Dict[str, Any]] = None,
             request_kwargs: Optional[Dict[Any, Any]] = None,
                 ) -> Iterator[List[T]]:
-        params["harvested_after"] = harvested_after
         batch = self._read_date(
             mode,
             params,
             filters,
+            by_date,
             indicator,
             url_params,
             json_params,
             request_kwargs)
-        prev_start = harvested_after
+        prev_start = params[get_by_date_after(by_date)]
         while mode.size(batch) > 0:
             try:
-                harvested_after = mode.max_date(batch)
-                yield mode.split(batch, pd.to_datetime(harvested_after))
-                params["harvested_after"] = harvested_after
+                date_after = mode.max_date(batch, by_date)
+                yield mode.split(batch, pd.to_datetime(date_after), by_date)
+                params[get_by_date_after(by_date)] = date_after
                 batch = self._read_date(
                     mode,
                     params,
                     filters,
+                    by_date,
                     indicator,
                     url_params,
                     json_params,
                     request_kwargs)
-                if harvested_after == prev_start:
+                if date_after == prev_start:
                     # NOTE: redundant check?
                     # batch_size becomes 0, loop gets terminated.
                     break
-                prev_start = harvested_after
+                prev_start = date_after
             except pd.errors.EmptyDataError:
                 break
 
@@ -714,12 +767,13 @@ class DataClient:
             "versions.",
             DeprecationWarning,
             stacklevel=2)
+        params["harvested_after"] = harvested_after
         return self._scroll(
-            harvested_after=harvested_after,
             params=params,
             mode=self.get_mode(),
             indicator=self.get_indicator(),
             filters={},
+            by_date="harvested_at",
             url_params=url_params)
 
     def read_total(
@@ -867,6 +921,15 @@ class DataClient:
             url_params: Optional[Dict[str, str]] = None,
             json_params: Optional[Dict[str, Any]] = None,
             request_kwargs: Optional[Dict[Any, Any]] = None) -> Iterator[T]:
+        # NOTE: Deprecate this.
+        if by_date == "date":
+            warnings.warn(
+                "\"date\" is deprecated and will be removed in later "
+                "versions. Use \"published_at\" instead.",
+                DeprecationWarning,
+                stacklevel=2)
+            by_date = "published_at"
+
         valid_mode = self._get_valid_mode(mode)
         valid_filters = self._get_valid_filters(filters)
         valid_mode.clean_buffer()
@@ -876,65 +939,61 @@ class DataClient:
         indicator_obj.generate_bar(
             total=len(pd.date_range(start_date, end_date)))
         indicator_obj.set_description(desc="Fetching info")
-        total = 0
-        expected_records: List[int] = []
+        overall_total = 0
 
-        start_date_dt = pd.to_datetime(start_date)
-        end_date_dt = pd.to_datetime(end_date)
-        start_date_only = start_date_dt.strftime(DATE_FORMAT)
-        end_date_only = end_date_dt.strftime(DATE_FORMAT)
-        start_date_only_dt = pd.to_datetime(start_date_only)
-        end_date_only_dt = pd.to_datetime(end_date_only)
-
-        def get_by_date_param(by_date: str, date: str) -> Dict[str, str]:
+        def get_min_max_date_param(
+                start_date: str,
+                end_date: str,
+                by_date: str) -> Dict[str, str]:
             if by_date not in BY_DATE:
                 raise ValueError(
                     f"Incorrect value {by_date} for by_date. "
                     f"Must be one of {BY_DATE}")
-            if by_date == "published_at":
-                return {"date": date}
-            return {by_date: date}
+            if convert_to_date(start_date) == start_date:
+                start_date = f"{start_date}T{START_TIME}"
+            if convert_to_date(end_date) == end_date:
+                end_date = f"{end_date}T{END_TIME}"
+            return {f"min_{by_date}": start_date, f"max_{by_date}": end_date}
 
-        def parse_time(date: str) -> Dict[str, str]:
-            times: Dict[str, str] = {}
-            if date == start_date_only and start_date_only_dt != start_date_dt:
-                times["start_time"] = start_date_dt.strftime(TIME_FORMAT)
-            if date == end_date_only and end_date_only_dt != end_date_dt:
-                times["end_time"] = end_date_dt.strftime(TIME_FORMAT)
-            return times
+        overall_total = self._read_total(
+            get_min_max_date_param(start_date, end_date, by_date),
+            filters=valid_filters,
+            indicator=indicator_obj,
+            request_kwargs=request_kwargs)
 
-        for cur_date in pd.date_range(start_date_only, end_date_only):
-            date = cur_date.strftime(DATE_FORMAT)
-            expected_records.append(
-                self._read_total(
-                    {**get_by_date_param(by_date, date), **parse_time(date)},
-                    filters=valid_filters,
-                    indicator=indicator_obj,
-                    request_kwargs=request_kwargs))
-            indicator_obj.update(1)
-        total = sum(expected_records)
-        indicator_obj.set_total(total=total)
+        indicator_obj.set_total(total=overall_total)
         indicator_obj.set_description(desc="Downloading signals")
-        for idx, cur_date in enumerate(
-                pd.date_range(start_date_only, end_date_only)):
-            indicator_obj.log(f"Expected {expected_records[idx]} signals.")
+        indicator_obj.log(f"Expected {overall_total} signals.")
+
+        params = get_min_max_date_param(start_date, end_date, by_date)
+        params[get_by_date_after(by_date)] = "1900-01-01"
+        prev_cur_date = None
+
+        def helper(cur_date: str) -> None:
+            nonlocal prev_cur_date, set_active_mode
             if set_active_mode is not None:
-                set_active_mode(valid_mode, cur_date, indicator_obj)
-            date = cur_date.strftime(DATE_FORMAT)
-            indicator_obj.set_description(f"Downloading signals for {date}")
-            params = {**get_by_date_param(by_date, date), **parse_time(date)}
-            for data in self._scroll(
-                    "1900-01-01",
-                    valid_mode,
-                    params,
-                    valid_filters,
-                    indicator=indicator_obj,
-                    url_params=url_params,
-                    json_params=json_params,
-                    request_kwargs=request_kwargs):
-                yield from valid_mode.iterate_data(
-                    data, indicator=indicator_obj)
-            yield from valid_mode.iterate_data(None, indicator=indicator_obj)
+                set_active_mode(
+                    valid_mode, pd.to_datetime(cur_date), indicator_obj)
+            if prev_cur_date != cur_date:
+                indicator_obj.set_description(
+                    f"Downloading signals for {cur_date}")
+                prev_cur_date = cur_date
+
+        for data in self._scroll(
+                valid_mode,
+                params,
+                valid_filters,
+                by_date,
+                indicator=indicator_obj,
+                url_params=url_params,
+                json_params=json_params,
+                request_kwargs=request_kwargs):
+            cur_date = valid_mode.get_current_date(data[0], by_date)
+            assert cur_date is not None
+            helper(cur_date)
+            yield from valid_mode.iterate_data(
+                data, by_date, indicator=indicator_obj, helper=helper)
+
         # For remaining fragment of data in csv mode only.
         # here buffer.shape < chunk_size
         buffer = valid_mode.get_buffer()

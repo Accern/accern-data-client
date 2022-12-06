@@ -23,6 +23,11 @@ R_BAR = """| {percentage:3.0f}% [{n}/{total}]"""
 BAR_FMT = f"{L_BAR}{{bar}}{R_BAR}"
 DEFAULT_CHUNK_SIZE = 100
 DATA_DIR = "tests/data"
+DATETIME_FORMAT = r"%Y-%m-%dT%H:%M:%S.%fZ"
+DATE_FORMAT = r"%Y-%m-%d"
+TIME_FORMAT = r"%H:%M:%S.000Z"
+START_TIME = "00:00:00.000Z"
+END_TIME = "23:59:59.999Z"
 
 
 def is_example_url(url: str) -> bool:
@@ -77,16 +82,10 @@ def field_transformation(value: Any) -> Union[str, List[str]]:
     return f"{value}"
 
 
-def get_date_type(obj: Dict[str, str]) -> Tuple[str, str]:
-    for date_type in ["date", "harvested_at"]:
-        try:
-            date_val = obj[date_type]
-            break
-        except KeyError:
-            pass
-    if date_type == "date":
-        date_type = "published_at"
-    return date_type, date_val
+def get_date_type(obj: Dict[str, str]) -> str:
+    if "min_published_at" in obj.keys():
+        return "published_at"
+    return "harvested_at"
 
 
 def get_overall_total_from_dummy(
@@ -94,8 +93,8 @@ def get_overall_total_from_dummy(
         filters: Dict[str, 'FilterValue'],
         encoding: str = "utf-8") -> Response:
     response_obj = Response()
-    date_type, date_val = get_date_type(params)
-    start_dt, end_dt = create_start_end_date(date_val, params)
+    date_type = get_date_type(params)
+    start_dt, end_dt = get_min_max_dates(params, date_type)
     if is_test():
         path = f"{get_data_dir()}/data-2022.json"
     else:
@@ -124,37 +123,32 @@ def get_overall_total_from_dummy(
     return response_obj
 
 
-def create_start_end_date(
-        date: str,
-        params: Dict[str, str]) -> Tuple[pd.Timestamp, pd.Timestamp]:
-    if "start_time" in params.keys():
-        start_dt = pd.to_datetime(f"{date}T{params['start_time']}", utc=True)
-    else:
-        start_dt = pd.to_datetime(date, utc=True)
-    if "end_time" in params.keys():
-        end_dt = pd.to_datetime(f"{date}T{params['end_time']}", utc=True)
-    else:
-        end_dt = pd.to_datetime(f"{date}T23:59:59.999Z", utc=True)
+def get_min_max_dates(
+        params: Dict[str, str],
+        by_date: str) -> Tuple[pd.Timestamp, pd.Timestamp]:
+    start_dt = pd.to_datetime(params[f"min_{by_date}"], utc=True)
+    end_dt = pd.to_datetime(params[f"max_{by_date}"], utc=True)
     return (start_dt, end_dt)
 
 
 def generate_csv_object(
         path: str,
         params: Dict[str, str],
-        harvested_after: pd.Timestamp,
+        date_after: pd.Timestamp,
         filters: Dict[str, 'FilterValue'],
+        by_date: str,
         encoding: str) -> io.BytesIO:
     df = pd.read_csv(path)
     df["harvested_at"] = pd.to_datetime(df["harvested_at"])
     df["published_at"] = pd.to_datetime(df["published_at"])
-    date_type, date_val = get_date_type(params)
-    start_dt, end_dt = create_start_end_date(date_val, params)
+    date_type = get_date_type(params)
+    start_dt, end_dt = get_min_max_dates(params, date_type)
     valid_df: pd.DataFrame = df[
         (df[date_type] >= start_dt) &
         (df[date_type] <= end_dt) &
-        (df["harvested_at"] > harvested_after)
+        (df[by_date] > date_after)
     ]
-    valid_df = valid_df.sort_values(by=["harvested_at", "signal_id"])
+    valid_df = valid_df.sort_values(by=[by_date, "signal_id"])
     if valid_df.empty:
         filtered_df = valid_df
     else:
@@ -180,27 +174,28 @@ def generate_csv_object(
 def generate_json_object(
         path: str,
         params: Dict[str, str],
-        harvested_after: pd.Timestamp,
+        date_after: pd.Timestamp,
         filters: Dict[str, 'FilterValue'],
+        by_date: str,
         encoding: str) -> io.BytesIO:
     json_obj = load_json(path)
-    date_type, date_val = get_date_type(params)
+    date_type = get_date_type(params)
     filtered_json = {
         key: val
         for key, val in json_obj.items()
         if key != "signals"
     }
-    start_dt, end_dt = create_start_end_date(date_val, params)
+    start_dt, end_dt = get_min_max_dates(params, date_type)
     filtered_json["signals"] = []
     for record in json_obj["signals"]:
         if (
                 pd.to_datetime(record[date_type]) >= start_dt
                 and pd.to_datetime(record[date_type]) <= end_dt
-                and pd.to_datetime(record["harvested_at"]) > harvested_after
+                and pd.to_datetime(record[by_date]) > date_after
                 ) and check_filters(record, filters):
             filtered_json["signals"].append(record)
     filtered_json["signals"].sort(
-        key=lambda x: (pd.to_datetime(x["harvested_at"]), x["signal_id"]))
+        key=lambda x: (pd.to_datetime(x[by_date]), x["signal_id"]))
     obj = io.BytesIO(json.dumps(filtered_json).encode(encoding))
     return obj
 
@@ -209,9 +204,11 @@ def generate_file_response(
         params: Dict[str, str],
         mode: str,
         filters: Dict[str, 'FilterValue'],
+        by_date: str,
         encoding: str = "utf-8") -> Response:
     response_obj = Response()
-    harvested_after_dt = pd.to_datetime(params["harvested_after"], utc=True)
+    date_after_dt = pd.to_datetime(
+        params[get_by_date_after(by_date)], utc=True)
 
     if is_test():
         path = f"{get_data_dir()}/data-2022.{mode}"
@@ -220,10 +217,10 @@ def generate_file_response(
 
     if mode == "csv":
         obj = generate_csv_object(
-            path, params, harvested_after_dt, filters, encoding)
+            path, params, date_after_dt, filters, by_date, encoding)
     else:
         obj = generate_json_object(
-            path, params, harvested_after_dt, filters, encoding)
+            path, params, date_after_dt, filters, by_date, encoding)
     obj.seek(0)
     response_obj._content = obj.read()
     response_obj.encoding = encoding
@@ -266,6 +263,14 @@ def get_header_file_name(fname: str) -> str:
 
 def micro_to_millisecond(timestamp: str) -> str:
     return f"{timestamp[:-4]}Z"
+
+
+def get_by_date_after(by_date: str) -> str:
+    return f"{by_date[:-3]}_after"
+
+
+def convert_to_date(date: str) -> str:
+    return pd.to_datetime(date).strftime(DATE_FORMAT)
 
 
 class ProgressIndicator:
