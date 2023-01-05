@@ -1,6 +1,6 @@
 {
   "name": "accern-data",
-  "version": "0.2.0rc1",
+  "version": "v0.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
