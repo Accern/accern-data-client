@@ -35,17 +35,29 @@ def is_example_url(url: str) -> bool:
 
 
 def load_json(path: str) -> Any:
+    """
+    Helper function for loading a JSON file.
+    """
     with open(path, "r") as file:
         json_obj = json.load(file)
     return json_obj
 
 
 def write_json(obj: Any, path: str, **kwargs: Any) -> None:
+    """
+    Helper function for writing a JSON file.
+    """
     with open(path, "w") as file:
         json.dump(obj, file, indent=4, **kwargs)
 
 
 def is_test() -> int:
+    """
+    Accern data client can be executed in two ways. One is actual execution
+    that requires real world data and the other one is test execution which
+    requires dummy data to ensure proper functioning of the code. This function
+    returns True if it is a test execution otherwise False.
+    """
     global IS_TEST
 
     if IS_TEST is None:
@@ -54,16 +66,39 @@ def is_test() -> int:
 
 
 def set_data_dir(path: str) -> None:
+    """
+    Function used to set the dummy data directory.
+
+    Parameters:
+        path: dummy data directory path.
+    """
     global DATA_DIR
     DATA_DIR = path
 
 
 def get_data_dir() -> str:
+    """
+    Function used to retrieve the dummy data directory.
+
+    Returns:
+        Dummy data directory path.
+    """
     return DATA_DIR
 
 
 def check_filters(
         record: Dict[str, Any], filters: Dict[str, 'FilterValue']) -> bool:
+    """
+    Checks if an input dictionary contains values provided by the filter object.
+
+    Parameters:
+        record: dictionary to check.
+        filters: filter values to check for.
+
+    Returns:
+        True if the input dictionary contains filter values otherwise False.
+    """
+
     for key, value in filters.items():
         transformed_val = field_transformation(value)
         if isinstance(transformed_val, list):
@@ -92,6 +127,19 @@ def get_overall_total_from_dummy(
         params: Dict[str, str],
         filters: Dict[str, 'FilterValue'],
         encoding: str = "utf-8") -> Response:
+    """
+    Mocks overall total (refer this term with respect to feed API) for a
+    combination of parameters.
+
+    Parameters:
+        params: Parameters of the API call.
+        filters: Filters to apply on the response.
+        encoding: Response encoding.
+
+    Returns:
+        A response containing data that follow rules as provided by params &
+        filters.
+    """
     response_obj = Response()
     date_type = get_date_type(params)
     start_dt, end_dt = get_min_max_dates(params, date_type)
@@ -126,6 +174,16 @@ def get_overall_total_from_dummy(
 def get_min_max_dates(
         params: Dict[str, str],
         by_date: str) -> Tuple[pd.Timestamp, pd.Timestamp]:
+    """
+    Generates date range.
+
+    Parameters:
+        params: Parameters of the API call.
+        by_date: can be either published_at or harvested_at.
+
+    Returns:
+        Tuple containing start & end date.
+    """
     start_dt = pd.to_datetime(params[f"min_{by_date}"], utc=True)
     end_dt = pd.to_datetime(params[f"max_{by_date}"], utc=True)
     return (start_dt, end_dt)
@@ -138,6 +196,20 @@ def generate_csv_object(
         filters: Dict[str, 'FilterValue'],
         by_date: str,
         encoding: str) -> io.BytesIO:
+    """
+    Mocks CSV file creation capability of actual API.
+
+    Parameters:
+        path: Dummy file path.
+        params: Parameters of the API call.
+        date_after: Date to paginate after.
+        filters:  Filters to apply on the response.
+        by_date: can be either published_at or harvested_at.
+        encoding: Response encoding.
+
+    Returns:
+        Bytes object containing data in CSV format.
+    """
     df = pd.read_csv(path)
     df["harvested_at"] = pd.to_datetime(df["harvested_at"])
     df["published_at"] = pd.to_datetime(df["published_at"])
@@ -178,6 +250,20 @@ def generate_json_object(
         filters: Dict[str, 'FilterValue'],
         by_date: str,
         encoding: str) -> io.BytesIO:
+    """
+    Mocks JSON file creation capability of actual API.
+
+    Parameters:
+        path: Dummy file path.
+        params: Parameters of the API call.
+        date_after: Date to paginate after.
+        filters:  Filters to apply on the response.
+        by_date: can be either published_at or harvested_at.
+        encoding: Response encoding.
+
+    Returns:
+        Bytes object containing data in JSON format.
+    """
     json_obj = load_json(path)
     date_type = get_date_type(params)
     filtered_json = {
@@ -206,6 +292,19 @@ def generate_file_response(
         filters: Dict[str, 'FilterValue'],
         by_date: str,
         encoding: str = "utf-8") -> Response:
+    """
+    Mocks file creation capability of actual API.
+
+    Parameters:
+        params: Parameters of the API call.
+        mode: Type of response. Can be either csv or json.
+        filters:  Filters to apply on the response.
+        by_date: can be either published_at or harvested_at.
+        encoding: Response encoding.
+
+    Returns:
+        Bytes object containing data in CSV format.
+    """
     response_obj = Response()
     date_after_dt = pd.to_datetime(
         params[get_by_date_after(by_date)], utc=True)
@@ -230,6 +329,15 @@ def generate_file_response(
 
 
 def get_master_file(extension: str) -> str:
+    """
+    This function is used to get the dummy/mock file name.
+
+    Parameters:
+        extension: Type of file, csv or json.
+
+    Returns:
+        File path.
+    """
     full_dir = os.path.join(
         sys.prefix, "accern_data", f"data-2022.{extension}")
     if not os.path.exists(full_dir) and site.USER_BASE is not None:
@@ -239,6 +347,10 @@ def get_master_file(extension: str) -> str:
 
 
 def is_jupyter() -> bool:
+    """
+    This function is used to check whether current environment is jupiter or
+    not.
+    """
     global IS_JUPYTER
 
     if IS_JUPYTER is not None:
@@ -274,6 +386,9 @@ def convert_to_date(date: str) -> str:
 
 
 class ProgressIndicator:
+    """
+    Class for indicating progress of the process.
+    """
     def log(self, msg: str) -> None:
         raise NotImplementedError()
 
@@ -294,6 +409,10 @@ class ProgressIndicator:
 
 
 class BarIndicator(ProgressIndicator):
+    """
+    Class for indicating progress of the process in form of an interactive
+    progress bar.
+    """
     def __init__(self) -> None:
         self._pbar: Optional[tqdm.tqdm] = None
 
@@ -325,6 +444,9 @@ class BarIndicator(ProgressIndicator):
 
 
 class MessageIndicator(ProgressIndicator):
+    """
+    Class for indicating progress of the process in form of message logs.
+    """
     def log(self, msg: str) -> None:
         print(msg)
 
@@ -349,6 +471,10 @@ class MessageIndicator(ProgressIndicator):
 
 
 class SilentIndicator(ProgressIndicator):
+    """
+    Class for indicating progress of the process silently. Quite ironical.
+    """
+
     def log(self, msg: str) -> None:
         # not required in silent logging.
         pass
@@ -375,6 +501,9 @@ class SilentIndicator(ProgressIndicator):
 
 
 def has_iprogress() -> bool:
+    """
+    Function to check whether current environment has IProgress or not.
+    """
     global HAS_IPROGRESS
 
     if HAS_IPROGRESS is not None:
