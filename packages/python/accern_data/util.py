@@ -89,7 +89,8 @@ def get_data_dir() -> str:
 def check_filters(
         record: Dict[str, Any], filters: Dict[str, 'FilterValue']) -> bool:
     """
-    Checks if an input dictionary contains values provided by the filter object.
+    Checks if an input dictionary contains values provided by the filter
+    object.
 
     Parameters:
         record: dictionary to check.
@@ -411,7 +412,7 @@ class ProgressIndicator:
 class BarIndicator(ProgressIndicator):
     """
     Class for indicating progress of the process in form of an interactive
-    progress bar.
+    progress bar. This is the default indicator.
     """
     def __init__(self) -> None:
         self._pbar: Optional[tqdm.tqdm] = None
@@ -445,7 +446,8 @@ class BarIndicator(ProgressIndicator):
 
 class MessageIndicator(ProgressIndicator):
     """
-    Class for indicating progress of the process in form of message logs.
+    Class for indicating progress of the process in form of message logs. It
+    prints log messages to stdout.
     """
     def log(self, msg: str) -> None:
         print(msg)
@@ -472,7 +474,8 @@ class MessageIndicator(ProgressIndicator):
 
 class SilentIndicator(ProgressIndicator):
     """
-    Class for indicating progress of the process silently. Quite ironical.
+    Class for indicating progress of the process silently. Does not show
+    anything. Keeps output stream clean. Quite ironical!
     """
 
     def log(self, msg: str) -> None:
