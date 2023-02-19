@@ -154,9 +154,15 @@ class Mode(Generic[T]):
         self._cur_pattern: Optional[str] = None
 
     def get_format(self) -> str:
+        """
+        Returns file format of the mode.
+        """
         raise NotImplementedError()
 
     def split_dates(self) -> bool:
+        """
+        Whether or not split files on the basis of dates.
+        """
         raise NotImplementedError
 
     def clean_buffer(self) -> None:
@@ -183,12 +189,27 @@ class Mode(Generic[T]):
             path: str,
             pattern: Optional[str],
             indicator: ProgressIndicator) -> None:
+        """
+        Intializes files & variables required before retrieving signals for a
+        day.
+
+        Parameters:
+            cur_date: Day to intialize.
+            path: The path in your local file system where you want to
+                store those downloaded files.
+            pattern: Patterns are the file name prefix that the downloaded
+                files should have.
+            indicator: Indicator to show progress of the whole process.
+        """
         self._cur_date = cur_date
         self._cur_path = path
         self._cur_pattern = pattern
         self.do_init(indicator)
 
     def do_init(self, indicator: ProgressIndicator) -> None:
+        """
+        Intializes resources & files.
+        """
         raise NotImplementedError()
 
     def add_result(self, signal: T) -> None:
@@ -220,6 +241,16 @@ class Mode(Generic[T]):
         raise NotImplementedError()
 
     def get_path(self, is_by_day: bool) -> str:
+        """
+        Generates file path.
+
+        Parameters:
+            is_by_day: Flag to determine whether or not file is divided on the
+            basis of dates.
+
+        Returns:
+            File path.
+        """
         # NOTE: pattern can be None or "" only for csv_date & json.
         # In case of None, filenames would be <date>.csv or <date>.json.
         # In case of empty string (""), filenames would be -<date>.csv or
@@ -251,9 +282,15 @@ class CSVMode(Mode[pd.DataFrame]):
         self._buffer_size = 0
 
     def get_format(self) -> str:
+        """
+        Returns file format of the mode.
+        """
         return "csv"
 
     def split_dates(self) -> bool:
+        """
+        Whether or not split files on the basis of dates.
+        """
         return self._is_by_day
 
     def clean_buffer(self) -> None:
@@ -268,6 +305,15 @@ class CSVMode(Mode[pd.DataFrame]):
         return None
 
     def parse_result(self, resp: requests.Response) -> List[pd.DataFrame]:
+        """
+        Parses response from the feed API to pandas dataframe.
+
+        Paramteres:
+            resp: Response from the API.
+
+        Returns:
+            List of dataframes processed from the API response.
+        """
         res = pd.read_csv(io.StringIO(resp.text))
         if res.empty:
             return []
@@ -281,9 +327,29 @@ class CSVMode(Mode[pd.DataFrame]):
         return [res]
 
     def size(self, batch: List[pd.DataFrame]) -> int:
+        """
+        Returns number of signals returned from the feed API.
+
+        Paramteres:
+            batch: List of pandas dataframe from the API.
+
+        Returns:
+            Total number of signals in the input batch.
+        """
         return sum(cur.shape[0] for cur in batch)
 
     def max_date(self, batch: List[pd.DataFrame], by_date: str) -> str:
+        """
+        Returns second maximum date from signals.
+
+        Paramteres:
+            batch: List of pandas dataframe from the API.
+            by_date: Can be either published_at or harvested_at.
+
+        Returns:
+            Second maximum harvested_at or published_at date (depends on
+            by_date parameter) from all the signals in the batch.
+        """
         temp = set()
         for cur in batch:
             date_at_list = cur[by_date].to_list()
@@ -297,6 +363,9 @@ class CSVMode(Mode[pd.DataFrame]):
         return max(dates[:-1]).strftime(DATETIME_FORMAT)
 
     def do_init(self, indicator: ProgressIndicator) -> None:
+        """
+        Intializes resources & files.
+        """
         fname = self.get_path(self._is_by_day)
         indicator.log(f"current file is {fname}")
 
@@ -306,15 +375,22 @@ class CSVMode(Mode[pd.DataFrame]):
         header.to_csv(get_header_file_name(fname), index=False)
 
     def add_result(self, signal: pd.DataFrame) -> None:
+        """
+        Appends signals to already existing file or writes to a new file.
+
+        Paramteres:
+            signal: Dataframe containing signals as rows.
+        """
         fname = self.get_path(is_by_day=self._is_by_day)
         tmp_fname = get_tmp_file_name(fname)
 
-        if self._cols is None:
+        if self._cols is None:  # Writing a fresh file.
             self._cols = sorted(signal.columns.to_list())
             self._write_cols()
             signal[self._cols].to_csv(
                 tmp_fname, index=False, header=False, mode="w")
-        else:
+        else:  # Appending to already existing file.
+            # Field/column inconsistency.
             cur_cols_set = set(self._cols)
             sig_cols_set = set(signal.columns)
             missing_cols = cur_cols_set.difference(sig_cols_set)
@@ -335,7 +411,16 @@ class CSVMode(Mode[pd.DataFrame]):
             self._cols = None
 
     def stringify_dates(self, obj: pd.DataFrame) -> pd.DataFrame:
+        """
+        Process the signals to convert dates to their string representation.
 
+        Parameters:
+            obj: Pandas dataframe containing signals as rows.
+
+        Returns:
+            Pandas dataframe containing signals as rows with date values as
+            string.
+        """
         def micro_to_milli(timestamp: pd.Timestamp) -> str:
             return micro_to_millisecond(
                 pd.to_datetime(timestamp).strftime(DATETIME_FORMAT))
@@ -349,11 +434,35 @@ class CSVMode(Mode[pd.DataFrame]):
             batch: List[pd.DataFrame],
             value: pd.Timestamp,
             by_date: str) -> List[pd.DataFrame]:
+        """
+        Filters signals having harvested_at or published_at (governed by
+        by_date parameter) less than a provided value.
+
+        Parameters:
+            batch: List of pandas dataframe from the API.
+            value: Date of & before which the signals has to be filtered.
+            by_date: Can be either published_at or harvested_at.
+
+        Returns:
+            List of filters pandas dataframe from the API.
+        """
         df = batch[0]
         return [self.stringify_dates(df[df[by_date] <= value])]
 
     def get_current_date(
             self, obj: pd.DataFrame, by_date: str) -> Optional[str]:
+        """
+        Returns first harvested_at or published_at (governed by
+        by_date parameter) in the dataframe.
+
+        Parameters:
+            obj: Dataframe containing signals as rows.
+            by_date: can be either published_at or harvested_at.
+
+        Returns:
+            Current date from input dataframe. If the input dataframe is empty
+            then it returns None.
+        """
         if obj.empty:
             return None
         # NOTE: check date format
@@ -365,6 +474,18 @@ class CSVMode(Mode[pd.DataFrame]):
             by_date: str,
             indicator: ProgressIndicator,
             helper: Callable[[str], None]) -> Iterator[pd.DataFrame]:
+        """
+        Streams data.
+
+        Parameters:
+            data: List of pandas dataframe containing signals as rows.
+            by_date: Can be either published_at or harvested_at.
+            indicator: Indicator to show progress of the whole process.
+
+        Returns:
+            Streams pandas dataframe containing signals as rows. Number of
+            signals returned are governed by the defined chunk size.
+        """
         assert self._chunk_size is None or self._chunk_size > 0
         if self._chunk_size is None:
             if data is not None:
@@ -418,9 +539,15 @@ class JSONMode(Mode[Dict[str, Any]]):
         self._debug_ix = 0
 
     def get_format(self) -> str:
+        """
+        Returns file format of the mode.
+        """
         return "json"
 
     def split_dates(self) -> bool:
+        """
+        Whether or not split files on the basis of dates.
+        """
         return True
 
     def clean_buffer(self) -> None:
@@ -431,6 +558,15 @@ class JSONMode(Mode[Dict[str, Any]]):
         return None
 
     def parse_result(self, resp: requests.Response) -> List[Dict[str, Any]]:
+        """
+        Parses response from the feed API to python dictionary object.
+
+        Paramteres:
+            resp: Response from the API.
+
+        Returns:
+            List of dictionary objects processed from the API response.
+        """
         res_json = resp.json()
         if self._debug_json:
             with open(f"tmp{self._debug_ix}.json", "w") as out:
@@ -451,9 +587,29 @@ class JSONMode(Mode[Dict[str, Any]]):
         ]
 
     def size(self, batch: List[Dict[str, Any]]) -> int:
+        """
+        Returns number of signals returned from the feed API.
+
+        Paramteres:
+            batch: List of signals in json format from the API.
+
+        Returns:
+            Total number of signals in the input batch.
+        """
         return len(batch)
 
     def max_date(self, batch: List[Dict[str, Any]], by_date: str) -> str:
+        """
+        Returns second maximum date from signals.
+
+        Paramteres:
+            batch: List of signals in json format from the API.
+            by_date: Can be either published_at or harvested_at.
+
+        Returns:
+            Second maximum harvested_at or published_at date (depends on
+            by_date parameter) from all the signals in the batch.
+        """
         temp = set()
         for cur in batch:
             date_at = cur[by_date]
@@ -465,17 +621,39 @@ class JSONMode(Mode[Dict[str, Any]]):
         return max(dates[:-1]).strftime(DATETIME_FORMAT)
 
     def do_init(self, indicator: ProgressIndicator) -> None:
+        """
+        Intializes resources & files.
+        """
         self._res = []
 
     def add_result(self, signal: Dict[str, Any]) -> None:
+        """
+        Appends signals to signals list.
+
+        Paramteres:
+            signal: A signal in form of dictionary object.
+        """
         self._res.append(signal)
 
     def finish_day(self, force_finish: bool = False) -> None:
+        """
+        Writes json file.
+        """
         fname = self.get_path(is_by_day=True)
         if len(self._res) > 0:
             write_json(self._res, fname, sort_keys=True)
 
     def stringify_dates(self, obj: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Process the signals to convert dates to their string representation.
+
+        Parameters:
+            obj: A signal in form of dictionary object.
+
+        Returns:
+            A signal in form of dictionary object containing date values as
+            string.
+        """
         if "harvested_at" in obj:
             obj["harvested_at"] = micro_to_millisecond(
                 obj["harvested_at"].strftime(DATETIME_FORMAT))
@@ -500,6 +678,17 @@ class JSONMode(Mode[Dict[str, Any]]):
 
     def get_current_date(
             self, obj: Dict[str, Any], by_date: str) -> Optional[str]:
+        """
+        Returns first harvested_at or published_at (governed by
+        by_date parameter) in the signal.
+
+        Parameters:
+            obj: Signal as a dictionary object.
+            by_date: can be either published_at or harvested_at.
+
+        Returns:
+            Current date from input dictionary object.
+        """
         # NOTE: check date format
         return convert_to_date(obj[by_date])
 
@@ -509,6 +698,17 @@ class JSONMode(Mode[Dict[str, Any]]):
             by_date: str,
             indicator: ProgressIndicator,
             helper: Callable[[str], None]) -> Iterator[Dict[str, Any]]:
+        """
+        Streams data.
+
+        Parameters:
+            data: List of dictionary objects containing signals as rows.
+            by_date: Can be either published_at or harvested_at.
+            indicator: Indicator to show progress of the whole process.
+
+        Returns:
+            Streams signals from the input one by one.
+        """
         if data is not None:
             for rec in data:
                 cur_date = self.get_current_date(rec, by_date)
