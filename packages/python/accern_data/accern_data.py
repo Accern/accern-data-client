@@ -1,4 +1,5 @@
 import csv
+import sys
 import io
 import os
 import time
@@ -246,6 +247,7 @@ class CSVMode(Mode[pd.DataFrame]):
         self._chunk_size = chunk_size
         self._buffer: List[pd.DataFrame] = []
         self._buffer_size = 0
+        csv.field_size_limit(sys.maxsize)
 
     def get_format(self) -> str:
         return "csv"
