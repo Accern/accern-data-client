@@ -144,9 +144,10 @@ ALL_MODES: Set[ModeType] = {"csv", "df", "json"}
 
 T = TypeVar('T')
 
-MAX_VALUE = 10000000 
-#constant value to increase the download limit of the csv. 
+MAX_CSV_FIELD_SIZE = 10000000
+# constant value to increase the download limit of the csv.
 # if the limit is still less, change this value for csv.field_size_limit
+
 
 class Mode(Generic[T]):
     def __init__(self) -> None:
@@ -250,7 +251,7 @@ class CSVMode(Mode[pd.DataFrame]):
         self._chunk_size = chunk_size
         self._buffer: List[pd.DataFrame] = []
         self._buffer_size = 0
-        csv.field_size_limit(MAX_VALUE)
+        csv.field_size_limit(MAX_CSV_FIELD_SIZE)
 
     def get_format(self) -> str:
         return "csv"
