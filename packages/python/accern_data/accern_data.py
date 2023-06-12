@@ -144,7 +144,10 @@ ALL_MODES: Set[ModeType] = {"csv", "df", "json"}
 
 T = TypeVar('T')
 
-MAX_VALUE = 10000000 #constant value to increase the download limit of the csv. if the limit is still less, change this value for csv.field_size_limit
+MAX_VALUE = 10000000 
+#constant value to increase the download limit of the csv. 
+# if the limit is still less, change this value for csv.field_size_limit
+
 class Mode(Generic[T]):
     def __init__(self) -> None:
         self._cur_date: Optional[str] = None
