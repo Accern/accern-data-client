@@ -149,15 +149,24 @@ MAX_CSV_FIELD_SIZE = 10000000
 
 
 class Mode(Generic[T]):
+    """
+    Mode in which the data has to be generated.
+    """
     def __init__(self) -> None:
         self._cur_date: Optional[str] = None
         self._cur_path: Optional[str] = None
         self._cur_pattern: Optional[str] = None
 
     def get_format(self) -> str:
+        """
+        Returns file format of the mode.
+        """
         raise NotImplementedError()
 
     def split_dates(self) -> bool:
+        """
+        Whether or not split files on the basis of dates.
+        """
         raise NotImplementedError
 
     def clean_buffer(self) -> None:
@@ -184,12 +193,27 @@ class Mode(Generic[T]):
             path: str,
             pattern: Optional[str],
             indicator: ProgressIndicator) -> None:
+        """
+        Intializes files & variables required before retrieving signals for a
+        day.
+
+        Parameters:
+            cur_date: Day to intialize.
+            path: The path in your local file system where you want to
+                store those downloaded files.
+            pattern: Patterns are the file name prefix that the downloaded
+                files should have.
+            indicator: Indicator to show progress of the whole process.
+        """
         self._cur_date = cur_date
         self._cur_path = path
         self._cur_pattern = pattern
         self.do_init(indicator)
 
     def do_init(self, indicator: ProgressIndicator) -> None:
+        """
+        Intializes resources & files.
+        """
         raise NotImplementedError()
 
     def add_result(self, signal: T) -> None:
@@ -221,6 +245,16 @@ class Mode(Generic[T]):
         raise NotImplementedError()
 
     def get_path(self, is_by_day: bool) -> str:
+        """
+        Generates file path.
+
+        Parameters:
+            is_by_day: Flag to determine whether or not file is divided on the
+            basis of dates.
+
+        Returns:
+            File path.
+        """
         # NOTE: pattern can be None or "" only for csv_date & json.
         # In case of None, filenames would be <date>.csv or <date>.json.
         # In case of empty string (""), filenames would be -<date>.csv or
@@ -253,9 +287,15 @@ class CSVMode(Mode[pd.DataFrame]):
         csv.field_size_limit(MAX_CSV_FIELD_SIZE)
 
     def get_format(self) -> str:
+        """
+        Returns file format of the mode.
+        """
         return "csv"
 
     def split_dates(self) -> bool:
+        """
+        Whether or not split files on the basis of dates.
+        """
         return self._is_by_day
 
     def clean_buffer(self) -> None:
@@ -270,6 +310,15 @@ class CSVMode(Mode[pd.DataFrame]):
         return None
 
     def parse_result(self, resp: requests.Response) -> List[pd.DataFrame]:
+        """
+        Parses response from the feed API to pandas dataframe.
+
+        Paramteres:
+            resp: Response from the API.
+
+        Returns:
+            List of dataframes processed from the API response.
+        """
         res = pd.read_csv(io.StringIO(resp.text))
         if res.empty:
             return []
@@ -283,9 +332,29 @@ class CSVMode(Mode[pd.DataFrame]):
         return [res]
 
     def size(self, batch: List[pd.DataFrame]) -> int:
+        """
+        Returns number of signals returned from the feed API.
+
+        Paramteres:
+            batch: List of pandas dataframe from the API.
+
+        Returns:
+            Total number of signals in the input batch.
+        """
         return sum(cur.shape[0] for cur in batch)
 
     def max_date(self, batch: List[pd.DataFrame], by_date: str) -> str:
+        """
+        Returns second maximum date from signals.
+
+        Paramteres:
+            batch: List of pandas dataframe from the API.
+            by_date: Can be either published_at or harvested_at.
+
+        Returns:
+            Second maximum harvested_at or published_at date (depends on
+            by_date parameter) from all the signals in the batch.
+        """
         temp = set()
         for cur in batch:
             date_at_list = cur[by_date].to_list()
@@ -299,6 +368,9 @@ class CSVMode(Mode[pd.DataFrame]):
         return max(dates[:-1]).strftime(DATETIME_FORMAT)
 
     def do_init(self, indicator: ProgressIndicator) -> None:
+        """
+        Intializes resources & files.
+        """
         fname = self.get_path(self._is_by_day)
         indicator.log(f"current file is {fname}")
 
@@ -308,15 +380,22 @@ class CSVMode(Mode[pd.DataFrame]):
         header.to_csv(get_header_file_name(fname), index=False)
 
     def add_result(self, signal: pd.DataFrame) -> None:
+        """
+        Appends signals to already existing file or writes to a new file.
+
+        Paramteres:
+            signal: Dataframe containing signals as rows.
+        """
         fname = self.get_path(is_by_day=self._is_by_day)
         tmp_fname = get_tmp_file_name(fname)
 
-        if self._cols is None:
+        if self._cols is None:  # Writing a fresh file.
             self._cols = sorted(signal.columns.to_list())
             self._write_cols()
             signal[self._cols].to_csv(
                 tmp_fname, index=False, header=False, mode="w")
-        else:
+        else:  # Appending to already existing file.
+            # Field/column inconsistency.
             cur_cols_set = set(self._cols)
             sig_cols_set = set(signal.columns)
             missing_cols = cur_cols_set.difference(sig_cols_set)
@@ -337,7 +416,16 @@ class CSVMode(Mode[pd.DataFrame]):
             self._cols = None
 
     def stringify_dates(self, obj: pd.DataFrame) -> pd.DataFrame:
+        """
+        Process the signals to convert dates to their string representation.
 
+        Parameters:
+            obj: Pandas dataframe containing signals as rows.
+
+        Returns:
+            Pandas dataframe containing signals as rows with date values as
+            string.
+        """
         def micro_to_milli(timestamp: pd.Timestamp) -> str:
             return micro_to_millisecond(
                 pd.to_datetime(timestamp).strftime(DATETIME_FORMAT))
@@ -351,11 +439,35 @@ class CSVMode(Mode[pd.DataFrame]):
             batch: List[pd.DataFrame],
             value: pd.Timestamp,
             by_date: str) -> List[pd.DataFrame]:
+        """
+        Filters signals having harvested_at or published_at (governed by
+        by_date parameter) less than a provided value.
+
+        Parameters:
+            batch: List of pandas dataframe from the API.
+            value: Date of & before which the signals has to be filtered.
+            by_date: Can be either published_at or harvested_at.
+
+        Returns:
+            List of filters pandas dataframe from the API.
+        """
         df = batch[0]
         return [self.stringify_dates(df[df[by_date] <= value])]
 
     def get_current_date(
             self, obj: pd.DataFrame, by_date: str) -> Optional[str]:
+        """
+        Returns first harvested_at or published_at (governed by
+        by_date parameter) in the dataframe.
+
+        Parameters:
+            obj: Dataframe containing signals as rows.
+            by_date: can be either published_at or harvested_at.
+
+        Returns:
+            Current date from input dataframe. If the input dataframe is empty
+            then it returns None.
+        """
         if obj.empty:
             return None
         # NOTE: check date format
@@ -367,6 +479,18 @@ class CSVMode(Mode[pd.DataFrame]):
             by_date: str,
             indicator: ProgressIndicator,
             helper: Callable[[str], None]) -> Iterator[pd.DataFrame]:
+        """
+        Streams data.
+
+        Parameters:
+            data: List of pandas dataframe containing signals as rows.
+            by_date: Can be either published_at or harvested_at.
+            indicator: Indicator to show progress of the whole process.
+
+        Returns:
+            Streams pandas dataframe containing signals as rows. Number of
+            signals returned are governed by the defined chunk size.
+        """
         assert self._chunk_size is None or self._chunk_size > 0
         if self._chunk_size is None:
             if data is not None:
@@ -420,9 +544,15 @@ class JSONMode(Mode[Dict[str, Any]]):
         self._debug_ix = 0
 
     def get_format(self) -> str:
+        """
+        Returns file format of the mode.
+        """
         return "json"
 
     def split_dates(self) -> bool:
+        """
+        Whether or not split files on the basis of dates.
+        """
         return True
 
     def clean_buffer(self) -> None:
@@ -433,6 +563,15 @@ class JSONMode(Mode[Dict[str, Any]]):
         return None
 
     def parse_result(self, resp: requests.Response) -> List[Dict[str, Any]]:
+        """
+        Parses response from the feed API to python dictionary object.
+
+        Paramteres:
+            resp: Response from the API.
+
+        Returns:
+            List of dictionary objects processed from the API response.
+        """
         res_json = resp.json()
         if self._debug_json:
             with open(f"tmp{self._debug_ix}.json", "w") as out:
@@ -453,9 +592,29 @@ class JSONMode(Mode[Dict[str, Any]]):
         ]
 
     def size(self, batch: List[Dict[str, Any]]) -> int:
+        """
+        Returns number of signals returned from the feed API.
+
+        Paramteres:
+            batch: List of signals in json format from the API.
+
+        Returns:
+            Total number of signals in the input batch.
+        """
         return len(batch)
 
     def max_date(self, batch: List[Dict[str, Any]], by_date: str) -> str:
+        """
+        Returns second maximum date from signals.
+
+        Paramteres:
+            batch: List of signals in json format from the API.
+            by_date: Can be either published_at or harvested_at.
+
+        Returns:
+            Second maximum harvested_at or published_at date (depends on
+            by_date parameter) from all the signals in the batch.
+        """
         temp = set()
         for cur in batch:
             date_at = cur[by_date]
@@ -467,17 +626,39 @@ class JSONMode(Mode[Dict[str, Any]]):
         return max(dates[:-1]).strftime(DATETIME_FORMAT)
 
     def do_init(self, indicator: ProgressIndicator) -> None:
+        """
+        Intializes resources & files.
+        """
         self._res = []
 
     def add_result(self, signal: Dict[str, Any]) -> None:
+        """
+        Appends signals to signals list.
+
+        Paramteres:
+            signal: A signal in form of dictionary object.
+        """
         self._res.append(signal)
 
     def finish_day(self, force_finish: bool = False) -> None:
+        """
+        Writes json file.
+        """
         fname = self.get_path(is_by_day=True)
         if len(self._res) > 0:
             write_json(self._res, fname, sort_keys=True)
 
     def stringify_dates(self, obj: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Process the signals to convert dates to their string representation.
+
+        Parameters:
+            obj: A signal in form of dictionary object.
+
+        Returns:
+            A signal in form of dictionary object containing date values as
+            string.
+        """
         if "harvested_at" in obj:
             obj["harvested_at"] = micro_to_millisecond(
                 obj["harvested_at"].strftime(DATETIME_FORMAT))
@@ -502,6 +683,17 @@ class JSONMode(Mode[Dict[str, Any]]):
 
     def get_current_date(
             self, obj: Dict[str, Any], by_date: str) -> Optional[str]:
+        """
+        Returns first harvested_at or published_at (governed by
+        by_date parameter) in the signal.
+
+        Parameters:
+            obj: Signal as a dictionary object.
+            by_date: can be either published_at or harvested_at.
+
+        Returns:
+            Current date from input dictionary object.
+        """
         # NOTE: check date format
         return convert_to_date(obj[by_date])
 
@@ -511,6 +703,17 @@ class JSONMode(Mode[Dict[str, Any]]):
             by_date: str,
             indicator: ProgressIndicator,
             helper: Callable[[str], None]) -> Iterator[Dict[str, Any]]:
+        """
+        Streams data.
+
+        Parameters:
+            data: List of dictionary objects containing signals as rows.
+            by_date: Can be either published_at or harvested_at.
+            indicator: Indicator to show progress of the whole process.
+
+        Returns:
+            Streams signals from the input one by one.
+        """
         if data is not None:
             for rec in data:
                 cur_date = self.get_current_date(rec, by_date)
@@ -521,6 +724,9 @@ class JSONMode(Mode[Dict[str, Any]]):
 
 
 class DataClient:
+    """
+    Client for downloading & processing feed API data.
+    """
     def __init__(
             self,
             url: str,
@@ -539,10 +745,24 @@ class DataClient:
         self._error_list: Deque[ErrorTuple] = deque(maxlen=n_errors)
 
     def reset_error_list(self) -> None:
+        """
+        Resets the error list.
+        """
         self._error_list.clear()
 
     @staticmethod
     def _validate_filters(filters: FiltersType) -> Dict[str, FilterValue]:
+        """
+        Function to check if provided filters are valid ones & contain valid
+        data type.
+
+        Parameters:
+            filters: Mapping with key as field name & value as field value on
+            which the data has to be filtered.
+
+        Returns:
+            Valid filters.
+        """
         valid_filters: Dict[str, FilterValue] = {}
         for key, value in filters.items():
             if key not in FILTER_FIELD:
@@ -556,6 +776,17 @@ class DataClient:
     @staticmethod
     def _parse_filters(
             filters: Dict[str, FilterValue]) -> Dict[str, FilterValue]:
+        """
+        Function to validate if reserved API parameters are not included in
+        filters.
+
+        Parameters:
+            filters: Mapping with key as field name & value as field value on
+            which the data has to be filtered.
+
+        Returns:
+            Valid filters.
+        """
         for key in filters.keys():
             assert key not in EXCLUDED_FILTER_FIELD, (
                 "filters should not be containing any of "
@@ -564,6 +795,13 @@ class DataClient:
 
     def set_indicator(
             self, indicator: Union[Indicators, ProgressIndicator]) -> None:
+        """
+        Sets progress indicator for the download process.
+
+        Parameters:
+            indicator: Can either be a string (pbar, message, silent) or
+            ProgressIndicator object.
+        """
         if isinstance(indicator, ProgressIndicator):
             self._indicator_obj = indicator
         else:
@@ -571,6 +809,18 @@ class DataClient:
 
     @staticmethod
     def _parse_indicator(indicator: Indicators) -> ProgressIndicator:
+        """
+        Checks if given indicator is valid & parses string format indicator to
+        corresponding ProgressIndicator object.
+
+        Parameters:
+            indicator: Can either be a pbar, message or silent
+
+        Returns:
+            BarIndicator(interactive progress bar) if input is pbar.
+            MessageIndicator(message logs) if input is message.
+            SilentIndicator(nothing at all) if input is silent.
+        """
         if indicator not in INDICATORS:
             raise ValueError(
                 f"Indicator should be None or one of {INDICATORS}. "
@@ -582,17 +832,26 @@ class DataClient:
         return MessageIndicator()
 
     def get_indicator(self) -> ProgressIndicator:
+        """
+        Returns current indicator in use.
+        """
         if self._indicator_obj is None:
             raise ValueError("Set indicator first.")
         return self._indicator_obj
 
     def set_filters(self, filters: FiltersType) -> None:
+        """
+        Sets filters to use in the current execution.
+        """
         self._set_raw_filters(self._validate_filters(filters))
 
     def _set_raw_filters(self, filters: Dict[str, FilterValue]) -> None:
         self._filters = self._parse_filters(filters)
 
     def get_filters(self) -> Dict[str, FilterValue]:
+        """
+        Returns current filters in use.
+        """
         return self._filters
 
     @staticmethod
@@ -600,6 +859,26 @@ class DataClient:
             mode: ModeType,
             split_dates: bool = True,
             chunk_size: Optional[int] = None) -> Mode:
+        """
+        Checks if given mode is valid & parses string format mode to
+        corresponding Mode object.
+
+        Parameters:
+            mode: Can either be a csv, df or json. csv and df are same thing.
+            split_dates: Flag to determine if the data has to be kept in
+                separate files on the basis of dates.
+            chunk_size: Number of signals to process at a time.
+
+        Returns:
+            A Mode object functioning as the following:
+            1. csv or df with split_dates=False downloads all the signals for
+            each day/date into one single csv file.
+            2. csv or df with split_dates=True downloads all the signals for
+            each day/date into respective csv files(based on dates).
+            3. json downloads all the signals for each day/date into
+            respective json files(based on dates). It does not matter what
+            value split_dates contain in this case.
+        """
         if mode == "json":
             if not split_dates:
                 warnings.warn(
@@ -626,14 +905,23 @@ class DataClient:
             mode: ModeType,
             split_dates: bool,
             chunk_size: Optional[int] = None) -> None:
+        """
+        Sets mode to use in the current execution.
+        """
         self._mode = self._parse_mode(mode, split_dates, chunk_size)
 
     def get_mode(self) -> Mode:
+        """
+        Returns current mode in use.
+        """
         assert self._mode is not None, "Set mode first."
         return self._mode.get_instance()
 
     def get_last_silenced_errors(
             self) -> List[ErrorTuple]:
+        """
+        Returns list of errors occurred during previous execution.
+        """
         return list(self._error_list)
 
     def _read_total(
@@ -642,13 +930,29 @@ class DataClient:
             filters: Dict[str, FilterValue],
             indicator: ProgressIndicator,
             request_kwargs: Optional[Dict[Any, Any]]) -> int:
+        """
+        Generates overall total for a given set of feed API parameters.
+
+        Parameters:
+            params: Parameters of the API call.
+            filters: Filters to apply on the response.
+            indicator: Indicator to show progress of the whole process.
+            request_kwargs: Keywords to pass to the post function of requests
+                module. For ex: Proxy.
+
+        Returns:
+            Total number of signals for given parameters.
+        """
         rkwargs = {} if request_kwargs is None else request_kwargs
         while True:
             try:
                 req_params: Optional[Dict[str, Union[str, int]]] = None
-                if is_example_url(self._base_url):
+                if is_example_url(self._base_url):  # Mock API
                     resp = get_overall_total_from_dummy(params, filters)
-                else:
+                else:  # Real API
+                    # Size is 1 and we exclude all signal fields because we are
+                    # interested in only overall_total. This reduces the load
+                    # on the API.
                     req_params = {
                         **params,
                         "format": "json",
@@ -683,6 +987,23 @@ class DataClient:
             url_params: Optional[Dict[str, str]],
             json_params: Optional[Dict[str, Any]],
             request_kwargs: Optional[Dict[Any, Any]]) -> List[T]:
+        """
+        Generates signals for a given set of feed API parameters.
+
+        Parameters:
+            mode: Type of response.
+            params: Parameters of the API call.
+            filters: Filters to apply on the response.
+            by_date: can be either published_at or harvested_at.
+            indicator: Indicator to show progress of the whole process.
+            url_params: Extra parameters to pass in the URL.
+            json_params: Extra parameters to pass in the request body.
+            request_kwargs: Keywords to pass to the post function of requests
+                module. For ex: Proxy.
+
+        Returns:
+            List of signals for given parameters.
+        """
         while True:
             req_params = None
             url_params = url_params if url_params is not None else {}
@@ -730,6 +1051,25 @@ class DataClient:
             json_params: Optional[Dict[str, Any]] = None,
             request_kwargs: Optional[Dict[Any, Any]] = None,
                 ) -> Iterator[List[T]]:
+        """
+        Streams signals for a given set of feed API parameters. This function
+        bypasses the signals size restriction provided by the API. It paginates
+        using the by_date parameter.
+
+        Parameters:
+            mode: Type of response.
+            params: Parameters of the API call.
+            filters: Filters to apply on the response.
+            by_date: can be either published_at or harvested_at.
+            indicator: Indicator to show progress of the whole process.
+            url_params: Extra parameters to pass in the URL.
+            json_params: Extra parameters to pass in the request body.
+            request_kwargs: Keywords to pass to the post function of requests
+                module. For ex: Proxy.
+
+        Returns:
+            Streams a list of signals for given parameters.
+        """
         batch = self._read_date(
             mode,
             params,
@@ -806,6 +1146,29 @@ class DataClient:
                 Tuple[ModeType, bool, Optional[int]]
                 ]],
             ) -> Mode:
+        """
+        Generates mode object for provided input mode.
+
+        Parameters:
+            mode: There are numerous methods by which you can set up mode here:
+                1. (mode_type, split_dates), where mode_type can be one of
+                    {csv, df, json} and split_dates can be True or False.
+                    chunk_size is None by default in this case
+                2. (mode_type, split_dates, chunk_size), where mode_type can be
+                    one of {csv, df, json}, split_dates can be True or False
+                    and chunk_size being an integer value.
+                3. mode_type, in this case split_dates is True by default.That
+                    means it's not for the combined csv mode.
+                4. mode can also be any object of the class Mode. There are two
+                    classes shipped with the library, CSVMode, JSONMode and can
+                    be found by doing:
+                        from accern_data import CSVMode, JSONMode
+                5. If nothing or null value is provided, then the program will
+                    take mode set by the set_mode method.
+
+        Returns:
+            A Mode object.
+        """
         if mode is None:
             return self.get_mode()
         if isinstance(mode, Mode):
@@ -816,6 +1179,19 @@ class DataClient:
 
     def _get_valid_filters(
             self, filters: Optional[FiltersType]) -> Dict[str, FilterValue]:
+        """
+        Generates an indicator object for provided input indicator.
+
+        Parameters:
+            filters: There are numerous methods by which you can set up
+                filters here:
+                1. By providing dictionary mapping of filters.
+                2. If nothing or null value is provided, then the program will
+                    take filters set by the set_filters method.
+
+        Returns:
+            Dictionary containing filters.
+        """
         if filters is None:
             return self.get_filters()
         return self._parse_filters(
@@ -825,6 +1201,26 @@ class DataClient:
             self,
             indicator: Optional[Union[Indicators, ProgressIndicator]]
             ) -> ProgressIndicator:
+        """
+        Generates an indicator object for provided input indicator.
+
+        Parameters:
+            indicator: There are numerous methods by which you can set up
+                indicator here:
+                1. By providing indicator string which can be one of
+                    {pbar, message, silent}.
+                2. indicator can also be any object of the class
+                    ProgressIndicator. There are three classes shipped with the
+                    library, BarIndicator, MessageIndicator, SilentIndicator
+                    and can be found by doing:
+                        from accern_data.utils import BarIndicator,
+                        MessageIndicator, SilentIndicator
+                3. If nothing or null value is provided, then the program will
+                    take indicator set by the set_indicator method.
+
+        Returns:
+            An indicator object.
+        """
         if indicator is None:
             indicator_obj = self.get_indicator()
         elif isinstance(indicator, ProgressIndicator):
@@ -861,6 +1257,60 @@ class DataClient:
             url_params: Optional[Dict[str, str]] = None,
             json_params: Optional[Dict[str, Any]] = None,
             request_kwargs: Optional[Dict[Any, Any]] = None) -> None:
+        """
+        Downloads signals into files.
+
+        Parameters:
+            start_date: The starting date from where you want to download the
+                data.
+            end_date: The ending date till where you want to download the data.
+                If provided, data would be downloaded from start_date to
+                end_date (both inclusive). If not provided, then it would
+                consider only start_date to download the data, i.e., download
+                single day's (start_date) data.
+            output_path: The path in your local file system where you want to
+                store those downloaded files. By default, it points to the
+                current working directory.
+            output_pattern: Patterns are the file name prefix that the
+                downloaded files should have.
+            mode: There are numerous methods by which you can set up mode here:
+                1. (mode_type, split_dates), where mode_type can be one of
+                    {csv, df, json} and split_dates can be True or False.
+                    chunk_size is None by default in this case
+                2. (mode_type, split_dates, chunk_size), where mode_type can be
+                    one of {csv, df, json}, split_dates can be True or False
+                    and chunk_size being an integer value.
+                3. mode_type, in this case split_dates is True by default.That
+                    means it's not for the combined csv mode.
+                4. mode can also be any object of the class Mode. There are two
+                    classes shipped with the library, CSVMode, JSONMode and can
+                    be found by doing:
+                        from accern_data import CSVMode, JSONMode
+                5. If nothing or null value is provided, then the program will
+                    take mode set by the set_mode method.
+            filters: There are numerous methods by which you can set up
+                filters here:
+                1. By providing dictionary mapping of filters.
+                2. If nothing or null value is provided, then the program will
+                    take filters set by the set_filters method.
+            indicator: There are numerous methods by which you can set up
+                indicator here:
+                1. By providing indicator string which can be one of
+                    {pbar, message, silent}.
+                2. indicator can also be any object of the class
+                    ProgressIndicator. There are three classes shipped with the
+                    library, BarIndicator, MessageIndicator, SilentIndicator
+                    and can be found by doing:
+                        from accern_data.utils import BarIndicator,
+                        MessageIndicator, SilentIndicator
+                3. If nothing or null value is provided, then the program will
+                    take indicator set by the set_indicator method.
+            by_date: can be either published_at or harvested_at.
+            url_params: Extra parameters to pass in the URL.
+            json_params: Extra parameters to pass in the request body.
+            request_kwargs: Keywords to pass to the post function of requests
+                module. For ex: Proxy.
+        """
         opath = "." if output_path is None else output_path
         os.makedirs(opath, exist_ok=True)
 
@@ -926,6 +1376,63 @@ class DataClient:
             url_params: Optional[Dict[str, str]] = None,
             json_params: Optional[Dict[str, Any]] = None,
             request_kwargs: Optional[Dict[Any, Any]] = None) -> Iterator[T]:
+        """
+        Instead of downloading the data into files, it can be kept in the
+        memory(variables). This function is basically the same as
+        download_range, but it yields signals, which can then be stored in
+        variables for further processing.
+
+        Parameters:
+            start_date: The starting date from where you want to download the
+                data.
+            end_date: The ending date till where you want to download the data.
+                If provided, data would be downloaded from start_date to
+                end_date (both inclusive). If not provided, then it would
+                consider only start_date to download the data, i.e., download
+                single day's (start_date) data.
+            mode: There are numerous methods by which you can set up mode here:
+                1. (mode_type, split_dates), where mode_type can be one of
+                    {csv, df, json} and split_dates can be True or False.
+                    chunk_size is None by default in this case
+                2. (mode_type, split_dates, chunk_size), where mode_type can be
+                    one of {csv, df, json}, split_dates can be True or False
+                    and chunk_size being an integer value.
+                3. mode_type, in this case split_dates is True by default.That
+                    means it's not for the combined csv mode.
+                4. mode can also be any object of the class Mode. There are two
+                    classes shipped with the library, CSVMode, JSONMode and can
+                    be found by doing:
+                        from accern_data import CSVMode, JSONMode
+                5. If nothing or null value is provided, then the program will
+                    take mode set by the set_mode method.
+            filters: There are numerous methods by which you can set up
+                filters here:
+                1. By providing dictionary mapping of filters.
+                2. If nothing or null value is provided, then the program will
+                    take filters set by the set_filters method.
+            indicator: There are numerous methods by which you can set up
+                indicator here:
+                1. By providing indicator string which can be one of
+                    {pbar, message, silent}.
+                2. indicator can also be any object of the class
+                    ProgressIndicator. There are three classes shipped with the
+                    library, BarIndicator, MessageIndicator, SilentIndicator
+                    and can be found by doing:
+                        from accern_data.utils import BarIndicator,
+                        MessageIndicator, SilentIndicator
+                3. If nothing or null value is provided, then the program will
+                    take indicator set by the set_indicator method.
+            set_active_mode: Not for end users.
+            by_date: can be either published_at or harvested_at.
+            url_params: Extra parameters to pass in the URL.
+            json_params: Extra parameters to pass in the request body.
+            request_kwargs: Keywords to pass to the post function of requests
+                module. For ex: Proxy.
+
+        Returns:
+            Streams data into the memory.
+        """
+
         # NOTE: Deprecate this.
         if by_date == "date":
             warnings.warn(
@@ -950,6 +1457,9 @@ class DataClient:
                 start_date: str,
                 end_date: str,
                 by_date: str) -> Dict[str, str]:
+            """
+            Generates date range in feed API convention.
+            """
             if by_date not in BY_DATE:
                 raise ValueError(
                     f"Incorrect value {by_date} for by_date. "
@@ -1015,10 +1525,34 @@ def create_data_client(
         n_errors: int = 5,
         indicator: Optional[Union[Indicators, ProgressIndicator]] = None,
         ) -> DataClient:
+    """
+    Creates client for downloading signals/data from the feed API.
+
+    Parameters:
+        url: Feed URL provided by the accern platform.
+        token: Authorization token provided by the accern platform.
+        n_errors: Maximum number of errors to keep in the queue.
+        indicator: progress indicator of the process in form of:
+            1. An interactive progress bar
+            2. Message logs
+            3. Silent indication (nothing at all)
+
+    Returns:
+        Client for querying the data from the feed API.
+    """
     return DataClient(url, token, n_errors, indicator)
 
 
 def merge_csv_file(fname: str) -> None:
+    """
+    Generates csv file out of header(containing columns names) & temporary
+    file. After merge, columns & temporary file gets deleted.
+
+    Parameters:
+        fname: Name of header file & temporary file. This name will be same
+            for both. Column file will have .~columns extension & temporary
+            file will have .~tmp extension.
+    """
     tmp_fname = get_tmp_file_name(fname)
     col_fname = get_header_file_name(fname)
     cols = pd.read_csv(col_fname).columns.to_list()
